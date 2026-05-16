@@ -15,7 +15,7 @@ window.BUNOFEED_API = {
 
   // ── Replace this with your Cloudflare Worker URL after deploying ──
   // Example: "https://bunofeed-api.YOUR-USERNAME.workers.dev"
-  BASE_URL: 'https://bunofeedbaheri.workers.dev.',
+  BASE_URL: 'https://bunofeedbaheri.workers.dev',
 
   // ── API Endpoints ──
   endpoints: {
