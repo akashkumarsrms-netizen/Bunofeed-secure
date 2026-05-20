@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <style>
 
     /* ── Page wrapper ── */
@@ -60,7 +60,6 @@
     }
     .search-row {
       display: flex;
-      flex-direction: column;
       gap: .8rem;
     }
     .search-row .form-input {
@@ -180,16 +179,12 @@
     .btn-warning-custom:hover:not(:disabled) { background: #e8620a; border-color: #e8620a; transform: translateY(-2px); }
     .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
-    /* ── Modals (flicker-free warm dark overlay) ── */
+    /* ── Modals ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(15, 8, 4, 0.88); z-index: 4000;
+      background: rgba(0,0,0,.6); z-index: 4000;
       align-items: center; justify-content: center;
-      padding: 1rem;
-      
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      transform: translate3d(0,0,0);
+      padding: 1rem; backdrop-filter: blur(5px);
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
@@ -276,17 +271,17 @@
   <!-- ═══════════ NAVBAR ═══════════ -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+      <a href="index.html" class="logo" aria-label="Bunofeed Home">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html"      class="nav-link">Home</a>
-        <a href="/shop.html"       class="nav-link">Products</a>
-        <a href="/orders.html"     class="nav-link active">My Orders</a>
-        <a href="/index.html#contact" class="nav-link">Contact</a>
+        <a href="index.html"      class="nav-link">Home</a>
+        <a href="shop.html"       class="nav-link">Products</a>
+        <a href="orders.html"     class="nav-link active">My Orders</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
@@ -298,23 +293,30 @@
       <div class="page-heading">
         <div class="section-tag">Order Tracking</div>
         <h1>Track Your <span>Order</span></h1>
-        <p>Enter your Order ID and Phone Number to see the latest status.</p>
+        <p>Enter your Order ID to see the latest status and manage your order.</p>
       </div>
 
       <!-- Search -->
       <div class="order-search-card">
-        <div class="search-row">
-          <div class="form-group">
-            <label for="order-id-input">Your Order ID <span>*</span></label>
-            <input type="text" id="order-id-input" class="form-input" placeholder="e.g. ORD17652514" autocomplete="off" spellcheck="false"/>
-          </div>
-          <div class="form-group">
-            <label for="phone-input">Phone Number <span>*</span></label>
-            <input type="tel" id="phone-input" class="form-input" placeholder="10-digit mobile number" autocomplete="off" spellcheck="false" maxlength="10"/>
-          </div>
-          <button class="btn btn-primary" id="track-btn" onclick="trackOrder()" style="margin-top: 1rem; border-radius: 50px;">
-            <i class="fas fa-search"></i> Track Order
-          </button>
+        <label for="order-id-input">Your Order ID</label>
+        <div class="search-row" style="flex-direction:column;">
+  
+  <input type="text" id="order-id-input" class="form-input"
+    placeholder="Enter Order ID"
+    autocomplete="off"
+    spellcheck="false"/>
+
+  <input type="tel" id="phone-input" class="form-input"
+    placeholder="Enter Phone Number"
+    autocomplete="off"
+    spellcheck="false"/>
+
+  <button class="btn btn-primary" id="track-btn" onclick="trackOrder()">
+    <i class="fas fa-search"></i> Track
+  </button>
+
+</div>
+          
         </div>
         <p class="search-hint">Your Order ID was sent to your email after placing the order.</p>
       </div>
@@ -401,10 +403,10 @@
 
           <!-- Actions -->
           <div class="action-row">
-            <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()" style="border-radius: 50px;">
+            <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()">
               <i class="fas fa-undo-alt"></i> Request Return
             </button>
-            <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()" style="border-radius: 50px;">
+            <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
               <i class="fas fa-times-circle"></i> Cancel Order
             </button>
           </div>
@@ -426,7 +428,7 @@
         <p class="modal-sub">Please tell us why you'd like to return this order. We'll review your request within 24–48 hours.</p>
         <div class="modal-form">
           <div class="form-group">
-            <label for="return-reason">Reason for Return <span>*</span></label>
+            <label>Reason for Return <span>*</span></label>
             <select id="return-reason" class="form-input">
               <option value="">— Select a reason —</option>
               <option>Damaged / Defective product</option>
@@ -438,19 +440,19 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="return-comment">Additional Comments</label>
+            <label>Additional Comments</label>
             <textarea id="return-comment" placeholder="Describe the issue in detail (optional but helpful)…"></textarea>
           </div>
           <div class="form-group">
             <label>Upload Images / Videos <span style="color:var(--gray);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></label>
             <div class="file-upload-box">
               <input type="file" id="return-files" accept="image/*,video/*" multiple onchange="updateFileLabel()"/>
-              <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+              <i class="fas fa-cloud-upload-alt"></i>
               <p>Click to upload or drag &amp; drop photos / videos</p>
               <p class="file-names" id="file-label"></p>
             </div>
           </div>
-          <button class="btn btn-warning-custom modal-submit-btn" id="return-submit-btn" onclick="submitReturn()" style="border-radius: 50px;">
+          <button class="btn btn-warning-custom modal-submit-btn" id="return-submit-btn" onclick="submitReturn()">
             <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Return Request</span>
             <span class="btn-spinner"><i class="fas fa-circle-notch fa-spin"></i> Submitting…</span>
           </button>
@@ -459,10 +461,10 @@
       </div>
 
       <div class="modal-success" id="return-success-view">
-        <i class="fas fa-check-circle" aria-hidden="true"></i>
+        <i class="fas fa-check-circle"></i>
         <h3>Return Request Submitted!</h3>
         <p>Your return request has been received. We'll review it within 24–48 hours. A confirmation email has been sent to you.</p>
-        <button class="btn btn-brown" style="margin-top:1.2rem;width:100%; border-radius: 50px;" onclick="closeModal('return-modal')">Close</button>
+        <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('return-modal')">Close</button>
       </div>
     </div>
   </div>
@@ -478,7 +480,7 @@
         <p class="modal-sub">We're sorry to hear you'd like to cancel. Please let us know the reason so we can serve you better.</p>
         <div class="modal-form">
           <div class="form-group">
-            <label for="cancel-reason">Reason for Cancellation <span>*</span></label>
+            <label>Reason for Cancellation <span>*</span></label>
             <select id="cancel-reason" class="form-input">
               <option value="">— Select a reason —</option>
               <option>Ordered by mistake</option>
@@ -490,10 +492,10 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="cancel-comment">Additional Comments</label>
+            <label>Additional Comments</label>
             <textarea id="cancel-comment" placeholder="Any additional details (optional)…"></textarea>
           </div>
-          <button class="btn btn-danger modal-submit-btn" id="cancel-submit-btn" onclick="submitCancellation()" style="border-radius: 50px;">
+          <button class="btn btn-danger modal-submit-btn" id="cancel-submit-btn" onclick="submitCancellation()">
             <span class="btn-text"><i class="fas fa-times-circle"></i> Submit Cancellation Request</span>
             <span class="btn-spinner"><i class="fas fa-circle-notch fa-spin"></i> Submitting…</span>
           </button>
@@ -502,10 +504,10 @@
       </div>
 
       <div class="modal-success" id="cancel-success-view">
-        <i class="fas fa-check-circle" aria-hidden="true"></i>
+        <i class="fas fa-check-circle"></i>
         <h3>Cancellation Request Submitted!</h3>
         <p>Your cancellation request has been received and is being reviewed. A confirmation email has been sent to you.</p>
-        <button class="btn btn-brown" style="margin-top:1.2rem;width:100%; border-radius: 50px;" onclick="closeModal('cancel-modal')">Close</button>
+        <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('cancel-modal')">Close</button>
       </div>
     </div>
   </div>
@@ -526,14 +528,14 @@
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="/index.html">Home</a>
-        <a href="/shop.html">Products</a>
-        <a href="/orders.html">My Orders</a>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Products</a>
+        <a href="orders.html">My Orders</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>Contact Us</h4>
@@ -542,37 +544,33 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms of Service</a> | <a href="/privacy.html">Privacy Policy</a></p>
+      <p>© 2026 Bunofeed. All rights reserved. | <a href="terms.html">Terms of Service</a> | <a href="privacy.html">Privacy Policy</a></p>
       <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
   </footer>
 
   <!-- ═══════════ SCRIPT ═══════════ -->
-  <script src="/api.js"></script>
+  <script src="api.js"></script>
   <script>
+    // API config loaded from api.js (window.BUNOFEED_API)
     let currentOrder = null;
 
     /* ── Hamburger ── */
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    if (hamburger && navLinks) {
-      hamburger.addEventListener('click', function(){
-        const open = navLinks.classList.toggle('open');
-        hamburger.classList.toggle('active', open);
-        hamburger.setAttribute('aria-expanded', open);
-        document.body.style.overflow = open ? 'hidden' : '';
-      });
-    }
+    document.getElementById('hamburger').addEventListener('click', function(){
+      this.classList.toggle('active');
+      this.setAttribute('aria-expanded', this.classList.contains('active'));
+      document.getElementById('navLinks').classList.toggle('open');
+    });
 
     /* ── Track Order ── */
     async function trackOrder() {
       const raw = document.getElementById('order-id-input').value.trim();
-      const phone = document.getElementById('phone-input').value.trim();
+const phone = document.getElementById('phone-input').value.trim();
 
-      if (!raw || !phone) {
-        showError('Please enter both Order ID and Phone Number.');
-        return;
-      }
+if (!raw || !phone) {
+  showError('Please enter both Order ID and Phone Number.');
+  return;
+}
 
       hideAll();
       show('state-loading');
@@ -593,7 +591,6 @@
       }
     }
     document.getElementById('order-id-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
-    document.getElementById('phone-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
 
     /* ── Render Order ── */
     function renderOrder(o) {

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <style>
     /* ======================================================
        SHOP PAGE — Extra Styles
@@ -79,11 +79,183 @@
     .empty-state p  { color:var(--gray);font-size:1rem; }
 
     /* ======================================================
+       PRODUCT DETAIL MODAL
+    ====================================================== */
+    .modal-overlay {
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.55);z-index:2000;
+      align-items:center;justify-content:center;
+      padding:1rem;
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+    }
+    .modal-overlay.open { display:flex; }
+
+    .modal {
+      background:var(--white);border-radius:20px;
+      max-width:860px;width:100%;
+      max-height:92vh;overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      box-shadow:0 24px 64px rgba(0,0,0,.25);
+      display:grid;grid-template-columns:1fr 1fr;
+      animation:modalIn .28s ease;
+    }
+    @keyframes modalIn {
+      from{opacity:0;transform:scale(.95) translateY(12px)}
+      to  {opacity:1;transform:scale(1) translateY(0)}
+    }
+
+    /* Modal left — image */
+    .modal-img-side {
+      display:flex;flex-direction:column;align-items:stretch;
+      font-size:7rem;border-radius:20px 0 0 20px;
+      min-height:320px;overflow:hidden;
+    }
+    .modal-main-img-wrap {
+      flex:1;width:100%;
+      display:flex;align-items:center;justify-content:center;
+      min-height:260px;overflow:hidden;
+    }
+    .modal-img-side img.modal-photo {
+  display:block;
+  width:100%;height:100%;
+  max-width:100%;max-height:100%;
+  object-fit:contain;padding:20px;
+  pointer-events:none;
+}
+    .modal-emoji { line-height:1; }
+
+    /* Thumbnail strip */
+    .modal-thumbs {
+      width:100%;display:flex;gap:8px;padding:10px 12px;
+      overflow-x:auto;background:rgba(0,0,0,.12);
+      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;
+      flex-shrink:0;
+    }
+    .modal-thumbs::-webkit-scrollbar { height:4px; }
+    .modal-thumbs::-webkit-scrollbar-thumb { background:rgba(255,255,255,.35);border-radius:4px; }
+    .modal-thumbs:empty { display:none; }
+    .modal-thumb {
+      width:56px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;
+      border:2px solid transparent;cursor:pointer;
+      transition:border-color .18s, transform .18s;background:#fff;
+    }
+    .modal-thumb:hover { transform:scale(1.05); }
+    .modal-thumb.active { border-color:#FF6B00;box-shadow:0 0 0 1px #FF6B00; }
+    .modal-thumb img { width:100%;height:100%;object-fit:contain;padding:4px; }
+    .modal-thumb-emoji {
+      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      font-size:1.6rem;
+    }
+
+    /* Modal right — content */
+    .modal-body {
+      padding:2.2rem 2rem;display:flex;flex-direction:column;gap:1rem;
+      overflow-y:auto;
+    }
+    .modal-close {
+      position:absolute;top:1rem;right:1rem;
+      width:36px;height:36px;border-radius:50%;
+      background:rgba(0,0,0,.12);border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1rem;color:var(--white);transition:var(--transition);
+      z-index:10;-webkit-appearance:none;
+    }
+    .modal-close:hover { background:rgba(0,0,0,.3); }
+    .modal-badge-row { display:flex;gap:.5rem;flex-wrap:wrap; }
+    .modal-badge {
+      font-family:var(--font-head);font-weight:700;font-size:.72rem;
+      padding:4px 12px;border-radius:50px;
+    }
+    .modal-badge.bestseller { background:var(--brown);color:var(--white); }
+    .modal-badge.new        { background:#28a745;color:var(--white); }
+    .modal-badge.limited    { background:#dc3545;color:var(--white); }
+    .modal-badge.sale       { background:var(--orange);color:var(--white); }
+
+    .modal-name {
+      font-family:var(--font-head);font-size:1.5rem;font-weight:800;
+      color:var(--dark);line-height:1.2;
+    }
+    .modal-tagline { font-size:.97rem;color:var(--orange);font-weight:600; }
+    .modal-desc { color:var(--gray);font-size:.93rem;line-height:1.75; }
+
+    /* Features */
+    .modal-features {
+      display:flex;flex-wrap:wrap;gap:.5rem;
+    }
+    .modal-feature-chip {
+      background:rgba(255,107,0,.1);color:var(--brown);
+      font-size:.78rem;font-family:var(--font-head);font-weight:600;
+      padding:5px 12px;border-radius:50px;
+    }
+
+    /* Price row */
+    .modal-price-row {
+      display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+      padding:.8rem 0;border-top:1px solid #f0e8e0;border-bottom:1px solid #f0e8e0;
+    }
+    .modal-price-main {
+      font-family:var(--font-head);font-size:1.7rem;font-weight:800;color:var(--brown);
+    }
+    .modal-price-sale { color:var(--orange); }
+    .modal-price-old  {
+      font-size:.95rem;color:var(--gray);text-decoration:line-through;font-weight:500;
+    }
+    .modal-weight-tag {
+      background:var(--off-white);padding:5px 14px;border-radius:50px;
+      font-size:.8rem;font-weight:600;color:var(--gray);font-family:var(--font-head);
+    }
+
+    /* Qty selector */
+    .modal-qty-row {
+      display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+    }
+    .qty-label { font-family:var(--font-head);font-weight:700;font-size:.85rem;color:var(--dark); }
+    .qty-control {
+      display:flex;align-items:center;border:2px solid #e0d4cc;border-radius:50px;overflow:hidden;
+    }
+    .qty-btn {
+      width:36px;height:36px;background:none;border:none;cursor:pointer;
+      font-size:1.1rem;font-weight:700;color:var(--dark);transition:var(--transition);
+      -webkit-appearance:none;display:flex;align-items:center;justify-content:center;
+    }
+    .qty-btn:hover { background:var(--off-white); }
+    .qty-num {
+      min-width:32px;text-align:center;font-family:var(--font-head);
+      font-weight:700;font-size:.95rem;
+    }
+
+    /* Action buttons */
+    .modal-actions { display:flex;gap:.8rem;flex-wrap:wrap; }
+    .modal-actions .btn { flex:1;min-width:130px;justify-content:center; }
+
+    /* Nutrition/info accordion */
+    .modal-accordion { margin-top:.5rem; }
+    .accordion-item { border-top:1px solid #f0e8e0; }
+    .accordion-head {
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.85rem 0;cursor:pointer;
+      font-family:var(--font-head);font-weight:700;font-size:.88rem;color:var(--dark);
+      background:none;border:none;width:100%;text-align:left;-webkit-appearance:none;
+    }
+    .accordion-head i { transition:transform var(--transition);color:var(--orange); }
+    .accordion-head.open i { transform:rotate(180deg); }
+    .accordion-body {
+      display:none;padding:.5rem 0 1rem;color:var(--gray);font-size:.88rem;line-height:1.7;
+    }
+    .accordion-body.open { display:block; }
+
+    /* ======================================================
        RESPONSIVE
     ====================================================== */
     @media(max-width:1024px){ .shop-grid{grid-template-columns:repeat(3,1fr);} }
     @media(max-width:768px){
       .shop-grid{grid-template-columns:repeat(2,1fr);gap:1rem;}
+      .modal{grid-template-columns:1fr;max-height:95vh;}
+      .modal-img-side{min-height:auto;border-radius:20px 20px 0 0;}
+      .modal-main-img-wrap{min-height:200px;}
+      .modal-body{padding:1.5rem 1.2rem;}
+      .modal-name{font-size:1.25rem;}
     }
     @media(max-width:480px){
       .shop-grid{grid-template-columns:1fr;}
@@ -99,18 +271,18 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+      <a href="index.html" class="logo" aria-label="Bunofeed Home">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html"       class="nav-link">Home</a>
-        <a href="/orders.html" class="nav-link">My Orders</a>
-        <a href="/shop.html"        class="nav-link active">Products</a>
-        <a href="/index.html#about" class="nav-link">About</a>
-        <a href="/index.html#contact" class="nav-link">Contact</a>
+        <a href="index.html"       class="nav-link">Home</a>
+        <a href="orders.html" class="nav-link">My Orders</a>
+        <a href="shop.html"        class="nav-link active">Products</a>
+        <a href="index.html#about" class="nav-link">About</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
@@ -159,24 +331,17 @@
 
       <!-- Right: info -->
       <div class="modal-body">
-        <div class="modal-badges" id="modal-badges" style="display:flex; gap:.5rem; flex-wrap:wrap;"></div>
+        <div class="modal-badge-row" id="modal-badges"></div>
         <h2 class="modal-name" id="modal-product-name">Product Name</h2>
         <p  class="modal-tagline" id="modal-tagline"></p>
-        <p  class="modal-desc clamped"    id="modal-desc"></p>
-        <button id="modal-desc-more" class="desc-more-btn">more...</button>
+        <p  class="modal-desc"    id="modal-desc"></p>
 
         <div class="modal-features" id="modal-features"></div>
-
-        <!-- Variant select option pack size -->
-        <div id="shop-variant-row" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-top:.5rem;">
-          <span class="qty-label">Pack Size:</span>
-          <select id="modal-variant-select" class="form-input" style="max-width:200px; padding:6px 12px; font-weight:600;"></select>
-        </div>
 
         <div class="modal-price-row">
           <span class="modal-price-main" id="modal-price"></span>
           <span class="modal-price-old"  id="modal-price-old" style="display:none"></span>
-          <span class="modal-weight-tag" id="modal-weight" style="display:none"></span>
+          <span class="modal-weight-tag" id="modal-weight"></span>
         </div>
 
         <div class="modal-qty-row">
@@ -186,14 +351,14 @@
             <span   class="qty-num"  id="qty-num">1</span>
             <button class="qty-btn" id="qty-plus"  aria-label="Increase quantity">+</button>
           </div>
-          <span style="font-size:.85rem;color:var(--gray); font-weight:700" id="modal-subtotal"></span>
+          <span style="font-size:.85rem;color:var(--gray)" id="modal-subtotal"></span>
         </div>
 
         <div class="modal-actions">
-          <button class="btn btn-primary" id="modal-buy-btn" style="border-radius:50px">
+          <button class="btn btn-primary" id="modal-buy-btn">
             <i class="fas fa-bolt"></i> Buy Now
           </button>
-          <a href="/shop.html" class="btn btn-brown" style="border-radius:50px">
+          <a href="shop.html" class="btn btn-brown">
             <i class="fas fa-arrow-left"></i> Back to Shop
           </a>
         </div>
@@ -207,35 +372,35 @@
   <!-- CHECKOUT MODAL -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
-      <button class="checkout-close" id="checkout-close-btn" aria-label="Close checkout"><i class="fas fa-times"></i></button>
+      <button class="checkout-close" id="checkout-close-btn"><i class="fas fa-times"></i></button>
       <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
         <div class="form-group">
-          <label for="cust-name">Full Name <span>*</span></label>
-          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required autocomplete="name">
+          <label>Full Name <span>*</span></label>
+          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
           <div class="error-msg" id="name-error">Please enter your full name</div>
         </div>
         <div class="form-group">
-          <label for="cust-phone">Mobile Number <span>*</span></label>
-          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10" autocomplete="tel">
+          <label>Mobile Number <span>*</span></label>
+          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10">
           <div class="error-msg" id="phone-error">Please enter a valid 10-digit mobile number</div>
         </div>
         <div class="form-group">
-          <label for="cust-email">Email ID <span>*</span></label>
-          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required autocomplete="email">
+          <label>Email ID <span>*</span></label>
+          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required>
           <div class="error-msg" id="email-error">Please enter a valid email address</div>
         </div>
         <div class="form-group">
-          <label for="cust-address">Full Address <span>*</span></label>
-          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required autocomplete="street-address">
+          <label>Full Address <span>*</span></label>
+          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required>
           <div class="error-msg" id="address-error">Please enter your delivery address</div>
         </div>
         <div class="form-group">
-          <label for="cust-pincode">Pincode <span>*</span></label>
-          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6" autocomplete="postal-code">
+          <label>Pincode <span>*</span></label>
+          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
-        <p style="color:red; font-size: 0.8rem; font-weight: 600;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
+        <p style="color:red;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
         <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn">
           Proceed to Pay
         </button>
@@ -247,7 +412,7 @@
   <footer class="footer" id="contact">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="https://bunoffeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
         <p>Your companion in healthy living. Honest food for real people.</p>
         <div class="social-links">
           <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -258,14 +423,14 @@
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="/index.html">Home</a>
-        <a href="/shop.html">Products</a>
-        <a href="/index.html#about">About</a>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Products</a>
+        <a href="index.html#about">About</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>Contact Us</h4>
@@ -275,8 +440,8 @@
     </div>
     <div class="footer-bottom">
       <p>© 2026 Bunofeed. All rights reserved. |
-        <a href="/terms.html">Terms of Service</a> |
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a> |
+        <a href="privacy.html">Privacy Policy</a>
       </p>
       <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
@@ -285,8 +450,8 @@
   <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <!-- Data & API config -->
-  <script src="/products.js"></script>
-  <script src="/api.js"></script>
+  <script src="products.js"></script>
+  <script src="api.js"></script>
   <script>
   /* ==============================================================
      SHOP PAGE SCRIPT
@@ -294,35 +459,6 @@
   document.addEventListener('DOMContentLoaded', () => {
     const D = window.BUNOFEED_DATA;
     if (!D) return;
-
-    /* Swipe support utility mapping touch gestures */
-    function addSwipeSupport(element, onSwipeLeft, onSwipeRight) {
-      let touchStartX = 0;
-      let touchEndX = 0;
-      
-      const elClone = element.cloneNode(true);
-      element.parentNode.replaceChild(elClone, element);
-      
-      elClone.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].clientX;
-      }, { passive: true });
-
-      elClone.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].clientX;
-        handleSwipe();
-      }, { passive: true });
-
-      function handleSwipe() {
-        const diff = touchEndX - touchStartX;
-        if (Math.abs(diff) < 40) return;
-        if (diff < 0) {
-          onSwipeLeft();
-        } else {
-          onSwipeRight();
-        }
-      }
-      return elClone;
-    }
 
     /* ---- helpers ---- */
     const saleActive = D.sale && D.sale.active &&
@@ -357,11 +493,12 @@
     let currentFilter = 'all';
     let products = (D.products || []).filter(p => p.visible !== false);
     let currentProduct = null;
-    let selectedVariant = null;
     let qty = 1;
     let isProcessing = false;
 
+    // GOOGLE SHEET WEB APP URL - Replace this with your actual Web App URL after deploying from Google Apps Script
     function generateOrderId() {
+      // Timestamp + 6 random digits — purely numeric, unpredictable enough
       const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
       return 'ORD' + Date.now() + rand;
     }
@@ -432,17 +569,12 @@
         proceedBtn.disabled = true;
         proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-        // Choose active price based on selected variant
-        const basePrice = selectedVariant ? selectedVariant.price : currentProduct.price;
-        const sp = salePrice(basePrice);
-        const unitPrice = sp || basePrice;
+        const sp = salePrice(currentProduct.price);
+        const unitPrice = sp || currentProduct.price;
         const totalAmount = unitPrice * qty;
         const shipping = D.shipping && totalAmount < D.shipping.freeShippingAbove ? D.shipping.shippingCharge : 0;
         const grandTotal = totalAmount + shipping;
         const orderId = generateOrderId();
-
-        const finalWeight = selectedVariant ? selectedVariant.weight : currentProduct.weight;
-        const finalProductName = currentProduct.name + " (" + finalWeight + ")";
 
         const orderData = {
           order_id: orderId,
@@ -453,7 +585,7 @@
           address: address,
           pincode: pincode,
           product_id: currentProduct.id,
-          product_name: finalProductName,
+          product_name: currentProduct.name,
           quantity: qty,
           product_price: unitPrice,
           total_amount: grandTotal,
@@ -481,48 +613,27 @@
 
     /* ---- Build product card ---- */
     function buildCard(product) {
-      const hasVariants = product.variants && product.variants.length > 0;
-      const defaultVariant = hasVariants ? product.variants[0] : { weight: product.weight, price: product.price, originalPrice: product.originalPrice };
-
-      const sp = salePrice(defaultVariant.price);
-      const displayPrice = sp || defaultVariant.price;
-      const opDisplay = defaultVariant.originalPrice || null;
-
+      const sp = salePrice(product.price);
       let badgeHTML = product.badge
         ? `<div class="product-badge${product.badgeType==='new'?' new':product.badgeType==='limited'?' limited':''}">${product.badge}</div>` : '';
       if (saleActive) badgeHTML += `<div class="sale-ribbon">${D.sale.label||'SALE'} ${discountPct}% OFF</div>`;
 
-      const primaryImg = (product.images && product.images.length > 0) ? product.images[0] : (product.image || '');
-      const imgHTML = primaryImg
-        ? `<img class="product-photo" src="${primaryImg}" alt="${product.name}" loading="lazy"/>`
+      const imgHTML = product.image
+        ? `<img class="product-photo" src="${product.image}" alt="${product.name}" loading="lazy"/>`
         : `<span class="product-emoji">${product.emoji||'🥜'}</span>`;
 
-      let priceHTML = '';
-      if (saleActive && sp) {
-        priceHTML = `
-          <div class="product-price">
-            <div class="product-weight">${defaultVariant.weight||''}</div>
+      const priceHTML = sp
+        ? `<div class="product-price">
+            <div class="product-weight">${product.weight||''}</div>
             <div class="price-sale">
               <span class="price-current">₹${sp}</span>
-              <span class="price-old">₹${defaultVariant.price}</span>
+              <span class="price-old">₹${product.price}</span>
             </div>
+          </div>`
+        : `<div class="product-price">
+            <div class="product-weight">${product.weight||''}</div>
+            <div class="price-original">₹${product.price}</div>
           </div>`;
-      } else if (opDisplay) {
-        priceHTML = `
-          <div class="product-price">
-            <div class="product-weight">${defaultVariant.weight||''}</div>
-            <div class="price-sale">
-              <span class="price-current" style="color:var(--brown)">₹${defaultVariant.price}</span>
-              <span class="price-old">₹${opDisplay}</span>
-            </div>
-          </div>`;
-      } else {
-        priceHTML = `
-          <div class="product-price">
-            <div class="product-weight">${defaultVariant.weight||''}</div>
-            <div class="price-original">₹${defaultVariant.price}</div>
-          </div>`;
-      }
 
       const card = document.createElement('div');
       card.className = 'product-card reveal';
@@ -578,10 +689,6 @@
           if (product) {
             currentProduct = product;
             qty = 1;
-            
-            const hasVariants = product.variants && product.variants.length > 0;
-            selectedVariant = hasVariants ? product.variants[0] : { weight: product.weight, price: product.price, originalPrice: product.originalPrice };
-            
             openCheckoutModal();
           }
         });
@@ -622,78 +729,43 @@
       currentProduct = product;
       qty = 1;
 
-      // Handle description clamping with button
-      const descEl = document.getElementById('modal-desc');
-      descEl.textContent = product.description;
-      descEl.classList.add('clamped');
-      
-      const moreBtn = document.getElementById('modal-desc-more');
-      moreBtn.style.display = 'inline-flex';
-      moreBtn.onclick = () => {
-        descEl.classList.remove('clamped');
-        moreBtn.style.display = 'none';
-      };
+      const sp = salePrice(product.price);
+      const displayPrice = sp || product.price;
 
-      // Set pack size selector
-      const hasVariants = product.variants && product.variants.length > 0;
-      const vList = hasVariants ? product.variants : [{ weight: product.weight || 'Default', price: product.price, originalPrice: product.originalPrice }];
-      selectedVariant = vList[0];
-
-      const sel = document.getElementById('modal-variant-select');
-      sel.innerHTML = vList.map((v, idx) => `<option value="${idx}">${v.weight} — ₹${v.price}</option>`).join('');
-      
-      sel.onchange = () => {
-        selectedVariant = vList[parseInt(sel.value)];
-        updatePriceDisplay();
-      };
-
-      // Image side with touch swipe support
-      const imgSide  = document.getElementById('modal-img-side');
+      // Image side — gallery support
+      const imgSide = document.getElementById('modal-img-side');
       const mainWrap = document.getElementById('modal-main-img-wrap');
       const thumbsEl = document.getElementById('modal-thumbs');
-      imgSide.className = `modal-img-side ${product.bgClass || 'peanut-bg'}`;
+      imgSide.className = `modal-img-side ${product.bgClass||'peanut-bg'}`;
 
-      const allImages = (product.images && product.images.filter(u => u && u.trim())) || (product.image ? [product.image] : []);
+      // Build images array: prefer product.images[], fallback to product.image, fallback to emoji
+      const allImages = (product.images && product.images.filter(u => u && u.trim()))
+        || (product.image ? [product.image] : []);
 
-      let activeImgIdx = 0;
-
-      function renderMainImage(idx) {
-        activeImgIdx = idx;
-        const src = allImages[idx];
+      function setMainImage(src) {
         mainWrap.innerHTML = src
           ? `<img class="modal-photo" src="${src}" alt="${product.name}"/>`
           : `<span class="modal-emoji" id="modal-emoji">${product.emoji||'🥜'}</span>`;
-
-        thumbsEl.querySelectorAll('.modal-thumb').forEach((th, i) => {
-          th.classList.toggle('active', i === idx);
-        });
       }
 
-      function buildThumbsList() {
+      function buildThumbs(images, activeIdx) {
         thumbsEl.innerHTML = '';
-        if (allImages.length <= 1) return;
-        allImages.forEach((src, i) => {
+        if (images.length <= 1) return; // single image — no strip needed
+        images.forEach((src, i) => {
           const t = document.createElement('div');
-          t.className = 'modal-thumb' + (i === 0 ? ' active' : '');
-          t.innerHTML = `<img src="${src}" alt="Thumb ${i+1}" loading="lazy"/>`;
-          t.addEventListener('click', () => renderMainImage(i));
+          t.className = 'modal-thumb' + (i === activeIdx ? ' active' : '');
+          t.innerHTML = `<img src="${src}" alt="Product image ${i+1}" loading="lazy"/>`;
+          t.addEventListener('click', () => {
+            setMainImage(src);
+            thumbsEl.querySelectorAll('.modal-thumb').forEach(el => el.classList.remove('active'));
+            t.classList.add('active');
+          });
           thumbsEl.appendChild(t);
         });
       }
 
-      renderMainImage(0);
-      buildThumbsList();
-
-      // Configure touch listeners for swipes
-      addSwipeSupport(mainWrap, () => {
-        if (allImages.length > 1) {
-          renderMainImage((activeImgIdx + 1) % allImages.length);
-        }
-      }, () => {
-        if (allImages.length > 1) {
-          renderMainImage((activeImgIdx - 1 + allImages.length) % allImages.length);
-        }
-      });
+      setMainImage(allImages[0] || null);
+      buildThumbs(allImages, 0);
 
       // Badges
       let badgesHTML = '';
@@ -705,41 +777,30 @@
 
       document.getElementById('modal-product-name').textContent = product.name;
       document.getElementById('modal-tagline').textContent       = product.tagline || '';
+      document.getElementById('modal-desc').textContent          = product.description;
+      document.getElementById('modal-weight').textContent        = product.weight || '';
 
       // Features
       document.getElementById('modal-features').innerHTML =
         (product.features||[]).map(f=>`<span class="modal-feature-chip">${f}</span>`).join('');
 
-      function updatePriceDisplay() {
-        const basePrice = selectedVariant.price;
-        const sp = salePrice(basePrice);
-        const displayPrice = sp || basePrice;
-        const opDisplay = selectedVariant.originalPrice || null;
-
-        const priceEl    = document.getElementById('modal-price');
-        const priceOldEl = document.getElementById('modal-price-old');
-
-        if (sp) {
-          priceEl.textContent = `₹${sp}`;
-          priceEl.classList.add('modal-price-sale');
-          priceOldEl.textContent = `₹${basePrice}`;
-          priceOldEl.style.display = 'inline';
-        } else if (opDisplay) {
-          priceEl.textContent = `₹${basePrice}`;
-          priceEl.classList.remove('modal-price-sale');
-          priceOldEl.textContent = `₹${opDisplay}`;
-          priceOldEl.style.display = 'inline';
-        } else {
-          priceEl.textContent = `₹${basePrice}`;
-          priceEl.classList.remove('modal-price-sale');
-          priceOldEl.style.display = 'none';
-        }
-
-        qtyNum.textContent = qty;
-        subtotal.textContent = `Total: ₹${displayPrice * qty}`;
+      // Price
+      const priceEl    = document.getElementById('modal-price');
+      const priceOldEl = document.getElementById('modal-price-old');
+      if (sp) {
+        priceEl.textContent = `₹${sp}`;
+        priceEl.classList.add('modal-price-sale');
+        priceOldEl.textContent = `₹${product.price}`;
+        priceOldEl.style.display = 'inline';
+      } else {
+        priceEl.textContent = `₹${product.price}`;
+        priceEl.classList.remove('modal-price-sale');
+        priceOldEl.style.display = 'none';
       }
 
-      updatePriceDisplay();
+      // Qty & subtotal
+      qtyNum.textContent     = qty;
+      subtotal.textContent   = `Total: ₹${displayPrice * qty}`;
 
       // Accordion — synced with admin panel fields
       const accordionData = [
@@ -787,9 +848,9 @@
       updateSubtotal();
     });
     function updateSubtotal() {
-      if (!currentProduct || !selectedVariant) return;
-      const sp = salePrice(selectedVariant.price);
-      const price = sp || selectedVariant.price;
+      if (!currentProduct) return;
+      const sp = salePrice(currentProduct.price);
+      const price = sp || currentProduct.price;
       subtotal.textContent = `Total: ₹${price * qty}`;
     }
 
@@ -801,7 +862,6 @@
       overlay.classList.remove('open');
       document.body.style.overflow = '';
       currentProduct = null;
-      selectedVariant = null;
     }
 
     /* Buy Now — Flow */
@@ -828,7 +888,7 @@
         amount: grandTotal * 100,       // Razorpay expects paise
         currency: D.payment.currency || 'INR',
         name: D.payment.businessName || 'Bunofeed',
-        description: `${orderData.product_name} × ${quantity}${shippingAmt > 0 ? ` + ₹${shippingAmt} shipping` : ' (Free Shipping)'}`,
+        description: `${product.name} × ${quantity}${shippingAmt > 0 ? ` + ₹${shippingAmt} shipping` : ' (Free Shipping)'}`,
         image: D.payment.logoUrl || '',
         theme: { color: D.payment.themeColor || '#FF6B00' },
         prefill: {
@@ -844,10 +904,11 @@
           orderData.payment_id = response.razorpay_payment_id;
           orderData.payment_status = 'Paid';
           await syncToGoogleSheets(orderData);
-          window.location.href = `/order-success.html?payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(orderData.product_name)}&qty=${quantity}&total=${grandTotal}`;
+          window.location.href = `order-success.html?payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
         },
         modal: {
           ondismiss: function() {
+            // Update the pending row to Dismissed so the sheet stays clean
             orderData.payment_status = 'Dismissed';
             orderData.payment_id = 'DISMISSED-' + Date.now();
             syncToGoogleSheets(orderData);

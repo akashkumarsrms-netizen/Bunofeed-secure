@@ -43,11 +43,6 @@ body {
   background: var(--white);
   line-height: 1.6;
   overflow-x: hidden;
-  
-  /* CRYSTAL CLEAR TEXT VISUAL QUALITY */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
 }
 img {
   max-width: 100%;
@@ -510,7 +505,6 @@ ul { list-style: none; }
   position: absolute;
   inset: 0;
   padding: 12px;
-  user-select: none;
 }
 .product-emoji {
   position: relative;
@@ -1012,9 +1006,9 @@ ul { list-style: none; }
    ============================================================ */
 .checkout-modal-overlay {
   display:none; position:fixed; inset:0;
-  background:rgba(15, 8, 4, 0.85); z-index:3000;
+  background:rgba(0,0,0,.6); z-index:3000;
   align-items:center; justify-content:center;
-  padding:1rem;
+  padding:1rem; backdrop-filter:blur(5px);
 }
 .checkout-modal-overlay.open { display:flex; }
 .checkout-modal {
@@ -1058,214 +1052,4 @@ ul { list-style: none; }
   .hero-title  { font-size: 1.65rem; }
   .btn         { padding: 11px 18px; }
   .why-stat-card { padding: 1.2rem 1rem; }
-}
-
-/* ============================================================
-   PRODUCT DETAIL MODALS — SCREEN-FILLING & COMPATIBLE
-   ============================================================ */
-
-/* Overlay */
-.modal-overlay, .home-modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  
-  /* Solid warm brown dark tint completely eliminates Android flickering */
-  background: rgba(15, 8, 4, 0.9);
-  z-index: 2000;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0 !important; /* Screen-filling overrides */
-  margin: 0 !important;
-  overflow: hidden;
-  
-  /* Hardware rendering accelerations to guarantee smooth Android open */
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translate3d(0,0,0);
-}
-
-.modal-overlay.open, .home-modal-overlay.open {
-  display: flex;
-}
-
-/* Fullscreen Immersion Box */
-.modal, .home-modal {
-  background: var(--white);
-  border-radius: 0 !important; /* Full width covers whole screen */
-  border: none !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: 100vw !important;
-  max-height: 100vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-  position: relative;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Image Side */
-.modal-img-side, .home-modal-img-side {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-  position: relative;
-}
-
-.modal-main-img-wrap, .home-modal-main-wrap {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  touch-action: pan-y; /* required for touch swipes */
-}
-
-.modal-img-side img, .home-modal-img-side img {
-  display: block;
-  max-width: 90%;
-  max-height: 80%;
-  object-fit: contain;
-  padding: 10px;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-/* Thumbs */
-.modal-thumbs, .home-modal-thumbs {
-  width: 100%;
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  overflow-x: auto;
-  background: rgba(0,0,0,0.06);
-  flex-shrink: 0;
-  scrollbar-width: thin;
-}
-
-.modal-thumb, .home-modal-thumb {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 2px solid transparent;
-  cursor: pointer;
-  background: #fff;
-  transition: border-color 0.2s, transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-thumb.active, .home-modal-thumb.active {
-  border-color: var(--orange) !important;
-}
-
-.modal-thumb img, .home-modal-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 4px;
-}
-
-/* Modal Close Button */
-.modal-close, .home-modal-close {
-  position: fixed !important;
-  top: 1.5rem !important;
-  right: 1.5rem !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 50% !important;
-  background: rgba(0, 0, 0, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 1.25rem !important;
-  color: #fff !important;
-  transition: background 0.2s, transform 0.2s !important;
-  z-index: 2200 !important; /* Floating absolute level */
-  text-shadow: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-.modal-close:hover, .home-modal-close:hover {
-  background: rgba(0, 0, 0, 0.75) !important;
-  transform: scale(1.08);
-}
-
-/* Modal right side / body */
-.modal-body, .home-modal-body {
-  padding: 3rem 2.5rem !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 1.2rem !important;
-  overflow-y: auto !important;
-  background: #fff;
-}
-
-/* Read More clamped style */
-.modal-desc.clamped, .home-modal-desc.clamped {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-height: calc(1.75em * 2) !important;
-}
-
-.desc-more-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  margin-top: 0px;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--orange);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-}
-
-.desc-more-btn:hover {
-  text-decoration: underline;
-}
-
-/* Responsive Overrides (Mobile screen covers) */
-@media (max-width: 768px) {
-  .modal, .home-modal {
-    grid-template-columns: 1fr !important;
-    height: 100vh !important;
-  }
-  .modal-img-side, .home-modal-img-side {
-    height: 40vh !important;
-    min-height: 40vh !important;
-    flex-shrink: 0;
-  }
-  .modal-body, .home-modal-body {
-    padding: 2rem 1.5rem !important;
-  }
-  .modal-close, .home-modal-close {
-    top: 1rem !important;
-    right: 1rem !important;
-    width: 38px !important;
-    height: 38px !important;
-    font-size: 1.1rem !important;
-  }
 }

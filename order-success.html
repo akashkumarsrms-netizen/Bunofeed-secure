@@ -2,250 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Order Confirmed! – Bunofeed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Confirmed – Bunofeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <style>
-    /* ── Success Wrapper ── */
-    .success-nav {
-      position: absolute; top:0; left: 0; width:100%; padding: 1rem 2rem;
-      display: flex; justify-content: center; background: transparent; z-index:100;
-    }
-    .success-nav img { height: 50px; }
-
-    .success-container {
-      min-height: 100vh;
+    .success-page {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
       background: var(--off-white);
-      display: flex; align-items: center; justify-content: center;
-      padding: 5rem 1.5rem 3rem;
     }
     .success-card {
       background: var(--white);
-      border-radius: 24px;
-      width: 100%; max-width: 620px;
+      border-radius: 20px;
       padding: 3rem 2.5rem;
+      max-width: 520px;
+      width: 100%;
       text-align: center;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-      margin: auto;
+      box-shadow: 0 16px 48px rgba(107,45,14,0.14);
     }
-    .success-card::before {
-      content:''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
-      background: linear-gradient(90deg, var(--orange), #ff9f43);
+    .success-icon {
+      width: 80px;height: 80px;border-radius: 50%;
+      background: linear-gradient(135deg,#28a745,#20c753);
+      display: flex;align-items: center;justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.2rem;color: #fff;
+      box-shadow: 0 8px 24px rgba(40,167,69,.3);
     }
-
-    /* Check animation */
-    .success-ring {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(40, 167, 69, 0.1);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.5rem; color: #28a745; font-size: 2.2rem;
-      animation: checkPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes checkPop {
-      0% { transform: scale(0.5); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
     .success-card h1 {
-      font-family: var(--font-head);
-      font-size: clamp(1.6rem, 4.5vw, 2.2rem);
-      font-weight: 800;
-      color: var(--dark);
-      margin-bottom: .6rem;
-      line-height: 1.25;
+      font-family: var(--font-head);font-size: 1.7rem;font-weight: 800;
+      color: var(--dark);margin-bottom: .5rem;
     }
-    .success-sub {
-      color: var(--gray);
-      font-size: .95rem;
-      line-height: 1.6;
-      max-width: 480px;
-      margin: 0 auto 2.2rem;
+    .success-card p { color: var(--gray);font-size: .97rem;line-height: 1.7;margin-bottom: .5rem; }
+    .order-details {
+      background: var(--off-white);border-radius: 12px;
+      padding: 1.2rem 1.5rem;margin: 1.5rem 0;text-align: left;
     }
-
-    /* Receipt Box */
-    .receipt-box {
-      background: var(--off-white);
-      border-radius: 16px;
-      padding: 1.6rem;
-      text-align: left;
-      margin-bottom: 2.2rem;
-      border: 1px solid #f0e6dd;
-      position: relative;
+    .order-row {
+      display: flex;justify-content: space-between;align-items: center;
+      padding: .45rem 0;border-bottom: 1px solid #f0e8e0;
+      font-size: .9rem;
     }
-    .receipt-box::after {
-      content:''; position: absolute; bottom: -8px; left: 4%; right: 4%; height: 8px;
-      background: radial-gradient(circle, transparent, transparent 50%, var(--off-white) 50%, var(--off-white) 100%);
-      background-size: 16px 16px;
-    }
-    .receipt-title {
-      font-family: var(--font-head);
-      font-weight: 700;
-      font-size: .83rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--gray);
-      margin-bottom: 1.2rem;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .receipt-row {
-      display: flex; justify-content: space-between; align-items: baseline;
-      padding: .6rem 0; border-bottom: 1px dashed #e1d4c8;
-      font-size: .92rem; color: var(--dark);
-    }
-    .receipt-row:last-of-type { border-bottom: none; margin-bottom: .8rem; }
-    .receipt-row .label { color: var(--gray); font-weight: 500; }
-    .receipt-row .value { font-weight: 700; text-align: right; }
-    
-    .receipt-total {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: .8rem; padding-top: 1rem; border-top: 2px solid #e1d4c8;
-    }
-    .receipt-total .label { font-family: var(--font-head); font-weight: 800; font-size: 1rem; color: var(--dark); }
-    .receipt-total .value { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; color: var(--orange); }
-
-    /* Buttons */
+    .order-row:last-child { border-bottom: none; }
+    .order-row span:first-child { color: var(--gray);font-weight: 500; }
+    .order-row span:last-child  { font-family: var(--font-head);font-weight: 700;color: var(--dark); }
     .success-actions {
-      display: flex; flex-direction: column; gap: .8rem;
+      display: flex;gap: .8rem;flex-wrap: wrap;justify-content: center;margin-top: 1.5rem;
     }
-    .success-actions .btn {
-      width: 100%; padding: 13px; font-size: .95rem; border-radius: 50px;
-    }
-
-    /* Note */
-    .secure-note {
-      display: flex; align-items: center; justify-content: center; gap: .4rem;
-      color: var(--gray); font-size: .78rem; margin-top: 1.5rem; opacity: .8;
-    }
-
+    .success-actions .btn { min-width: 140px; }
     @media(max-width:480px){
-      .success-card { padding: 2.2rem 1.4rem; }
-      .receipt-box { padding: 1.1rem; }
+      .success-card{padding:2rem 1.2rem;}
+      .success-actions .btn{flex:1;}
     }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
-  <header class="success-nav">
-    <a href="/index.html"><img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo"/></a>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
+      </a>
+    </div>
   </header>
 
-  <!-- Container -->
-  <div class="success-container">
+  <div class="success-page">
     <div class="success-card">
-      <div class="success-ring"><i class="fas fa-check"></i></div>
-      
-      <h1>Order Confirmed!</h1>
-      <p class="success-sub">Thank you for healthy shopping. Your payment was secure, and your order is currently being packed with care.</p>
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h1>Order Confirmed! 🎉</h1>
+      <p>Thank you for your order. Your payment was successful and we've received your order.</p>
+      <p>You'll receive a confirmation email shortly. We'll notify you once your order ships.</p>
 
-      <!-- Receipt -->
-      <div class="receipt-box">
-        <div class="receipt-title">
-          <span>Order Details</span>
-          <span style="color:var(--orange)">Receipt</span>
-        </div>
-        
-        <div class="receipt-row">
-          <span class="label">Order ID</span>
-          <span class="value" id="receipt-order-id" style="color:var(--orange)">Loading…</span>
-        </div>
-        <div class="receipt-row">
-          <span class="label">Product Pack</span>
-          <span class="value" id="receipt-product">—</span>
-        </div>
-        <div class="receipt-row">
-          <span class="label">Quantity</span>
-          <span class="value" id="receipt-qty">—</span>
-        </div>
-        <div class="receipt-row" id="pincode-row" style="display:none">
-          <span class="label">Delivery Pincode</span>
-          <span class="value" id="receipt-pincode">—</span>
-        </div>
-        <div class="receipt-row">
-          <span class="label">Transaction ID</span>
-          <span class="value" id="receipt-payment-id" style="font-size:.8rem;word-break:break-all;">—</span>
-        </div>
-        
-        <div class="receipt-total">
-          <span class="label">Total Paid (INR)</span>
-          <span class="value" id="receipt-total">₹0</span>
-        </div>
+      <div class="order-details" id="order-details">
+        <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
+        <div class="order-row"><span>Product</span><span id="pay-product">—</span></div>
+        <div class="order-row"><span>Quantity</span><span id="pay-qty">—</span></div>
+        <div class="order-row"><span>Amount Paid</span><span id="pay-total">—</span></div>
       </div>
 
-      <!-- Buttons -->
       <div class="success-actions">
-        <a class="btn btn-primary" id="track-order-link" href="/orders.html" style="border-radius: 50px;">
-          <i class="fas fa-route"></i> Track My Order
-        </a>
-        <button class="btn btn-brown" onclick="window.print()" style="border-radius: 50px;">
-          <i class="fas fa-print"></i> Print Receipt / Save PDF
-        </button>
-        <a class="btn btn-ghost" href="/shop.html" style="border-radius: 50px;">
-          <i class="fas fa-arrow-left"></i> Continue Shopping
-        </a>
-      </div>
-
-      <div class="secure-note">
-        <i class="fas fa-shield-alt"></i> 256-bit SSL Secure Checkout
+        <a href="shop.html"  class="btn btn-primary">Continue Shopping</a>
+        <a href="index.html" class="btn btn-brown">Back to Home</a>
       </div>
     </div>
   </div>
 
-  <script src="/api.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      const params  = new URLSearchParams(window.location.search);
-      const orderId = params.get('orderId');
-      const phone   = params.get('phone');
-
-      if (!orderId) {
-        document.getElementById('receipt-order-id').textContent = 'No Order ID provided';
-        return;
-      }
-
-      // If phone is provided, let's auto-append to the track order link to make tracking instant
-      if (phone && orderId) {
-        const link = document.getElementById('track-order-link');
-        link.href = `/orders.html?orderId=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(phone)}`;
-      }
-
-      try {
-        // Fetch order details to render
-        const res = await window.BUNOFEED_API.get('lookupOrder', { orderId, phone: phone || '' });
-        if (res.status === 'success' && res.order) {
-          const o = res.order;
-          document.getElementById('receipt-order-id').textContent  = o.orderId;
-          document.getElementById('receipt-product').textContent   = o.productName + ` (${o.variantWeight || o.weight || ''})`;
-          document.getElementById('receipt-qty').textContent       = o.qty;
-          document.getElementById('receipt-payment-id').textContent= o.paymentId || '—';
-          document.getElementById('receipt-total').textContent     = `₹${o.total}`;
-          if (o.pincode) {
-            document.getElementById('receipt-pincode').textContent = o.pincode;
-            document.getElementById('pincode-row').style.display = 'flex';
-          }
-        } else {
-          // fallback query parsing if API unavailable / slow
-          document.getElementById('receipt-order-id').textContent = orderId;
-          if (params.get('product'))  document.getElementById('receipt-product').textContent  = params.get('product');
-          if (params.get('qty'))      document.getElementById('receipt-qty').textContent      = params.get('qty');
-          if (params.get('paymentId'))document.getElementById('receipt-payment-id').textContent= params.get('paymentId');
-          if (params.get('total'))    document.getElementById('receipt-total').textContent    = `₹${params.get('total')}`;
-        }
-      } catch(e) {
-        // fallback display
-        document.getElementById('receipt-order-id').textContent = orderId;
-        if (params.get('product'))  document.getElementById('receipt-product').textContent  = params.get('product');
-        if (params.get('qty'))      document.getElementById('receipt-qty').textContent      = params.get('qty');
-        if (params.get('paymentId'))document.getElementById('receipt-payment-id').textContent= params.get('paymentId');
-        if (params.get('total'))    document.getElementById('receipt-total').textContent    = `₹${params.get('total')}`;
-      }
-    });
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('pay-id').textContent      = params.get('payment_id') || '—';
+    document.getElementById('pay-product').textContent = params.get('product')    || '—';
+    document.getElementById('pay-qty').textContent     = params.get('qty')        || '—';
+    const total = params.get('total');
+    document.getElementById('pay-total').textContent   = total ? `₹${total}` : '—';
   </script>
 </body>
 </html>

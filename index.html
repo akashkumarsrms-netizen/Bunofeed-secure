@@ -19,7 +19,7 @@
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <!-- Styles -->
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
@@ -41,8 +41,8 @@
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
         <a href="#home"    class="nav-link active">Home</a>
-        <a href="/shop.html" class="nav-link">Products</a>
-        <a href="/orders.html" class="nav-link">My Orders</a>
+        <a href="shop.html" class="nav-link">Products</a>
+        <a href="orders.html" class="nav-link">My Orders</a>
         <a href="#about"   class="nav-link">About</a>
         <a href="#contact" class="nav-link">Contact</a>
         <button class="search-btn" aria-label="Search">
@@ -71,7 +71,7 @@
         <a href="#about" class="btn btn-outline">Our Story</a>
       </div>
     </div>
-    <!-- Hero visual: Replaced dynamically -->
+    <!-- Hero visual: replaced with image if products.js hero.image is set -->
     <div class="hero-image" aria-hidden="true">
       <div class="hero-img-wrap">
         <div class="food-circle food-circle-1">🥜</div>
@@ -116,7 +116,7 @@
     <!-- Best-seller cards injected here by script.js -->
     <div class="products-grid" id="products-grid"></div>
     <div style="text-align:center;margin-top:2.5rem;">
-      <a href="/shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;">
+      <a href="shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;">
         <i class="fas fa-store" aria-hidden="true"></i> View All Products
       </a>
     </div>
@@ -167,6 +167,11 @@
     <div class="about-visual">
       <div class="about-badge">Est. 2026</div>
       <div class="about-img-box">
+        <!--
+          TO CHANGE THIS IMAGE:
+          Replace the src below with your image URL.
+          Or keep the logo as-is.
+        -->
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo"/>
       </div>
     </div>
@@ -207,6 +212,10 @@
         <p class="presubmitnote">
           Let us know what you think! Your honest feedback helps us grow and serve you better.
         </p>
+        <!--
+          The href below is set dynamically from products.js → brand.feedbackFormUrl
+          You can also hardcode it here if preferred.
+        -->
         <a href="#" data-feedback-link
            target="_blank" rel="noopener noreferrer"
            class="btn btn-primary feedback-submit">
@@ -220,35 +229,35 @@
   <!-- CHECKOUT MODAL -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
-      <button class="checkout-close" id="checkout-close-btn" aria-label="Close checkout"><i class="fas fa-times"></i></button>
+      <button class="checkout-close" id="checkout-close-btn"><i class="fas fa-times"></i></button>
       <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
         <div class="form-group">
-          <label for="cust-name">Full Name <span>*</span></label>
-          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required autocomplete="name">
+          <label>Full Name <span>*</span></label>
+          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
           <div class="error-msg" id="name-error">Please enter your full name</div>
         </div>
         <div class="form-group">
-          <label for="cust-phone">Mobile Number <span>*</span></label>
-          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10" autocomplete="tel">
+          <label>Mobile Number <span>*</span></label>
+          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10">
           <div class="error-msg" id="phone-error">Please enter a valid 10-digit mobile number</div>
         </div>
         <div class="form-group">
-          <label for="cust-email">Email ID <span>*</span></label>
-          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required autocomplete="email">
+          <label>Email ID <span>*</span></label>
+          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required>
           <div class="error-msg" id="email-error">Please enter a valid email address</div>
         </div>
         <div class="form-group">
-          <label for="cust-address">Full Address <span>*</span></label>
-          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required autocomplete="street-address">
+          <label>Full Address <span>*</span></label>
+          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required>
           <div class="error-msg" id="address-error">Please enter your delivery address</div>
         </div>
         <div class="form-group">
-          <label for="cust-pincode">Pincode <span>*</span></label>
-          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6" autocomplete="postal-code">
+          <label>Pincode <span>*</span></label>
+          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
-        <p style="color:red; font-size: 0.8rem; font-weight: 600;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
+        <p style="color:red;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
         <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn">
           Proceed to Pay
         </button>
@@ -285,15 +294,15 @@
       <div class="footer-col">
         <h4>Quick Links</h4>
         <a href="#home">Home</a>
-        <a href="/shop.html">Products</a>
+        <a href="#shop">Products</a>
         <a href="#about">About</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
       </div>
-      <div class="footer-col">
+      <div class="footer-col" id="contact">
         <h4>Contact Us</h4>
         <p>
           <i class="fas fa-envelope" aria-hidden="true"></i>
@@ -309,19 +318,22 @@
     </div>
     <div class="footer-bottom">
       <p>© 2026 Bunofeed. All rights reserved. |
-        <a href="/terms.html">Terms of Service</a> |
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a> |
+        <a href="privacy.html">Privacy Policy</a>
       </p>
       <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
   </footer>
 
-  <!-- Razorpay SDK -->
+  <!-- Razorpay SDK (required for Buy Now on homepage) -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <!-- Data & API bindings -->
-  <script src="/products.js"></script>
-  <script src="/api.js"></script>
-  <script src="/script.js"></script>
+  <!-- =========================================================
+       SCRIPTS
+       Load products.js FIRST, then script.js
+       ========================================================= -->
+  <script src="products.js"></script>
+  <script src="api.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>

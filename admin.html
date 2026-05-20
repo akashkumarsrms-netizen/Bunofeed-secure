@@ -466,7 +466,7 @@
       <i class="fas fa-sign-in-alt"></i> Sign In
     </button>
     <p class="login-error" id="login-error">Incorrect username or password.</p>
-    <p class="login-hint">Default: admin / bunofeed 2026</p>
+    <p class="login-hint">Default: admin / bunofeed2026<br>Change inside admin.html → ADMIN_CREDENTIALS</p>
   </div>
 </div>
 
@@ -504,7 +504,7 @@
       </div>
     </nav>
     <div class="sidebar-footer">
-      <a href="/index.html" target="_blank" aria-label="View Website">
+      <a href="index.html" target="_blank" aria-label="View Website">
         <i class="fas fa-external-link-alt"></i>
       </a>
     </div>
@@ -548,10 +548,10 @@
           <button class="btn btn-ghost" onclick="switchPanel('offers')">
             <i class="fas fa-tags"></i> Manage Offers
           </button>
-          <a href="/shop.html" target="_blank" class="btn btn-ghost">
+          <a href="shop.html" target="_blank" class="btn btn-ghost">
             <i class="fas fa-store"></i> View Shop
           </a>
-          <a href="/index.html" target="_blank" class="btn btn-ghost">
+          <a href="index.html" target="_blank" class="btn btn-ghost">
             <i class="fas fa-home"></i> View Homepage
           </a>
         </div>
@@ -851,35 +851,26 @@
         <input type="text" class="form-input" id="edit-name" placeholder="e.g. Creamy Peanut Butter"/>
       </div>
       <div class="form-group">
+        <label class="form-label">Short Tagline</label>
+        <input type="text" class="form-input" id="edit-tagline" placeholder="One-line pitch"/>
+      </div>
+      <div class="form-group">
         <label class="form-label">Category</label>
         <select class="form-select" id="edit-category">
           <!-- Populated dynamically from adminData.categories -->
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Short Tagline</label>
-        <input type="text" class="form-input" id="edit-tagline" placeholder="One-line pitch"/>
-      </div>
-      
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Description <span>*</span></label>
         <textarea class="form-textarea" id="edit-description" placeholder="Full product description..."></textarea>
       </div>
-
-      <!-- =====================================================
-           DYNAMIC VARIANTS MANAGER SECTION
-      ====================================================== -->
-      <div class="form-group" style="grid-column:1/-1">
-        <div style="background:#fff8f3; border:2px solid var(--border); border-radius:12px; padding:1.2rem; margin-top:0.3rem">
-          <label class="form-label" style="display:flex; align-items:center; gap:0.5rem; justify-content:space-between; margin-bottom: 0.8rem">
-            <span><i class="fas fa-boxes" style="color:var(--orange)"></i> Pack Size & Price Variants</span>
-            <button type="button" class="btn btn-orange btn-xs" onclick="addVariantRow()"><i class="fas fa-plus"></i> Add Size Variant</button>
-          </label>
-          <div id="variants-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom: 0.5rem;">
-            <!-- Render dynamic size entries -->
-          </div>
-          <span style="font-size: 0.75rem; color:#666; font-weight:600"><i class="fas fa-info-circle"></i> Create variants (sizes like 400gm, 250gm, 1.25kg, etc.), input their Selling Price and MRP Crossed Price.</span>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Price (₹) <span>*</span></label>
+        <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Weight / Size</label>
+        <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
       </div>
 
       <!-- =====================================================
@@ -993,16 +984,17 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="/products.js"></script>
+<script src="products.js"></script>
 <script>
 /* ==============================================================
    ADMIN PANEL SCRIPT — Bunofeed
+   ⚠️  CHANGE PASSWORD BELOW
 ============================================================== */
 
 /* ---- CREDENTIALS ---- */
 const ADMIN_CREDENTIALS = {
   username: 'admin',
-  password: 'bunofeed2026',
+  password: 'bunofeed2026',   // ← CHANGE THIS PASSWORD
 };
 
 /* ---- Default categories (used if products.js has none) ---- */
@@ -1017,7 +1009,6 @@ const DEFAULT_CATEGORIES = [
 let adminData = null;
 let editingProductIndex = -1;
 let currentImageUrls = [];   // working array for multi-image editor
-let currentVariants = [];    // working array for variants
 
 /* ================================================================
    LOGIN
@@ -1126,7 +1117,7 @@ function renderDashboard() {
 }
 
 /* ================================================================
-   PRODUCTS LIST
+   PRODUCTS
 ================================================================ */
 function renderProductList() {
   const list = document.getElementById('admin-product-list');
@@ -1135,30 +1126,14 @@ function renderProductList() {
 }
 
 function productListItemHTML(p, i, compact) {
-  // Read first variant or core fields
-  const hasVariants = p.variants && p.variants.length > 0;
-  const activeWeight = hasVariants ? p.variants[0].weight : (p.weight || '');
-  const activePrice  = hasVariants ? p.variants[0].price : (p.price || 0);
-  const activeOriginal = hasVariants ? p.variants[0].originalPrice : (p.originalPrice || null);
-
   const sp = adminData.sale && adminData.sale.active
-    ? Math.round(activePrice * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
-    
+    ? Math.round(p.price * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
   // Use first image from images[] or fallback to image field
   const primaryImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
   const imgCount   = (p.images && p.images.length > 1) ? `<span class="meta-chip new-chip" title="Multiple images">${p.images.length} imgs</span>` : '';
   const imgHTML = primaryImg
-    ? `<img src="${primaryImg}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;border-radius:8px"/>`
+    ? `<img src="${primaryImg}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`
     : `${p.emoji || '🥜'}`;
-
-  let priceStr = `₹${activePrice}`;
-  if (sp) {
-    priceStr = `₹${sp} (<del>₹${activePrice}</del> Sale)`;
-  } else if (activeOriginal) {
-    priceStr = `₹${activePrice} (<del>₹${activeOriginal}</del> MRP)`;
-  }
-
-  const varCount = hasVariants ? `<span class="meta-chip visible" style="background:#fff3cd; color:#856404">${p.variants.length} Sizes</span>` : '';
 
   return `
     <div class="product-list-item" data-idx="${i}">
@@ -1167,11 +1142,10 @@ function productListItemHTML(p, i, compact) {
         <h4>${p.name}</h4>
         <p>${(p.description||'').substring(0,70)}${p.description && p.description.length>70?'…':''}</p>
         <div class="meta">
-          <span class="meta-chip price">${priceStr} · ${activeWeight}</span>
+          <span class="meta-chip price">₹${p.price}${sp?` → ₹${sp}`:''} · ${p.weight||''}</span>
           <span class="meta-chip ${p.visible!==false?'visible':'hidden'}">${p.visible!==false?'Visible':'Hidden'}</span>
           ${p.bestSeller?'<span class="meta-chip bs">Homepage</span>':''}
           ${p.badge?`<span class="meta-chip new-chip">${p.badge}</span>`:''}
-          ${varCount}
           ${imgCount}
         </div>
       </div>
@@ -1216,16 +1190,18 @@ function openEditModal(idx) {
   document.getElementById('delete-product-btn').style.display = isNew ? 'none' : 'inline-flex';
 
   const p = isNew ? {
-    id:'', name:'', tagline:'', description:'', price:'', originalPrice:'', weight:'',
+    id:'', name:'', tagline:'', description:'', price:'', weight:'',
     badge:'', badgeType:'', images:[], image:'', emoji:'🥜',
     bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
-    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:'', variants: []
+    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:''
   } : adminData.products[idx];
 
   document.getElementById('edit-product-id').value     = p.id || '';
   document.getElementById('edit-name').value           = p.name || '';
   document.getElementById('edit-tagline').value        = p.tagline || '';
   document.getElementById('edit-description').value    = p.description || '';
+  document.getElementById('edit-price').value          = p.price || '';
+  document.getElementById('edit-weight').value         = p.weight || '';
   document.getElementById('edit-emoji').value          = p.emoji || '🥜';
   document.getElementById('edit-badge').value          = p.badge || '';
   document.getElementById('edit-badgeType').value      = p.badgeType || '';
@@ -1238,10 +1214,10 @@ function openEditModal(idx) {
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
 
-  // Populate category dropdown
+  // Populate category dropdown from adminData.categories
   populateCategorySelect(p.category || '');
 
-  // Build images array
+  // Build images array: prefer p.images[], fall back to p.image string
   if (p.images && p.images.length > 0) {
     currentImageUrls = [...p.images];
   } else if (p.image && p.image.trim()) {
@@ -1250,21 +1226,6 @@ function openEditModal(idx) {
     currentImageUrls = [];
   }
   renderImageEntries();
-
-  // Build variants array
-  if (p.variants && p.variants.length > 0) {
-    currentVariants = JSON.parse(JSON.stringify(p.variants));
-  } else {
-    // legacy support fallback
-    currentVariants = [
-      {
-        weight: p.weight || '400g',
-        price: p.price || 1,
-        originalPrice: p.originalPrice || ''
-      }
-    ];
-  }
-  renderVariantsList();
 
   document.getElementById('edit-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1276,7 +1237,10 @@ function populateCategorySelect(selectedSlug) {
   sel.innerHTML = cats.map(c =>
     `<option value="${c.slug}" ${c.slug === selectedSlug ? 'selected' : ''}>${c.name}</option>`
   ).join('');
-  if (cats.length === 0) sel.innerHTML = '<option value="other">Other</option>';
+  // Add a custom "Other" if none exist
+  if (cats.length === 0) {
+    sel.innerHTML = '<option value="other">Other</option>';
+  }
 }
 
 function closeEditModal() {
@@ -1284,70 +1248,13 @@ function closeEditModal() {
   document.body.style.overflow = '';
   editingProductIndex = -1;
   currentImageUrls = [];
-  currentVariants = [];
 }
 
-/* ================================================================
-   DYNAMIC PRICE VARIANTS BUILDER
-================================================================ */
-function renderVariantsList() {
-  const container = document.getElementById('variants-container');
-  container.innerHTML = '';
-  
-  currentVariants.forEach((v, idx) => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:grid; grid-template-columns: 2.2fr 2.2fr 2.2fr 44px; gap:8px; align-items:center; background:#fff; padding:8px; border-radius:8px; border:1px solid var(--border);';
-    row.innerHTML = `
-      <div class="form-group" style="gap:2px;">
-        <input type="text" class="form-input" placeholder="e.g. 400g" value="${v.weight || ''}" oninput="updateVariant(${idx}, 'weight', this.value)" style="padding:6px; font-size:.82rem; height:34px;" required />
-      </div>
-      <div class="form-group" style="gap:2px;">
-        <input type="number" class="form-input" placeholder="Price (₹)" value="${v.price || ''}" oninput="updateVariant(${idx}, 'price', this.value)" style="padding:6px; font-size:.82rem; height:34px;" required />
-      </div>
-      <div class="form-group" style="gap:2px;">
-        <input type="number" class="form-input" placeholder="MRP crossed" value="${v.originalPrice || ''}" oninput="updateVariant(${idx}, 'originalPrice', this.value)" style="padding:6px; font-size:.82rem; height:34px;" />
-      </div>
-      <button type="button" class="image-remove-btn" onclick="removeVariantRow(${idx})" style="padding:0; height:34px; margin:0;" title="Delete Variant">
-        <i class="fas fa-trash-alt"></i>
-      </button>
-    `;
-    container.appendChild(row);
-  });
-}
-
-window.addVariantRow = function() {
-  currentVariants.push({ weight: '', price: '', originalPrice: '' });
-  renderVariantsList();
-};
-
-window.updateVariant = function(idx, field, value) {
-  if (field === 'price' || field === 'originalPrice') {
-    currentVariants[idx][field] = value ? parseFloat(value) : '';
-  } else {
-    currentVariants[idx][field] = value;
-  }
-};
-
-window.removeVariantRow = function(idx) {
-  if (currentVariants.length <= 1) {
-    toast("You must have at least one variant size/price.", "error");
-    return;
-  }
-  currentVariants.splice(idx, 1);
-  renderVariantsList();
-};
-
-/* ---- Save Edited Product ---- */
 function saveEditedProduct() {
   const name  = document.getElementById('edit-name').value.trim();
-  if (!name) { toast('Product name is required', 'error'); return; }
-
-  // Clean variants and check valid price
-  const cleanedVariants = currentVariants.filter(v => v.weight && v.weight.trim() && v.price);
-  if (cleanedVariants.length === 0) {
-    toast('At least one valid Variant (size and price) is required', 'error');
-    return;
-  }
+  const price = parseFloat(document.getElementById('edit-price').value);
+  if (!name)        { toast('Product name is required', 'error'); return; }
+  if (isNaN(price)) { toast('Valid price is required',  'error'); return; }
 
   const featureStr = document.getElementById('edit-features').value;
   const features   = featureStr.split(',').map(f => f.trim()).filter(Boolean);
@@ -1355,7 +1262,7 @@ function saveEditedProduct() {
   let id = document.getElementById('edit-product-id').value.trim();
   if (!id) id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
-  // Clean images
+  // Clean image URLs — remove empties
   const cleanedImages = currentImageUrls.filter(u => u && u.trim());
   const primaryImage  = cleanedImages.length > 0 ? cleanedImages[0] : '';
 
@@ -1364,13 +1271,8 @@ function saveEditedProduct() {
     name,
     tagline:     document.getElementById('edit-tagline').value.trim(),
     description: document.getElementById('edit-description').value.trim(),
-    
-    // BACKWARDS COMPATIBILITY FIELD AUTOSYNC
-    price:       cleanedVariants[0].price,
-    weight:      cleanedVariants[0].weight,
-    originalPrice: cleanedVariants[0].originalPrice || null,
-    
-    variants:    cleanedVariants,
+    price,
+    weight:      document.getElementById('edit-weight').value.trim(),
     image:       primaryImage,
     images:      cleanedImages,
     emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
@@ -1469,12 +1371,14 @@ function addImageEntry() {
   }
   currentImageUrls.push('');
   renderImageEntries();
+  // Focus the new input
   const inputs = document.querySelectorAll('#image-entries-list .form-input');
   if (inputs.length) inputs[inputs.length - 1].focus();
 }
 
 function updateImageUrl(idx, value) {
   currentImageUrls[idx] = value.trim();
+  // Update thumb live
   const entries = document.querySelectorAll('#image-entries-list .image-entry');
   if (entries[idx]) {
     const thumb = entries[idx].querySelector('.image-entry-thumb');
@@ -1491,7 +1395,7 @@ function removeImageEntry(idx) {
   renderImageEntries();
 }
 
-/* Close modal outside triggers */
+/* Close modal on outside click / Escape */
 document.getElementById('edit-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeEditModal();
 });
@@ -1500,12 +1404,13 @@ document.addEventListener('keydown', e => {
 });
 
 /* ================================================================
-   CATEGORIES LIST
+   CATEGORIES
 ================================================================ */
 function renderCategoryList() {
   const cats    = adminData.categories || [];
   const listEl  = document.getElementById('cat-list');
 
+  // Auto-fill slug from name
   document.getElementById('new-cat-name').addEventListener('input', function() {
     const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     document.getElementById('new-cat-slug').value = slug;

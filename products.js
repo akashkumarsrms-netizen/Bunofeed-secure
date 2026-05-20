@@ -44,19 +44,11 @@ window.BUNOFEED_DATA = {
       "tagline": "Tasty, Crunchy & packed with protein.",
       "description": "Indulgent dark chocolate meets creamy roasted peanuts in a perfectly smooth spread crafted for taste and nutrition. Made with high-quality peanuts and rich cocoa, this protein-packed peanut butter delivers a deep chocolate flavor without compromising on wholesome ingredients.\nPerfect for:\n\n\nToasts & sandwiches\n\n\nSmoothies & shakes\n\n\nFruits & pancakes\n\n\nPre/post-workout meals\n\n\nStraight-from-the-jar cravings\n\n\nWhy you’ll love it:\n\n\nSmooth & creamy texture\n\n\nRich dark chocolate flavor\n\n\nGood source of plant-based protein\n\nEnergy-boosting healthy fats\n\n\nGreat for fitness & healthy snacking",
       "price": 1,
-      "originalPrice": 150,
       "weight": "400g",
       "image": "https://i.ibb.co/psxqc3J/1-removebg-preview.png",
       "images": [
         "https://i.ibb.co/psxqc3J/1-removebg-preview.png",
         "https://i.ibb.co/SDG4SYSN/1.png"
-      ],
-      "variants": [
-        { "weight": "400g", "price": 1, "originalPrice": 150 },
-        { "weight": "250g", "price": 99, "originalPrice": 120 },
-        { "weight": "900g", "price": 199, "originalPrice": 250 },
-        { "weight": "500g", "price": 129, "originalPrice": 180 },
-        { "weight": "1.25kg", "price": 299, "originalPrice": 399 }
       ],
       "emoji": "🥜",
       "badge": "Best Seller",
@@ -80,19 +72,11 @@ window.BUNOFEED_DATA = {
       "tagline": "Guilt-free chocolate indulgence.",
       "description": "Dark cocoa meets rich peanut butter for a treat you can feel good about. No refined sugar, no palm oil. Great as a spread, dip, or protein shake mix-in.",
       "price": 329,
-      "originalPrice": 399,
       "weight": "500g",
-      "image": "",
-      "images": [],
-      "variants": [
-        { "weight": "500g", "price": 329, "originalPrice": 399 },
-        { "weight": "250g", "price": 199, "originalPrice": 250 },
-        { "weight": "900g", "price": 499, "originalPrice": 599 },
-        { "weight": "1.25kg", "price": 699, "originalPrice": 799 }
-      ],
       "badge": null,
       "badgeType": null,
       "bestSeller": true,
+      "image": "",
       "emoji": "🍫",
       "bgClass": "choco-bg",
       "features": [
@@ -113,18 +97,11 @@ window.BUNOFEED_DATA = {
       "tagline": "Wholesome oats, heart-healthy goodness.",
       "description": "Quick-cooking whole grain rolled oats. Naturally high in beta-glucan fibre which supports heart health. Ideal for porridge, overnight oats, granola bars, and baking.",
       "price": 199,
-      "originalPrice": 249,
       "weight": "1kg",
-      "image": "",
-      "images": [],
-      "variants": [
-        { "weight": "1kg", "price": 199, "originalPrice": 249 },
-        { "weight": "500g", "price": 119, "originalPrice": 149 },
-        { "weight": "250g", "price": 69, "originalPrice": 89 }
-      ],
       "badge": "New",
       "badgeType": "new",
       "bestSeller": false,
+      "image": "",
       "emoji": "🌾",
       "bgClass": "oat-bg",
       "features": [
@@ -145,18 +122,11 @@ window.BUNOFEED_DATA = {
       "tagline": "Your perfect power-packed breakfast.",
       "description": "A premium blend of rolled oats, mixed nuts, seeds, and real dried fruits. Loaded with fibre, healthy fats, and natural energy. No artificial flavours or added sugar.",
       "price": 349,
-      "originalPrice": 399,
       "weight": "500g",
-      "image": "",
-      "images": [],
-      "variants": [
-        { "weight": "500g", "price": 349, "originalPrice": 399 },
-        { "weight": "250g", "price": 199, "originalPrice": 249 },
-        { "weight": "900g", "price": 549, "originalPrice": 649 }
-      ],
       "badge": null,
       "badgeType": null,
       "bestSeller": false,
+      "image": "",
       "emoji": "🥣",
       "bgClass": "muesli-bg",
       "features": [

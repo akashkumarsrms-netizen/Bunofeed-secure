@@ -1,946 +1,763 @@
 /**
- * ==============================================================
- *  BUNOFEED CLIENT-SIDE SCRIPT — (script.js)
- *  Core logic for carousel swiping, modal overlay, variant pricing,
- *  category filtering, search, and checkout.
- * ==============================================================
+ * ============================================================
+ *  BUNOFEED — Main Script (script.js)
+ *  - Reads data from products.js (window.BUNOFEED_DATA)
+ *  - Renders products dynamically on homepage
+ *  - Full product modal with Buy Now (Razorpay) on homepage
+ *  - Shows/hides campaign banner
+ *  - Mobile nav, scroll reveal, active links
+ * ============================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Ensure we have active products data
-  if (!window.BUNOFEED_DATA) {
-    console.error('BUNOFEED_DATA not loaded. Check products.js.');
-    return;
-  }
 
-  // --- STATE SYSTEM ---
-  const state = {
-    products: window.BUNOFEED_DATA.products || [],
-    categories: window.BUNOFEED_DATA.categories || [],
-    campaign: window.BUNOFEED_DATA.campaign || {},
-    sale: window.BUNOFEED_DATA.sale || {},
-    shipping: window.BUNOFEED_DATA.shipping || { freeShippingAbove: 499, shippingCharge: 60 },
-    pincodes: window.BUNOFEED_DATA.serviceablePincodes || [],
-    brand: window.BUNOFEED_DATA.brand || {},
-    payment: window.BUNOFEED_DATA.payment || {},
+  const D = window.BUNOFEED_DATA;
+  if (!D) { console.error('BUNOFEED_DATA not found. Is products.js loaded?'); return; }
 
-    // UI Tracker for Active Modal
-    activeProduct: null,
-    activeVariantIdx: 0,
-    activeQty: 1,
-    activeImageIdx: 0,
-    descExpanded: false,
-
-    // Touch Swiping Coordinates
-    swipeStart: 0,
-    swipeEnd: 0,
-    isSwiping: false
-  };
-
-  // --- RUN DISPATCHER ---
-  initCampaignBanner();
-  initContactInfo();
-  initPincodeSearch();
-
-  // Route specific rendering
-  const isShopPage = window.location.pathname.includes('shop.html');
-  if (isShopPage) {
-    initShopPage(state);
-  } else {
-    initHomePage(state);
-  }
-
-  /* ============================================================
+  /* ----------------------------------------------------------
      CAMPAIGN BANNER
-  ============================================================ */
-  function initCampaignBanner() {
-    const active = state.campaign.active === true;
-    const banner = document.getElementById('campaign-banner');
-    if (!banner) return;
+  ---------------------------------------------------------- */
+  const banner = document.getElementById('campaign-banner');
+  if (banner && D.campaign && D.campaign.active) {
+    const expired = D.campaign.expiryDate && new Date() > new Date(D.campaign.expiryDate);
+    if (!expired) {
+      banner.style.display = 'block';
+      banner.style.background = D.campaign.bgColor || '#FF6B00';
+      banner.style.color      = D.campaign.textColor || '#fff';
 
-    if (!active) {
-      banner.style.display = 'none';
-      return;
-    }
+      let html = `<span>${D.campaign.text}</span>`;
+      if (D.campaign.link && D.campaign.linkText) {
+        html += `<a href="${D.campaign.link}" target="_blank" rel="noopener noreferrer" style="color:${D.campaign.textColor||'#fff'}">${D.campaign.linkText}</a>`;
+      }
+      html += `<button id="banner-close" style="color:${D.campaign.textColor||'#fff'}" aria-label="Close banner">✕</button>`;
+      banner.innerHTML = html;
 
-    // Load custom copy
-    const textEl = banner.querySelector('.campaign-text');
-    if (textEl) {
-      textEl.innerHTML = state.campaign.text || '🎉 Welcome to Bunofeed!';
-    }
-
-    // Set styling and anchor
-    if (state.campaign.bgColor) {
-      banner.style.background = state.campaign.bgColor;
-    }
-    const linkEl = banner.querySelector('.campaign-link');
-    if (linkEl && state.campaign.link) {
-      linkEl.href = state.campaign.link;
-      linkEl.textContent = state.campaign.linkText || 'Shop Now →';
-      linkEl.style.display = 'inline-flex';
-    } else if (linkEl) {
-      linkEl.style.display = 'none';
-    }
-    
-    // Close handler
-    const closeBtn = banner.querySelector('.campaign-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        banner.style.transform = 'translateY(-100%)';
-        setTimeout(() => banner.style.display = 'none', 300);
+      document.getElementById('banner-close').addEventListener('click', () => {
+        banner.style.display = 'none';
       });
     }
   }
 
-  /* ============================================================
-     FOOTER & CONTACT SYNC
-  ============================================================ */
-  function initContactInfo() {
-    const email = state.brand.email || 'bunofeedhelpdesk@gmail.com';
-    const instagram = state.brand.instagram || 'https://www.instagram.com';
-    const facebook = state.brand.facebook || 'https://www.facebook.com';
-    const linkedin = state.brand.linkedin || 'https://www.linkedin.com/in/akash-kumar-995739293';
-    const youtube = state.brand.youtube || 'https://www.youtube.com';
+  /* ----------------------------------------------------------
+     HERO SECTION — dynamic text + image
+  ---------------------------------------------------------- */
+  if (D.hero) {
+    const h = D.hero;
+    const sub   = document.getElementById('hero-sub');
+    const title = document.getElementById('hero-title');
+    const desc  = document.getElementById('hero-desc');
+    if (sub)   sub.textContent   = h.subtitle;
+    if (title) title.innerHTML   = `${h.title}<br/><span class="hero-highlight">${h.titleHighlight}</span>`;
+    if (desc)  desc.textContent  = h.description;
 
-    // Populate any direct support email links
-    document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
-      if (el.getAttribute('href') === 'mailto:bunofeedhelpdesk@gmail.com') {
-        el.href = `mailto:${email}`;
-        el.textContent = email;
+    const cta = document.getElementById('hero-cta');
+    if (cta) {
+      cta.textContent = h.ctaText;
+      cta.href = h.ctaLink;
+    }
+
+    if (h.image) {
+      const wrap = document.querySelector('.hero-img-wrap');
+      if (wrap) {
+        wrap.innerHTML = `<img class="hero-photo" src="${h.image}" alt="Bunofeed Hero" loading="eager"/>`;
+        document.querySelector('.hero-image').style.display = 'flex';
       }
-    });
-
-    // Populate social links
-    document.querySelectorAll('.social-links a').forEach(el => {
-      const cls = el.innerHTML;
-      if (cls.includes('fa-instagram')) el.href = instagram;
-      else if (cls.includes('fa-facebook')) el.href = facebook;
-      else if (cls.includes('fa-linkedin')) el.href = linkedin;
-      else if (cls.includes('fa-youtube')) el.href = youtube;
-    });
-  }
-
-  /* ============================================================
-     PINCODE ELIGIBILITY CHECKER (WIDGET IN CONTACT)
-  ============================================================ */
-  function initPincodeSearch() {
-    const btn = document.getElementById('chk-pin-btn');
-    const input = document.getElementById('pincode-checker-input');
-    const result = document.getElementById('pincode-check-result');
-    if (!btn || !input || !result) return;
-
-    btn.addEventListener('click', handleCheck);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleCheck(); });
-
-    function handleCheck() {
-      const val = input.value.trim();
-      if (!/^\d{6}$/.test(val)) {
-        result.className = 'status-msg error';
-        result.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a valid 6-digit numeric pincode.';
-        result.style.display = 'block';
-        return;
-      }
-
-      const activeList = state.pincodes || [];
-      if (activeList.length === 0) {
-        result.className = 'status-msg success';
-        result.innerHTML = `<i class="fas fa-check-circle"></i> Yes! We deliver to <strong>${val}</strong> (Accepted Nationwide)`;
-        result.style.display = 'block';
-        return;
-      }
-
-      if (activeList.includes(val)) {
-        result.className = 'status-msg success';
-        result.innerHTML = `<i class="fas fa-check-circle"></i> Perfect! <strong>${val}</strong> is currently within our express delivery grid.`;
-      } else {
-        result.className = 'status-msg error';
-        result.innerHTML = `<i class="fas fa-times-circle"></i> We apologize. <strong>${val}</strong> is outside our service loop at this stage.`;
-      }
-      result.style.display = 'block';
     }
   }
 
-  /* ============================================================
-     HOMEPAGE PRODUCT RENDERING
-  ============================================================ */
-  function initHomePage(state) {
-    const grid = document.getElementById('homepage-best-sellers-grid');
-    if (!grid) return;
-
-    // Filter only visible products
-    const visibleProducts = state.products.filter(p => p.visible !== false);
-    // Homepage only shows products designated as best sellers
-    const bsProducts = visibleProducts.filter(p => p.bestSeller === true);
-    
-    // If empty render message or load first 4
-    const displayList = bsProducts.length > 0 ? bsProducts : visibleProducts.slice(0, 4);
-
-    if (displayList.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1/-1;text-align:center;padding:2rem;color:var(--gray)">No items available at this moment.</div>';
-      return;
-    }
-
-    grid.innerHTML = displayList.map(p => productCardHtml(p, state)).join('');
-    wireProductCardClicks(grid);
+  /* ----------------------------------------------------------
+     SALE helpers
+  ---------------------------------------------------------- */
+  const saleActive  = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
+  const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
+  function salePrice(p) {
+    return saleActive && discountPct > 0 ? Math.round(p * (1 - discountPct / 100)) : null;
   }
 
-  /* ============================================================
-     SHOP PAGE CATALOG RENDERING & FILTERING
-  ============================================================ */
-  function initShopPage(state) {
-    const grid = document.getElementById('shop-catalog-grid');
-    const filterContainer = document.getElementById('shop-filters');
-    const searchInput = document.getElementById('shop-search');
-    const productsCount = document.getElementById('catalog-products-count');
-    if (!grid) return;
+  /* ----------------------------------------------------------
+     RENDER BEST-SELLER CARDS (homepage)
+  ---------------------------------------------------------- */
+  const grid = document.getElementById('products-grid');
+  if (grid && D.products) {
+    grid.innerHTML = '';
 
-    let activeCategorySlug = 'all';
-    let searchQuery = '';
+    D.products.filter(p => p.visible !== false && p.bestSeller === true).forEach(product => {
+      const sp = salePrice(product.price);
 
-    // Render category filters
-    if (filterContainer) {
-      const activeCats = state.categories || [];
-      const chips = [
-        { name: 'All Products', slug: 'all' },
-        ...activeCats
-      ];
-      filterContainer.innerHTML = chips.map(c => 
-        `<button class="filter-chip ${c.slug === 'all'?'active':''}" data-slug="${c.slug}">${c.name}</button>`
-      ).join('');
-
-      // Wire Category Chips
-      filterContainer.querySelectorAll('.filter-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          filterContainer.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeCategorySlug = btn.dataset.slug;
-          applyFiltersAndSearch();
-        });
-      });
-    }
-
-    // Wire search query
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.toLowerCase().trim();
-        applyFiltersAndSearch();
-      });
-    }
-
-    // First render
-    applyFiltersAndSearch();
-
-    function applyFiltersAndSearch() {
-      let filtered = state.products.filter(p => p.visible !== false);
-
-      // Category match
-      if (activeCategorySlug !== 'all') {
-        filtered = filtered.filter(p => p.category === activeCategorySlug);
+      let badgeHTML = '';
+      if (product.badge) {
+        const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
+        badgeHTML = `<div class="product-badge${cls}">${product.badge}</div>`;
+      }
+      if (saleActive) {
+        badgeHTML += `<div class="sale-ribbon">${D.sale.label || 'SALE'} ${discountPct}% OFF</div>`;
       }
 
-      // Search match
-      if (searchQuery) {
-        filtered = filtered.filter(p => 
-          p.name.toLowerCase().includes(searchQuery) || 
-          (p.tagline && p.tagline.toLowerCase().includes(searchQuery)) ||
-          p.description.toLowerCase().includes(searchQuery) ||
-          (p.features && p.features.some(f => f.toLowerCase().includes(searchQuery)))
-        );
-      }
+      const imgHTML = product.image
+        ? `<img class="product-photo" src="${product.image}" alt="${product.name}" loading="lazy"/>`
+        : `<span class="product-emoji">${product.emoji || '🥜'}</span>`;
 
-      // Counter
-      if (productsCount) {
-        productsCount.textContent = `${filtered.length} Product${filtered.length !== 1 ? 's' : ''}`;
-      }
-
-      // Empty state
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align:center; padding:4rem 1rem; color:var(--gray);">
-            <i class="fas fa-search" style="font-size:2.5rem; color:var(--border); margin-bottom:1rem; display:block"></i>
-            <h3 style="font-family:var(--font-head); font-weight:700; color:var(--dark); margin-bottom:.3rem">No matches found</h3>
-            <p style="font-size:.9rem">Try modifying your search or choosing another category.</p>
-          </div>`;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(p => productCardHtml(p, state)).join('');
-      wireProductCardClicks(grid);
-    }
-  }
-
-  /* ============================================================
-     PRODUCT CARD HTML GENERATOR
-  ============================================================ */
-  function productCardHtml(p, state) {
-    // Read price and weights
-    const hasVariants = p.variants && p.variants.length > 0;
-    const activeWeight = hasVariants ? p.variants[0].weight : (p.weight || '');
-    const activePrice  = hasVariants ? p.variants[0].price : (p.price || 0);
-    const activeOriginal = hasVariants ? p.variants[0].originalPrice : (p.originalPrice || null);
-
-    // Apply global sale mode discount if active
-    let sellingPrice = activePrice;
-    let oldPriceHTML = '';
-
-    if (state.sale && state.sale.active === true) {
-      const disc = state.sale.discountPercent || 15;
-      sellingPrice = Math.round(activePrice * (1 - (disc / 100)));
-      oldPriceHTML = `
-        <span class="product-price-old">₹${activePrice}</span>
-        <span class="sale-discount-tag">${disc}% OFF</span>`;
-    } else if (activeOriginal) {
-      oldPriceHTML = `<span class="product-price-old">₹${activeOriginal}</span>`;
-    }
-
-    // Set badge text & styling
-    let badgeHTML = '';
-    const isSaleMode = state.sale && state.sale.active === true;
-    const activeBadge = isSaleMode ? (state.sale.label || 'SALE') : (p.badge || '');
-    const activeBadgeType = isSaleMode ? 'limited' : (p.badgeType || '');
-
-    if (activeBadge) {
-      badgeHTML = `<span class="product-badge badge-${activeBadgeType || 'bestseller'}">${activeBadge}</span>`;
-    }
-
-    // Find first image URL
-    const primaryImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
-    const hasMultiImg = p.images && p.images.length > 1;
-
-    const imgHTML = primaryImg
-      ? `<img src="${primaryImg}" alt="${p.name}" class="product-img" loading="lazy" referrerPolicy="no-referrer"/>`
-      : `<span class="product-emoji">${p.emoji || '🥜'}</span>`;
-
-    const multiImgIndicator = hasMultiImg 
-      ? `<div class="card-multi-indicator"><i class="fas fa-images"></i> 1/${p.images.length} Swipeable</div>` 
-      : '';
-
-    return `
-      <div class="product-card ${p.bgClass || 'peanut-bg'}" data-id="${p.id}" id="prodcard-${p.id}">
-        ${badgeHTML}
-        <div class="img-container">
-          ${imgHTML}
-          ${multiImgIndicator}
-        </div>
-        <div class="product-card-body">
-          <div class="product-weight">${activeWeight}</div>
-          <h3 class="product-name">${p.name}</h3>
-          <p class="product-tagline">${p.tagline || ''}</p>
-          
-          <div class="product-footer-row">
-            <div class="product-price-block">
-              <span class="product-price-current">₹${sellingPrice}</span>
-              ${oldPriceHTML}
+      let priceHTML = '';
+      if (sp) {
+        priceHTML = `
+          <div class="product-price">
+            <div class="product-weight">${product.weight || ''}</div>
+            <div class="price-sale">
+              <span class="price-current">₹${sp}</span>
+              <span class="price-old">₹${product.price}</span>
             </div>
-            <button class="btn btn-brown btn-sm card-viewdetails-btn" data-id="${p.id}">
-              <i class="fas fa-shopping-cart"></i> View
-            </button>
-          </div>
-        </div>
-      </div>`;
-  }
+          </div>`;
+      } else {
+        priceHTML = `
+          <div class="product-price">
+            <div class="product-weight">${product.weight || ''}</div>
+            <div class="price-original">₹${product.price}</div>
+          </div>`;
+      }
 
-  function wireProductCardClicks(container) {
-    if (!container) return;
-    container.querySelectorAll('.product-card').forEach(card => {
+      const card = document.createElement('div');
+      card.className = 'product-card reveal';
+      card.dataset.id = product.id;
+      card.innerHTML = `
+        ${badgeHTML}
+        <div class="product-img ${product.bgClass || ''}">${imgHTML}</div>
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.description}</p>
+          <div class="product-footer">
+            ${priceHTML}
+            <div class="product-card-btns">
+              <button class="btn-view-detail view-detail-btn" data-id="${product.id}">View Details</button>
+              <button class="btn-buy buy-now-btn" data-id="${product.id}">Buy Now</button>
+            </div>
+          </div>
+        </div>`;
+
+      grid.appendChild(card);
+    });
+
+    /* Wire up card clicks and buttons */
+    grid.querySelectorAll('.product-card').forEach(card => {
       card.addEventListener('click', (e) => {
-        // Prevent trigger if they click another direct nested link, but currently there are none
-        const prodId = card.dataset.id;
-        if (prodId) openProductModal(prodId);
+        if (!e.target.closest('.btn-buy') && !e.target.closest('.btn-view-detail')) {
+          openModal(card.dataset.id);
+        }
       });
     });
-  }
-
-  /* ============================================================
-     PRODUCT DETAIL MODAL CONTROLLER
-  ============================================================ */
-  const modalOverlay = document.getElementById('product-modal');
-  const modalCloseBtn = document.getElementById('modal-close-btn');
-
-  if (modalCloseBtn && modalOverlay) {
-    modalCloseBtn.addEventListener('click', closeProductModal);
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeProductModal();
+    grid.querySelectorAll('.view-detail-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openModal(btn.dataset.id); });
     });
+    grid.querySelectorAll('.buy-now-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const product = (D.products || []).find(p => p.id === btn.dataset.id);
+        if (product) {
+          currentProduct = product;
+          qty = 1;
+          openCheckoutModal();
+        }
+      });
+    });
+
+    initReveal();
   }
 
-  function openProductModal(id) {
-    const p = state.products.find(prod => prod.id === id);
-    if (!p) return;
+  /* ----------------------------------------------------------
+     SCROLL REVEAL ANIMATION
+  ---------------------------------------------------------- */
+  function initReveal() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  }
 
-    state.activeProduct = p;
-    state.activeVariantIdx = 0;
-    state.activeQty = 1;
-    state.activeImageIdx = 0;
-    state.descExpanded = false;
+  document.querySelectorAll('.product-card, .why-stat-card, .feature-item').forEach(el => {
+    el.classList.add('reveal');
+  });
+  initReveal();
 
-    // Trigger overlay styling
-    if (modalOverlay) {
-      modalOverlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
+  /* ----------------------------------------------------------
+     PRODUCT MODAL (same as shop.html) injected into index.html
+  ---------------------------------------------------------- */
+  /* Inject modal HTML if not already present */
+  if (!document.getElementById('home-modal-overlay')) {
+    const modalHTML = `
+    <style>
+      .home-modal-overlay {
+        display:none;position:fixed;inset:0;
+        background:rgba(0,0,0,.55);z-index:2000;
+        align-items:center;justify-content:center;
+        padding:1rem;
+        backdrop-filter:blur(4px);
+        -webkit-backdrop-filter:blur(4px);
+      }
+      .home-modal-overlay.open { display:flex; }
+      .home-modal {
+        background:#fff;border-radius:20px;
+        max-width:860px;width:100%;
+        max-height:92vh;overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
+        box-shadow:0 24px 64px rgba(0,0,0,.25);
+        display:grid;grid-template-columns:1fr 1fr;
+        animation:hModalIn .28s ease;
+        position:relative;
+      }
+      @keyframes hModalIn {
+        from{opacity:0;transform:scale(.95) translateY(12px)}
+        to  {opacity:1;transform:scale(1) translateY(0)}
+      }
+      .home-modal-img-side {
+        display:flex;flex-direction:column;align-items:stretch;
+        font-size:7rem;border-radius:20px 0 0 20px;
+        min-height:320px;overflow:hidden;
+      }
+      .home-modal-main-wrap {
+        flex:1;width:100%;
+        display:flex;align-items:center;justify-content:center;
+        min-height:260px;overflow:hidden;
+      }
+      .home-modal-img-side img {
+  display:block;
+  width:100%;height:100%;
+  max-width:100%;max-height:100%;
+  object-fit:contain;padding:20px;
+  pointer-events:none;
+}
+      /* Thumbnail strip */
+      .home-modal-thumbs {
+        width:100%;display:flex;gap:8px;padding:10px 12px;
+        overflow-x:auto;background:rgba(0,0,0,.12);
+        scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;
+        flex-shrink:0;
+      }
+      .home-modal-thumbs::-webkit-scrollbar { height:4px; }
+      .home-modal-thumbs::-webkit-scrollbar-thumb { background:rgba(255,255,255,.35);border-radius:4px; }
+      .home-modal-thumbs:empty { display:none; }
+      .home-modal-thumb {
+        width:56px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;
+        border:2px solid transparent;cursor:pointer;
+        transition:border-color .18s,transform .18s;background:#fff;
+      }
+      .home-modal-thumb:hover { transform:scale(1.05); }
+      .home-modal-thumb.active { border-color:#FF6B00;box-shadow:0 0 0 1px #FF6B00; }
+      .home-modal-thumb img { width:100%;height:100%;object-fit:contain;padding:4px; }
+      .home-modal-body {
+        padding:2.2rem 2rem;display:flex;flex-direction:column;gap:1rem;
+        overflow-y:auto;
+      }
+      .home-modal-close {
+        position:absolute;top:1rem;right:1rem;
+        width:36px;height:36px;border-radius:50%;
+        background:rgba(0,0,0,.18);border:none;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        font-size:1rem;color:#fff;transition:.2s;z-index:10;
+      }
+      .home-modal-close:hover { background:rgba(0,0,0,.35); }
+      .home-modal-badge-row { display:flex;gap:.5rem;flex-wrap:wrap; }
+      .home-modal-badge {
+        font-family:'Montserrat',sans-serif;font-weight:700;font-size:.72rem;
+        padding:4px 12px;border-radius:50px;
+      }
+      .home-modal-badge.bestseller { background:#6B2D0E;color:#fff; }
+      .home-modal-badge.new        { background:#28a745;color:#fff; }
+      .home-modal-badge.limited    { background:#dc3545;color:#fff; }
+      .home-modal-badge.sale       { background:#FF6B00;color:#fff; }
+      .home-modal-name {
+        font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;
+        color:#1a1a1a;line-height:1.2;
+      }
+      .home-modal-tagline { font-size:.97rem;color:#FF6B00;font-weight:600; }
+      .home-modal-desc { color:#666;font-size:.93rem;line-height:1.75; }
+      .home-modal-features { display:flex;flex-wrap:wrap;gap:.5rem; }
+      .home-modal-chip {
+        background:rgba(255,107,0,.1);color:#6B2D0E;
+        font-size:.78rem;font-family:'Montserrat',sans-serif;font-weight:600;
+        padding:5px 12px;border-radius:50px;
+      }
+      .home-modal-price-row {
+        display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+        padding:.8rem 0;border-top:1px solid #f0e8e0;border-bottom:1px solid #f0e8e0;
+      }
+      .home-modal-price-main {
+        font-family:'Montserrat',sans-serif;font-size:1.7rem;font-weight:800;color:#6B2D0E;
+      }
+      .home-modal-price-sale { color:#FF6B00; }
+      .home-modal-price-old  { font-size:.95rem;color:#666;text-decoration:line-through;font-weight:500; }
+      .home-modal-weight-tag {
+        background:#FFF8F3;padding:5px 14px;border-radius:50px;
+        font-size:.8rem;font-weight:600;color:#666;font-family:'Montserrat',sans-serif;
+      }
+      .home-modal-qty-row { display:flex;align-items:center;gap:1rem;flex-wrap:wrap; }
+      .home-qty-label { font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem;color:#1a1a1a; }
+      .home-qty-control {
+        display:flex;align-items:center;border:2px solid #e0d4cc;border-radius:50px;overflow:hidden;
+      }
+      .home-qty-btn {
+        width:36px;height:36px;background:none;border:none;cursor:pointer;
+        font-size:1.1rem;font-weight:700;color:#1a1a1a;transition:.2s;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .home-qty-btn:hover { background:#FFF8F3; }
+      .home-qty-num { min-width:32px;text-align:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.95rem; }
+      .home-modal-actions { display:flex;gap:.8rem;flex-wrap:wrap; }
+      .home-modal-actions .btn { flex:1;min-width:130px;justify-content:center; }
+      .home-modal-accordion { margin-top:.5rem; }
+      .home-acc-item { border-top:1px solid #f0e8e0; }
+      .home-acc-head {
+        display:flex;align-items:center;justify-content:space-between;
+        padding:.85rem 0;cursor:pointer;
+        font-family:'Montserrat',sans-serif;font-weight:700;font-size:.88rem;color:#1a1a1a;
+        background:none;border:none;width:100%;text-align:left;
+      }
+      .home-acc-head i { transition:transform .2s;color:#FF6B00; }
+      .home-acc-head.open i { transform:rotate(180deg); }
+      .home-acc-body { display:none;padding:.5rem 0 1rem;color:#666;font-size:.88rem;line-height:1.7; white-space:pre-line; }
+      .home-acc-body.open { display:block; }
+      @media(max-width:768px){
+        .home-modal{grid-template-columns:1fr;max-height:95vh;}
+        .home-modal-img-side{min-height:auto;border-radius:20px 20px 0 0;}
+        .home-modal-main-wrap{min-height:200px;}
+        .home-modal-body{padding:1.5rem 1.2rem;}
+        .home-modal-name{font-size:1.25rem;}
+      }
+    </style>
+    <div class="home-modal-overlay" id="home-modal-overlay" role="dialog" aria-modal="true">
+      <div class="home-modal" id="home-modal-box">
+        <button class="home-modal-close" id="home-modal-close" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="home-modal-img-side peanut-bg" id="home-modal-img-side">
+          <div class="home-modal-main-wrap" id="home-modal-main-wrap">
+            <span id="home-modal-emoji">🥜</span>
+          </div>
+          <div class="home-modal-thumbs" id="home-modal-thumbs"></div>
+        </div>
+        <div class="home-modal-body">
+          <div class="home-modal-badge-row" id="home-modal-badges"></div>
+          <h2 class="home-modal-name" id="home-modal-name">Product Name</h2>
+          <p class="home-modal-tagline" id="home-modal-tagline"></p>
+          <p class="home-modal-desc" id="home-modal-desc"></p>
+          <div class="home-modal-features" id="home-modal-features"></div>
+          <div class="home-modal-price-row">
+            <span class="home-modal-price-main" id="home-modal-price"></span>
+            <span class="home-modal-price-old"  id="home-modal-price-old" style="display:none"></span>
+            <span class="home-modal-weight-tag" id="home-modal-weight"></span>
+          </div>
+          <div class="home-modal-qty-row">
+            <span class="home-qty-label">Quantity:</span>
+            <div class="home-qty-control">
+              <button class="home-qty-btn" id="home-qty-minus" aria-label="Decrease">−</button>
+              <span   class="home-qty-num"  id="home-qty-num">1</span>
+              <button class="home-qty-btn" id="home-qty-plus"  aria-label="Increase">+</button>
+            </div>
+            <span style="font-size:.85rem;color:#666" id="home-modal-subtotal"></span>
+          </div>
+          <div class="home-modal-actions">
+            <button class="btn btn-primary" id="home-modal-buy-btn">
+              <i class="fas fa-bolt"></i> Buy Now
+            </button>
+            <a href="shop.html" class="btn btn-brown">
+              <i class="fas fa-store"></i> View All Products
+            </a>
+          </div>
+          <div class="home-modal-accordion" id="home-modal-accordion"></div>
+        </div>
+      </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  /* Modal state */
+  let currentProduct = null;
+  let qty = 1;
+  let isProcessing = false;
+
+  function generateOrderId() {
+    const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
+    return 'ORD' + Date.now() + rand;
+  }
+
+  async function syncToGoogleSheets(orderData) {
+    if (!window.BUNOFEED_API) { console.warn('api.js not loaded.'); return; }
+    try {
+      await window.BUNOFEED_API.post('createOrder', orderData);
+    } catch (e) {
+      console.error('Error syncing order:', e);
     }
-
-    // Load initial info
-    document.getElementById('m-name').textContent = p.name;
-    document.getElementById('m-tagline').textContent = p.tagline || '';
-    document.getElementById('m-qty-val').textContent = state.activeQty;
-
-    // Trigger dynamic components
-    renderModalCarousel();
-    renderModalDescription();
-    renderModalVariants();
-    renderModalDetails();
-    updateModalPriceAndQtyDisplay();
-    initCarouselTouchEvents();
-
-    // Reset shipping checkout error status
-    document.getElementById('checkout-error-msg').style.display = 'none';
-
-    // Highlight active card or viewport focus if scrolled
   }
 
-  function closeProductModal() {
-    if (modalOverlay) {
-      modalOverlay.classList.remove('open');
+  const checkoutOverlay = document.getElementById('checkout-modal-overlay');
+  const checkoutForm    = document.getElementById('checkout-form');
+  const checkoutClose   = document.getElementById('checkout-close-btn');
+
+  function openCheckoutModal() {
+    if (!currentProduct) return;
+    checkoutOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCheckoutModal() {
+    checkoutOverlay.classList.remove('open');
+    if (!document.getElementById('home-modal-overlay').classList.contains('open')) {
       document.body.style.overflow = '';
     }
-    state.activeProduct = null;
   }
 
-  /* ============================================================
-     CAROUSEL IMAGE SWIPING & Touch Tracking
-  ============================================================ */
-  function renderModalCarousel() {
-    const frame = document.getElementById('m-carousel-frame');
-    const dotsContainer = document.getElementById('m-carousel-dots');
-    if (!frame || !dotsContainer) return;
+  if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
 
-    const p = state.activeProduct;
-    // Collect active images list
-    let imgs = [];
-    if (p.images && p.images.length > 0) {
-      imgs = [...p.images];
-    } else if (p.image && p.image.trim()) {
-      imgs = [p.image.trim()];
-    }
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isProcessing) return;
 
-    if (imgs.length === 0) {
-      frame.innerHTML = `
-        <div class="carousel-slide active">
-          <span class="modal-emoji-placeholder">${p.emoji || '🥜'}</span>
-        </div>`;
-      dotsContainer.innerHTML = '';
-      return;
-    }
+      const name     = document.getElementById('cust-name').value.trim();
+      const phone    = document.getElementById('cust-phone').value.trim();
+      const email    = document.getElementById('cust-email').value.trim();
+      const address  = document.getElementById('cust-address').value.trim();
+      const pincode  = document.getElementById('cust-pincode').value.trim();
 
-    frame.innerHTML = imgs.map((u, idx) => `
-      <div class="carousel-slide ${idx === 0?'active':''}" data-idx="${idx}">
-        <img src="${u}" alt="${p.name} Image ${idx+1}" referrerPolicy="no-referrer"/>
-      </div>`
-    ).join('');
+      // Reset errors
+      document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
 
-    dotsContainer.innerHTML = imgs.map((_, idx) => `
-      <button class="carousel-dot ${idx === 0?'active':''}" data-idx="${idx}" aria-label="View slide ${idx+1}"></button>`
-    ).join('');
+      // Validation
+      let isValid = true;
+      if (!name) { document.getElementById('name-error').style.display = 'block'; isValid = false; }
+      if (!/^\d{10}$/.test(phone)) { document.getElementById('phone-error').style.display = 'block'; isValid = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('email-error').style.display = 'block'; isValid = false; }
+      if (!address) { document.getElementById('address-error').style.display = 'block'; isValid = false; }
+      if (!/^\d{6}$/.test(pincode)) { document.getElementById('pincode-error').style.display = 'block'; isValid = false; }
 
-    // Wire dots click
-    dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
-      dot.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigateToSlide(parseInt(dot.dataset.idx));
-      });
-    });
-  }
-
-  function navigateToSlide(idx) {
-    const frame = document.getElementById('m-carousel-frame');
-    const dotsContainer = document.getElementById('m-carousel-dots');
-    if (!frame) return;
-
-    const slides = frame.querySelectorAll('.carousel-slide');
-    if (idx < 0 || idx >= slides.length) return;
-
-    state.activeImageIdx = idx;
-
-    // Toggle active classes
-    slides.forEach((slide, sIdx) => {
-      slide.classList.toggle('active', sIdx === idx);
-    });
-
-    if (dotsContainer) {
-      dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, sIdx) => {
-        dot.classList.toggle('active', sIdx === idx);
-      });
-    }
-  }
-
-  function initCarouselTouchEvents() {
-    const carContainer = document.getElementById('m-carousel-container');
-    if (!carContainer) return;
-
-    // Unbind prior listeners by replacing the element or standard overwrite
-    // Let's bind standard touch and pointer events
-    carContainer.onmousedown = dragStart;
-    carContainer.ontouchstart = dragStart;
-
-    carContainer.onmousemove = dragMove;
-    carContainer.ontouchmove = dragMove;
-
-    carContainer.onmouseup = dragEnd;
-    carContainer.onmouseleave = dragEnd;
-    carContainer.ontouchend = dragEnd;
-
-    function dragStart(e) {
-      state.isSwiping = true;
-      state.swipeStart = getCoordX(e);
-    }
-    function dragMove(e) {
-      if (!state.isSwiping) return;
-      state.swipeEnd = getCoordX(e);
-    }
-    function dragEnd() {
-      if (!state.isSwiping) return;
-      state.isSwiping = false;
-
-      const diff = state.swipeStart - state.swipeEnd;
-      const threshold = 55; // minimum px movement to trigger slide
-
-      if (Math.abs(diff) > threshold) {
-        if (diff > 0) {
-          // Swipe left -> Next image
-          navigateToSlide(state.activeImageIdx + 1);
-        } else {
-          // Swipe right -> Prior image
-          navigateToSlide(state.activeImageIdx - 1);
-        }
+      // Serviceable pincode check
+      const serviceablePincodes = D.serviceablePincodes || [];
+      if (isValid && serviceablePincodes.length > 0 && !serviceablePincodes.includes(pincode)) {
+        const el = document.getElementById('pincode-error');
+        el.textContent = 'Sorry, we do not deliver to this pincode yet.';
+        el.style.display = 'block';
+        isValid = false;
       }
-    }
-    function getCoordX(e) {
-      return e.touches ? e.touches[0].clientX : e.clientX;
-    }
-  }
 
-  /* ============================================================
-     TRUNCATED REUSABLE DESCRIPTION
-  ============================================================ */
-  function renderModalDescription() {
-    const container = document.getElementById('m-description-container');
-    if (!container) return;
+      if (!isValid) return;
 
-    const p = state.activeProduct;
-    const desc = p.description || '';
+      isProcessing = true;
+      const proceedBtn = document.getElementById('proceed-pay-btn');
+      proceedBtn.disabled = true;
+      proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-    // If description fits easily inside 2 lines (approx 120 chars) don't truncate
-    if (desc.length <= 130) {
-      container.innerHTML = `<p class="m-desc">${desc}</p>`;
-      return;
-    }
+      const sp = salePrice(currentProduct.price);
+      const unitPrice = sp || currentProduct.price;
+      const totalAmount = unitPrice * qty;
+      const shipping = D.shipping && totalAmount < D.shipping.freeShippingAbove ? D.shipping.shippingCharge : 0;
+      const grandTotal = totalAmount + shipping;
+      const orderId = generateOrderId();
 
-    const shortText = desc.substring(0, 110) + '…';
-
-    container.innerHTML = `
-      <p class="m-desc" id="m-desc-text">${shortText}</p>
-      <button class="m-desc-toggle-btn" id="m-desc-toggle-btn">
-        <span>More <i class="fas fa-chevron-down"></i></span>
-      </button>`;
-
-    const toggleBtn = document.getElementById('m-desc-toggle-btn');
-    const descText  = document.getElementById('m-desc-text');
-
-    if (toggleBtn && descText) {
-      toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        state.descExpanded = !state.descExpanded;
-        if (state.descExpanded) {
-          descText.textContent = desc;
-          toggleBtn.innerHTML = 'Less <i class="fas fa-chevron-up"></i>';
-        } else {
-          descText.textContent = shortText;
-          toggleBtn.innerHTML = 'More <i class="fas fa-chevron-down"></i>';
-        }
-      });
-    }
-  }
-
-  /* ============================================================
-     VARIANTS CHIP MATRIX & QUANTITY
-  ============================================================ */
-  function renderModalVariants() {
-    const matrix = document.getElementById('m-variants-matrix');
-    if (!matrix) return;
-
-    const p = state.activeProduct;
-    let fallbackVars = [];
-
-    if (p.variants && p.variants.length > 0) {
-      fallbackVars = [...p.variants];
-    } else {
-      fallbackVars = [{ weight: p.weight || '400g', price: p.price || 0, originalPrice: p.originalPrice || null }];
-    }
-
-    matrix.innerHTML = fallbackVars.map((v, idx) => `
-      <button class="variant-chip ${idx === 0?'active':''}" data-idx="${idx}">
-        <span class="weight-tag">${v.weight}</span>
-        <span class="price-brief">₹${getVariantSellingPrice(v)}</span>
-      </button>`
-    ).join('');
-
-    matrix.querySelectorAll('.variant-chip').forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        matrix.querySelectorAll('.variant-chip').forEach(ch => ch.classList.remove('active'));
-        chip.classList.add('active');
-        state.activeVariantIdx = parseInt(chip.dataset.idx);
-        updateModalPriceAndQtyDisplay();
-      });
-    });
-  }
-
-  function getVariantSellingPrice(v) {
-    if (state.sale && state.sale.active === true) {
-      const disc = state.sale.discountPercent || 15;
-      return Math.round(v.price * (1 - (disc / 100)));
-    }
-    return v.price;
-  }
-
-  // Bind Quantity change buttons
-  const qtyMinus = document.getElementById('m-qty-minus');
-  const qtyPlus = document.getElementById('m-qty-plus');
-
-  if (qtyMinus && qtyPlus) {
-    qtyMinus.onclick = (e) => {
-      e.stopPropagation();
-      if (state.activeQty > 1) {
-        state.activeQty--;
-        document.getElementById('m-qty-val').textContent = state.activeQty;
-        updateModalPriceAndQtyDisplay();
-      }
-    };
-    qtyPlus.onclick = (e) => {
-      e.stopPropagation();
-      if (state.activeQty < 20) {
-        state.activeQty++;
-        document.getElementById('m-qty-val').textContent = state.activeQty;
-        updateModalPriceAndQtyDisplay();
-      }
-    };
-  }
-
-  function updateModalPriceAndQtyDisplay() {
-    const p = state.activeProduct;
-    if (!p) return;
-
-    let v = null;
-    if (p.variants && p.variants.length > 0) {
-      v = p.variants[state.activeVariantIdx] || p.variants[0];
-    } else {
-      v = { price: p.price, originalPrice: p.originalPrice };
-    }
-
-    const basePrice = v.price;
-    const baseOriginal = v.originalPrice;
-
-    // Apply discount
-    let sellingPrice = basePrice;
-    let oldHTML = '';
-
-    if (state.sale && state.sale.active === true) {
-      const disc = state.sale.discountPercent || 15;
-      sellingPrice = Math.round(basePrice * (1 - (disc / 100)));
-      oldHTML = `
-        <span class="m-price-crossed">₹${basePrice * state.activeQty}</span>
-        <span class="m-price-tag">- ${disc}% OFF</span>`;
-    } else if (baseOriginal) {
-      oldHTML = `<span class="m-price-crossed">₹${baseOriginal * state.activeQty}</span>`;
-    }
-
-    // Set prices in active footer row
-    document.getElementById('m-price').textContent = `₹${sellingPrice * state.activeQty}`;
-    document.getElementById('m-old-price-container').innerHTML = oldHTML;
-
-    // Calculate free shipping hint info
-    const subtotal = sellingPrice * state.activeQty;
-    const shipLimit = state.shipping.freeShippingAbove || 499;
-    const charge = state.shipping.shippingCharge || 60;
-    const indicator = document.getElementById('m-shipping-info-indicator');
-
-    if (indicator) {
-      if (subtotal >= shipLimit) {
-        indicator.innerHTML = `<i class="fas fa-truck" style="color:var(--success)"></i> Your order qualifies for <strong>FREE Shipping!</strong>`;
-      } else {
-        const diff = shipLimit - subtotal;
-        indicator.innerHTML = `<i class="fas fa-info-circle"></i> Add <strong>₹${diff}</strong> more to get <strong>FREE Express Delivery</strong> (Save ₹${charge})`;
-      }
-    }
-  }
-
-  /* ============================================================
-     TAB DETAILS AND SPECIAL STATS (INGREDIENTS, BENEFITS)
-  ============================================================ */
-  function renderModalDetails() {
-    const p = state.activeProduct;
-
-    // Features list
-    const featsContainer = document.getElementById('m-features-list');
-    if (featsContainer) {
-      const list = p.features || [];
-      if (list.length > 0) {
-        featsContainer.innerHTML = list.map(f => `<span class="m-feature-pill"><i class="fas fa-certificate"></i> ${f}</span>`).join('');
-        featsContainer.style.display = 'flex';
-      } else {
-        featsContainer.style.display = 'none';
-      }
-    }
-
-    // Extra collapsible tabs (ingredients / allergen / benefits / storage)
-    const ingText = document.getElementById('m-detail-ingredients');
-    const benText = document.getElementById('m-detail-benefits');
-    const storText = document.getElementById('m-detail-storage');
-    const allText = document.getElementById('m-detail-allergen');
-
-    if (ingText)  ingText.innerHTML  = formatBulletLines(p.ingredients  || 'Prepared with premium, wholesome organic food inputs under strict quality checks.');
-    if (benText)  benText.innerHTML  = formatBulletLines(p.keyBenefits  || '🔥 Loaded with plant-based protein • Heart-healthy choice • Clean sustained energy.');
-    if (storText) storText.innerHTML = formatBulletLines(p.storageInfo  || 'Store in a cool dry place. Close lid tightly after serving.');
-    if (allText)  allText.innerHTML  = formatBulletLines(p.allergenInfo || 'Clean recipe. Processed in an allergen-safe, peanut-loving, fully sterilized environment.');
-
-    // Tab controllers
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const tabName = btn.dataset.tab;
-        const body    = btn.closest('.tab-container');
-        body.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        body.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-
-        btn.classList.add('active');
-        body.querySelector(`.tab-panel[data-tab="${tabName}"]`).classList.add('active');
+      const orderData = {
+        order_id: orderId,
+        date_time: new Date().toLocaleString('en-IN'),
+        customer_name: name,
+        phone_number: phone,
+        email: email,
+        address: address,
+        pincode: pincode,
+        product_id: currentProduct.id,
+        product_name: currentProduct.name,
+        quantity: qty,
+        product_price: unitPrice,
+        total_amount: grandTotal,
+        payment_id: '',
+        razorpay_order_id: '',
+        payment_status: 'Pending'
       };
+
+      // Save customer data even before payment (Step 4 Requirement)
+      await syncToGoogleSheets(orderData);
+
+      // Open Razorpay
+      triggerRazorpay(currentProduct, qty, grandTotal, shipping, orderData);
     });
   }
 
-  function formatBulletLines(str) {
-    if (!str) return '';
-    // Format if multiple points are listed using bullet separator •
-    if (str.includes('•')) {
-      return '<ul>' + str.split('•').map(s => s.trim()).filter(Boolean).map(s => `<li>${s}</li>`).join('') + '</ul>';
+  function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData) {
+    const key = D.payment && D.payment.razorpayKeyId;
+    if (!key || key.includes('PASTE_YOUR')) {
+      alert('⚠️ Razorpay key not configured yet.\n\nOpen products.js and paste your Razorpay Key ID in payment.razorpayKeyId.');
+      resetSubmitBtn();
+      return;
     }
-    return `<p>${str}</p>`;
-  }
-
-  /* ============================================================
-     SECURE RAZORPAY INTEGRATION AND REAL-TIME CHECKOUTS
-  ============================================================ */
-  const checkoutBtn = document.getElementById('m-checkout-btn');
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', startCheckoutFlow);
-  }
-
-  async function startCheckoutFlow(e) {
-    e.stopPropagation();
-
-    const name  = document.getElementById('checkout-name').value.trim();
-    const email = document.getElementById('checkout-email').value.trim();
-    const phone = document.getElementById('checkout-phone').value.trim();
-    const addr  = document.getElementById('checkout-address').value.trim();
-    const pin   = document.getElementById('checkout-pincode').value.trim();
-
-    const errBox = document.getElementById('checkout-error-msg');
-    errBox.style.display = 'none';
-
-    // 1. Basic empty validations
-    if (!name || !email || !phone || !addr || !pin) {
-      showCheckoutError('All fields marked * are required to dispatch your package secure.');
+    if (typeof Razorpay === 'undefined') {
+      alert('Payment gateway not loaded. Please check your internet connection.');
+      resetSubmitBtn();
       return;
     }
 
-    // 2. Format validations
-    if (!/^\d{10}$/.test(phone)) {
-      showCheckoutError('Please enter a valid 10-digit Phone Number.');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showCheckoutError('Please enter a valid Email address.');
-      return;
-    }
-    if (!/^\d{6}$/.test(pin)) {
-      showCheckoutError('Please enter a valid 6-digit Delivery Pincode.');
-      return;
-    }
-
-    // 3. Pincode Active Verification
-    const serviceable = state.pincodes || [];
-    if (serviceable.length > 0 && !serviceable.includes(pin)) {
-      showCheckoutError(`We apologize. The pincode ${pin} is currently outside our serviceable circle.`);
-      return;
-    }
-
-    // 4. Loading button state
-    checkoutBtn.classList.add('loading');
-    checkoutBtn.disabled = true;
-
-    // Get active variant details
-    const p = state.activeProduct;
-    let v = null;
-    if (p.variants && p.variants.length > 0) {
-      v = p.variants[state.activeVariantIdx];
-    } else {
-      v = { weight: p.weight || '400g', price: p.price };
-    }
-
-    const sellingPrice = getVariantSellingPrice(v);
-    const subtotal = sellingPrice * state.activeQty;
-
-    // Add delivery charge constraints
-    const freeThresh = state.shipping.freeShippingAbove || 499;
-    const shippingFee = subtotal >= freeThresh ? 0 : (state.shipping.shippingCharge || 60);
-    const totalAmount = subtotal + shippingFee;
-
-    // Get credentials configured by the merchant
-    const rzpKeyId     = state.payment.razorpayKeyId || '';
-    const merchantName = state.payment.businessName  || 'Bunofeed';
-    const themeColor   = state.payment.themeColor    || '#FF6B00';
-
-    try {
-      // Create Order at backend
-      const r = await window.BUNOFEED_API.post('createOrder', {
-        productName: p.name,
-        variantWeight: v.weight,
-        qty: state.activeQty,
-        price: sellingPrice,
-        shippingCharge: shippingFee,
-        total: totalAmount,
-        customerName: name,
-        email,
-        phone,
-        address: addr,
-        pincode: pin
-      });
-
-      if (r.status !== 'success' || !r.order) {
-        throw new Error(r.message || 'Failed to initialize checkout transaction.');
-      }
-
-      const backendOrder = r.order;
-
-      // Check if Razorpay Key is missing - if so, allow Sandbox Mock/Simulated placement
-      if (!rzpKeyId) {
-        console.warn('Razorpay Key ID is empty. Processing in Sandbox Local Mode.');
-        setTimeout(async () => {
-          // Simulate payment callback success directly to mock backend
-          const successPaymentId = 'pay_MOCK_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-          await window.BUNOFEED_API.post('updateOrder', {
-            orderId: backendOrder.orderId,
-            newStatus: 'Confirmed',
-            paymentId: successPaymentId,
-            paymentStatus: 'Success'
-          });
-          
-          checkoutBtn.classList.remove('loading');
-          checkoutBtn.disabled = false;
-          closeProductModal();
-
-          // Redirect to checkout success page
-          window.location.href = `/order-success.html?orderId=${backendOrder.orderId}&phone=${phone}`;
-        }, 1200);
-        return;
-      }
-
-      // Check if razorpay script exists in parent windows, else lazy-inject
-      if (typeof Razorpay === 'undefined') {
-        const sc = document.createElement('script');
-        sc.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        sc.onload = () => initRazorpayWidget(rzpKeyId, backendOrder, totalAmount, merchantName, themeColor, phone, email);
-        document.body.appendChild(sc);
-      } else {
-        initRazorpayWidget(rzpKeyId, backendOrder, totalAmount, merchantName, themeColor, phone, email);
-      }
-
-    } catch (err) {
-      checkoutBtn.classList.remove('loading');
-      checkoutBtn.disabled = false;
-      showCheckoutError(err.message || 'Network error occurred. Please try again.');
-    }
-  }
-
-  function initRazorpayWidget(key, backendOrder, amount, name, theme, phone, email) {
     const options = {
       key: key,
-      amount: amount * 100, // in paisa
-      currency: 'INR',
-      name: name,
-      description: `Purchase – ${backendOrder.productName} (${backendOrder.variantWeight})`,
-      image: 'https://bunofeed.in/images/logo2.png',
-      order_id: backendOrder.rzpOrderId || '', // Generated by Razorpay orders API in real setups
-      handler: async function (response) {
-        checkoutBtn.classList.add('loading');
-        
-        // Confirm checkout validation at backend via update API
-        try {
-          const statusResult = await window.BUNOFEED_API.post('updateOrder', {
-            orderId: backendOrder.orderId,
-            newStatus: 'Confirmed',
-            paymentId: response.razorpay_payment_id || response.paymentId || 'pay_manual',
-            paymentStatus: 'Success'
-          });
-
-          checkoutBtn.classList.remove('loading');
-          checkoutBtn.disabled = false;
-          closeProductModal();
-
-          window.location.href = `/order-success.html?orderId=${backendOrder.orderId}&phone=${phone}`;
-        } catch (e) {
-          checkoutBtn.classList.remove('loading');
-          checkoutBtn.disabled = false;
-          showCheckoutError('Payment verified, but failed to register order. Support email: bunofeedhelpdesk@gmail.com');
-        }
-      },
+      amount: grandTotal * 100,
+      currency: D.payment.currency || 'INR',
+      name: D.payment.businessName || 'Bunofeed',
+      description: `${product.name} × ${quantity}${shippingAmt > 0 ? ` + ₹${shippingAmt} shipping` : ' (Free Shipping)'}`,
+      image: D.payment.logoUrl || '',
+      theme: { color: D.payment.themeColor || '#FF6B00' },
       prefill: {
-        name: backendOrder.customerName,
-        email: email,
-        contact: phone
+        name: orderData.customer_name,
+        email: orderData.email,
+        contact: orderData.phone_number
       },
-      theme: {
-        color: theme
+      notes: {
+        order_id: orderData.order_id,
+        product_id: product.id,
+      },
+      handler: async function(response) {
+        orderData.payment_id = response.razorpay_payment_id;
+        orderData.payment_status = 'Paid';
+        await syncToGoogleSheets(orderData);
+        window.location.href = `order-success.html?payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
       },
       modal: {
-        ondismiss: function () {
-          checkoutBtn.classList.remove('loading');
-          checkoutBtn.disabled = false;
+        ondismiss: function() {
+          orderData.payment_status = 'Dismissed';
+          orderData.payment_id = 'DISMISSED-' + Date.now();
+          syncToGoogleSheets(orderData);
+          resetSubmitBtn();
         }
       }
     };
-
     const rzp = new Razorpay(options);
-    rzp.on('payment.failed', function (resp) {
-      showCheckoutError(`Payment failed: ${resp.error.description}`);
-      checkoutBtn.classList.remove('loading');
-      checkoutBtn.disabled = false;
+    rzp.on('payment.failed', async function(response) {
+      orderData.payment_id = (response.error.metadata && response.error.metadata.payment_id) || ('FAIL-' + Date.now());
+      orderData.payment_status = 'Failed';
+      await syncToGoogleSheets(orderData);
+      alert(`Payment failed: ${response.error.description}`);
+      resetSubmitBtn();
     });
     rzp.open();
   }
 
-  function showCheckoutError(msg) {
-    const errBox = document.getElementById('checkout-error-msg');
-    if (errBox) {
-      errBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>${msg}</span>`;
-      errBox.style.display = 'flex';
-      errBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  function resetSubmitBtn() {
+    isProcessing = false;
+    const proceedBtn = document.getElementById('proceed-pay-btn');
+    if (proceedBtn) {
+      proceedBtn.disabled = false;
+      proceedBtn.textContent = 'Proceed to Pay';
     }
   }
 
-  /* ============================================================
-     GLOBAL HAMBURGER MOBILE MENU CONTROLLER
-  ============================================================ */
+  function openModal(id, focusBuy) {
+    const product = (D.products || []).find(p => p.id === id);
+    if (!product) return;
+    currentProduct = product;
+    qty = 1;
+
+    const sp = salePrice(product.price);
+    const displayPrice = sp || product.price;
+
+    // Image side — gallery support
+    const imgSide  = document.getElementById('home-modal-img-side');
+    const mainWrap = document.getElementById('home-modal-main-wrap');
+    const thumbsEl = document.getElementById('home-modal-thumbs');
+    imgSide.className = `home-modal-img-side ${product.bgClass || 'peanut-bg'}`;
+
+    // Build images array: prefer product.images[], fallback to product.image, fallback to emoji
+    const allImages = (product.images && product.images.filter(u => u && u.trim()))
+      || (product.image ? [product.image] : []);
+
+    function setMainImg(src) {
+      mainWrap.innerHTML = src
+        ? `<img src="${src}" alt="${product.name}"/>`
+        : `<span style="font-size:7rem;line-height:1">${product.emoji || '🥜'}</span>`;
+    }
+
+    function buildHomeThumbs(images, activeIdx) {
+      thumbsEl.innerHTML = '';
+      if (images.length <= 1) return;
+      images.forEach((src, i) => {
+        const t = document.createElement('div');
+        t.className = 'home-modal-thumb' + (i === activeIdx ? ' active' : '');
+        t.innerHTML = `<img src="${src}" alt="Product image ${i+1}" loading="lazy"/>`;
+        t.addEventListener('click', () => {
+          setMainImg(src);
+          thumbsEl.querySelectorAll('.home-modal-thumb').forEach(el => el.classList.remove('active'));
+          t.classList.add('active');
+        });
+        thumbsEl.appendChild(t);
+      });
+    }
+
+    setMainImg(allImages[0] || null);
+    buildHomeThumbs(allImages, 0);
+
+    // Badges
+    let badgesHTML = '';
+    if (product.badge) {
+      badgesHTML += `<span class="home-modal-badge ${product.badgeType || ''}">${product.badge}</span>`;
+    }
+    if (saleActive) badgesHTML += `<span class="home-modal-badge sale">${D.sale.label || 'SALE'} ${discountPct}% OFF</span>`;
+    document.getElementById('home-modal-badges').innerHTML = badgesHTML;
+
+    document.getElementById('home-modal-name').textContent    = product.name;
+    document.getElementById('home-modal-tagline').textContent = product.tagline || '';
+    document.getElementById('home-modal-desc').textContent    = product.description;
+    document.getElementById('home-modal-weight').textContent  = product.weight || '';
+
+    // Features
+    document.getElementById('home-modal-features').innerHTML =
+      (product.features || []).map(f => `<span class="home-modal-chip">${f}</span>`).join('');
+
+    // Price
+    const priceEl    = document.getElementById('home-modal-price');
+    const priceOldEl = document.getElementById('home-modal-price-old');
+    if (sp) {
+      priceEl.textContent = `₹${sp}`;
+      priceEl.classList.add('home-modal-price-sale');
+      priceOldEl.textContent = `₹${product.price}`;
+      priceOldEl.style.display = 'inline';
+    } else {
+      priceEl.textContent = `₹${product.price}`;
+      priceEl.classList.remove('home-modal-price-sale');
+      priceOldEl.style.display = 'none';
+    }
+
+    // Qty & subtotal
+    document.getElementById('home-qty-num').textContent        = qty;
+    document.getElementById('home-modal-subtotal').textContent = `Total: ₹${displayPrice * qty}`;
+
+    // Accordion — using synced fields
+    const accordionData = [
+      { title: 'Ingredients',   body: product.ingredients  || product.description || 'See product label for full ingredient list.' },
+      { title: 'Key Benefits',  body: product.keyBenefits  || (product.features || []).join(' • ') || 'See product label for full details.' },
+      { title: 'Storage Info',  body: product.storageInfo  || 'Store in a cool, dry place. Keep lid tightly closed after opening. Consume within 3 months of opening.' },
+      { title: 'Allergen Info', body: product.allergenInfo || 'May contain traces of nuts and soy. Always read the full label before consumption if you have allergies.' },
+    ];
+    document.getElementById('home-modal-accordion').innerHTML = accordionData.map((a, i) => `
+      <div class="home-acc-item">
+        <button class="home-acc-head" data-hacc="${i}">
+          ${a.title} <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="home-acc-body" data-hacc-body="${i}">${a.body}</div>
+      </div>`).join('');
+
+    document.querySelectorAll('.home-acc-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const idx  = head.dataset.hacc;
+        const body = document.querySelector(`.home-acc-body[data-hacc-body="${idx}"]`);
+        const open = head.classList.toggle('open');
+        body.classList.toggle('open', open);
+      });
+    });
+
+    document.getElementById('home-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    if (focusBuy) {
+      setTimeout(() => document.getElementById('home-modal-buy-btn').focus(), 100);
+    }
+  }
+
+  /* Qty controls */
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'home-qty-minus' || e.target.closest('#home-qty-minus')) {
+      if (qty > 1) { qty--; updateHomeSubtotal(); }
+    }
+    if (e.target.id === 'home-qty-plus' || e.target.closest('#home-qty-plus')) {
+      qty++; updateHomeSubtotal();
+    }
+  });
+  function updateHomeSubtotal() {
+    if (!currentProduct) return;
+    const sp = salePrice(currentProduct.price);
+    const price = sp || currentProduct.price;
+    document.getElementById('home-qty-num').textContent        = qty;
+    document.getElementById('home-modal-subtotal').textContent = `Total: ₹${price * qty}`;
+  }
+
+  /* Close modal */
+  function closeHomeModal() {
+    document.getElementById('home-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    currentProduct = null;
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'home-modal-close' || e.target.closest('#home-modal-close')) closeHomeModal();
+    if (e.target.id === 'home-modal-overlay') closeHomeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHomeModal(); });
+
+  /* Buy Now — Razorpay */
+  document.addEventListener('click', (e) => {
+    if (e.target.id === 'home-modal-buy-btn' || e.target.closest('#home-modal-buy-btn')) {
+      if (!currentProduct) return;
+      openCheckoutModal();
+    }
+  });
+
+  /* ----------------------------------------------------------
+     MOBILE NAVIGATION
+  ---------------------------------------------------------- */
   const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('navLinks');
-  
+  const navLinks  = document.getElementById('navLinks');
+
   if (hamburger && navLinks) {
     hamburger.addEventListener('click', () => {
       const open = navLinks.classList.toggle('open');
       hamburger.classList.toggle('active', open);
       hamburger.setAttribute('aria-expanded', open);
       document.body.style.overflow = open ? 'hidden' : '';
+    });
+    navLinks.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (navLinks.classList.contains('open') &&
+          !navLinks.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  /* ----------------------------------------------------------
+     ACTIVE NAV LINK
+  ---------------------------------------------------------- */
+  const sections    = document.querySelectorAll('section[id]');
+  const navLinkEls  = document.querySelectorAll('a.nav-link');
+  const sectionObs  = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinkEls.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  sections.forEach(s => sectionObs.observe(s));
+
+  /* ----------------------------------------------------------
+     SOCIAL LINKS
+  ---------------------------------------------------------- */
+  if (D.brand) {
+    const b = D.brand;
+    document.querySelectorAll('[data-social]').forEach(el => {
+      const key = el.getAttribute('data-social');
+      if (b[key]) el.href = b[key];
+    });
+    document.querySelectorAll('[data-email]').forEach(el => {
+      el.href = `mailto:${b.email}`;
+      if (!el.textContent.trim() || el.textContent.includes('bunofeed')) el.textContent = b.email;
+    });
+    document.querySelectorAll('[data-feedback-link]').forEach(el => {
+      el.href = b.feedbackFormUrl;
     });
   }
 
