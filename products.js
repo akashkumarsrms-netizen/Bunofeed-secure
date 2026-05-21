@@ -211,7 +211,7 @@ window.BUNOFEED_DATA = {
     "title": "Companion in your",
     "titleHighlight": "Healthy Lifestyle",
     "description": "Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.",
-    "image": "",
+    "image": "https://bunofeed.in/images/web_cover_image.png",
     "ctaText": "Shop Now",
     "ctaLink": "shop.html"
   },
