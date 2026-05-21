@@ -723,18 +723,34 @@
 
   /* ---- Buy button ---- */
   buyBtn.addEventListener('click', () => {
-    if (!_product || !_onBuy) return;
-    const { price } = getVariantPrice();
-    const D = window.BUNOFEED_DATA;
-    let unitPrice = price;
-    if (D && D.sale && D.sale.active) {
-      const endOk = !D.sale.endDate || new Date() <= new Date(D.sale.endDate);
-      if (endOk && D.sale.discountPercent > 0) {
-        unitPrice = Math.round(price * (1 - D.sale.discountPercent / 100));
-      }
+  if (!_product || !_onBuy) return;
+
+  const { price } = getVariantPrice();
+  const D = window.BUNOFEED_DATA;
+
+  let unitPrice = price;
+
+  if (D && D.sale && D.sale.active) {
+    const endOk =
+      !D.sale.endDate || new Date() <= new Date(D.sale.endDate);
+
+    if (endOk && D.sale.discountPercent > 0) {
+      unitPrice = Math.round(
+        price * (1 - D.sale.discountPercent / 100)
+      );
     }
-    _onBuy(_product, _qty, unitPrice);
+  }
+
+  // Close product modal first
+  closeModal();
+
+  // Prevent checkout opening behind modal
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      _onBuy(_product, _qty, unitPrice);
+    });
   });
+});
 
   /* ---- Close ---- */
   function closeModal() {
