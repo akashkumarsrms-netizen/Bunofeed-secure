@@ -71,7 +71,7 @@
         <a href="#about" class="btn btn-outline">Our Story</a>
       </div>
       <div style="margin-top:1.2rem;">
-        <a href="protein-calculator.html" class="btn btn-brown" style="display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;padding:10px 24px;">
+        <a href="protein-calculator.html" class="btn btn-brown" style="display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;padding:12px 24px; min-height:48px;">
           <i class="fas fa-calculator"></i> Calculate Your Daily Protein
         </a>
       </div>
@@ -121,7 +121,7 @@
     <!-- Best-seller cards injected here by script.js -->
     <div class="products-grid" id="products-grid"></div>
     <div style="text-align:center;margin-top:2.5rem;">
-      <a href="shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;">
+      <a href="shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
         <i class="fas fa-store" aria-hidden="true"></i> View All Products
       </a>
     </div>
@@ -172,11 +172,6 @@
     <div class="about-visual">
       <div class="about-badge">Est. 2026</div>
       <div class="about-img-box">
-        <!--
-          TO CHANGE THIS IMAGE:
-          Replace the src below with your image URL.
-          Or keep the logo as-is.
-        -->
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo"/>
       </div>
     </div>
@@ -185,7 +180,7 @@
       <h2>Born from a Passion for <span>Clean Eating</span></h2>
       <p>Bunofeed started with a simple observation — finding genuinely good, honest food products isn’t as easy as it should be. Too often, products that appear healthy on the outside don’t reflect the same quality in their ingredients. We began with a clear intention: to offer food products that are straightforward, reliable, and made with a focus on quality. Instead of overcomplicating things, we focus on selecting and developing products that meet practical expectations — clean compositions, consistent taste, and dependable sourcing. As we continue to grow our range across categories, our approach remains the same. Every product is chosen with care, keeping in mind everyday use — whether it’s part of a fitness routine or a regular household staple. At Bunofeed, the goal is simple: to build a brand people can rely on for products that are transparent in what they offer and consistent in what they deliver.</p>
       <p>Every jar, every bag, every product carries our promise — wholesome ingredients, transparent labels, and a taste that keeps you coming back.</p>
-      <a href="#shop" class="btn btn-primary" style="margin-top:1rem;">
+      <a href="#shop" class="btn btn-primary" style="margin-top:1rem;min-height:48px;">
         <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
       </a>
     </div>
@@ -217,13 +212,9 @@
         <p class="presubmitnote">
           Let us know what you think! Your honest feedback helps us grow and serve you better.
         </p>
-        <!--
-          The href below is set dynamically from products.js → brand.feedbackFormUrl
-          You can also hardcode it here if preferred.
-        -->
         <a href="#" data-feedback-link
            target="_blank" rel="noopener noreferrer"
-           class="btn btn-primary feedback-submit">
+           class="btn btn-primary feedback-submit" style="min-height:48px;">
           <i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Review
         </a>
         <p class="form-note">* We may feature your review on our website (with your permission).</p>
@@ -234,7 +225,7 @@
   <!-- CHECKOUT MODAL -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
-      <button class="checkout-close" id="checkout-close-btn"><i class="fas fa-times"></i></button>
+      <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
       <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
         <div class="form-group">
@@ -262,8 +253,8 @@
           <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
-        <p style="color:red;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
-        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn">
+        <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
+        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
           Proceed to Pay
         </button>
       </form>
@@ -334,7 +325,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <!-- =========================================================
        SCRIPTS
-       Load products.js FIRST, then script.js
+       Load products.js FIRST, then api.js & modal.js, and script.js LAST
        ========================================================= -->
   <script src="products.js"></script>
   <script src="api.js"></script>

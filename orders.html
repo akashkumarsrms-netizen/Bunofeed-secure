@@ -44,7 +44,7 @@
     .order-search-card {
       background: var(--white);
       border-radius: 18px;
-      padding: 2rem 2rem 1.8rem;
+      padding: 2rem;
       box-shadow: var(--shadow);
       margin-bottom: 2rem;
     }
@@ -56,10 +56,11 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       color: var(--dark);
-      margin-bottom: .5rem;
+      margin-bottom: .8rem;
     }
     .search-row {
       display: flex;
+      flex-direction: column;
       gap: .8rem;
     }
     .search-row .form-input {
@@ -71,9 +72,10 @@
       font-size: .97rem;
       outline: none;
       transition: border-color .2s;
+      min-height: 44px;
     }
     .search-row .form-input:focus { border-color: var(--orange); }
-    .search-row .btn { white-space: nowrap; padding: 13px 24px; }
+    .search-row .btn { padding: 13px 24px; min-height:48px; }
     .search-hint {
       font-size: .78rem;
       color: var(--gray);
@@ -102,14 +104,14 @@
       display: none;
     }
     .order-result-card .status-bar { height: 6px; background: var(--orange); }
-    .order-result-card .card-body  { padding: 1.8rem 2rem 2rem; }
+    .order-result-card .card-body  { padding: 2rem; }
 
     /* ── Status badge ── */
     .status-badge {
       display: inline-flex;
       align-items: center;
       gap: .4rem;
-      padding: 5px 14px;
+      padding: 6px 14px;
       border-radius: 50px;
       font-family: var(--font-head);
       font-weight: 700;
@@ -172,7 +174,7 @@
       display: flex; gap: .8rem; flex-wrap: wrap;
       padding-top: 1.2rem; border-top: 1px solid #f0e8e0;
     }
-    .action-row .btn { flex: 1; min-width: 160px; font-size: .9rem; padding: 12px 18px; }
+    .action-row .btn { flex: 1; min-width: 160px; font-size: .9rem; padding: 12px 18px; min-height:44px; }
     .btn-danger { background: #dc3545; color: #fff; border-color: #dc3545; }
     .btn-danger:hover:not(:disabled) { background: #b02a37; border-color: #b02a37; transform: translateY(-2px); }
     .btn-warning-custom { background: #fd7e14; color: #fff; border-color: #fd7e14; }
@@ -200,8 +202,8 @@
     }
     .modal-close {
       position: absolute; top: 1rem; right: 1rem;
-      background: none; border: none; font-size: 1.2rem; color: var(--gray);
-      cursor: pointer; width: 32px; height: 32px;
+      background: none; border: none; font-size: 1.25rem; color: var(--gray);
+      cursor: pointer; width: 36px; height: 36px;
       display: flex; align-items: center; justify-content: center;
       border-radius: 50%; transition: background .2s, color .2s;
     }
@@ -225,6 +227,7 @@
       padding: 11px 14px; border: 2px solid #e0d4cc; border-radius: 10px;
       font-family: var(--font-body); font-size: .92rem; outline: none;
       transition: border-color .2s; width: 100%; background: #fff;
+      min-height: 44px;
     }
     .modal-form .form-input:focus,
     .modal-form textarea:focus,
@@ -245,7 +248,7 @@
     .file-upload-box p { font-size: .83rem; color: var(--gray); margin: 0; }
     .file-upload-box .file-names { font-size: .8rem; color: var(--dark); margin-top: .4rem; font-weight: 600; }
 
-    .modal-submit-btn { width: 100%; margin-top: .4rem; }
+    .modal-submit-btn { width: 100%; margin-top: .4rem; min-height: 48px; }
     .btn-spinner { display: none; }
     .btn.loading .btn-text    { display: none; }
     .btn.loading .btn-spinner { display: inline-block; }
@@ -261,7 +264,6 @@
       .info-row:nth-last-child(-n+2) { border-bottom: 1px solid #f0e8e0; }
       .info-row:last-child { border-bottom: none; }
       .action-row .btn { flex: 1 1 100%; }
-      .search-row { flex-direction: column; }
       .modal-box { padding: 1.5rem 1.2rem; }
     }
   </style>
@@ -293,32 +295,23 @@
       <div class="page-heading">
         <div class="section-tag">Order Tracking</div>
         <h1>Track Your <span>Order</span></h1>
-        <p>Enter your Order ID to see the latest status and manage your order.</p>
+        <p>Enter your Order details to see the latest status and manage your order.</p>
       </div>
 
       <!-- Search -->
       <div class="order-search-card">
-        <label for="order-id-input">Your Order ID</label>
-        <div class="search-row" style="flex-direction:column;">
-  
-  <input type="text" id="order-id-input" class="form-input"
-    placeholder="Enter Order ID"
-    autocomplete="off"
-    spellcheck="false"/>
+        <div class="search-row">
+          <label for="order-id-input">Order ID</label>
+          <input type="text" id="order-id-input" class="form-input" placeholder="e.g. ORD173000..." autocomplete="off" spellcheck="false"/>
 
-  <input type="tel" id="phone-input" class="form-input"
-    placeholder="Enter Phone Number"
-    autocomplete="off"
-    spellcheck="false"/>
+          <label for="phone-input">Mobile Number</label>
+          <input type="tel" id="phone-input" class="form-input" placeholder="10-digit mobile number" autocomplete="off" spellcheck="false"/>
 
-  <button class="btn btn-primary" id="track-btn" onclick="trackOrder()">
-    <i class="fas fa-search"></i> Track
-  </button>
-
-</div>
-          
+          <button class="btn btn-primary" id="track-btn" onclick="trackOrder()">
+            <i class="fas fa-search"></i> Track Order
+          </button>
         </div>
-        <p class="search-hint">Your Order ID was sent to your email after placing the order.</p>
+        <p class="search-hint" style="margin-top: 1rem;">Your Order ID was sent to your email after placing the order.</p>
       </div>
 
       <!-- Loading -->
@@ -425,7 +418,7 @@
       <div id="return-form-view">
         <div class="modal-icon return-icon"><i class="fas fa-undo-alt"></i></div>
         <h2>Request Return</h2>
-        <p class="modal-sub">Please tell us why you'd like to return this order. We'll review your request within 24–48 hours.</p>
+        <p class="modal-sub">Tell us why you'd like to return this order. We'll inspect your request within 24–48 hours.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Return <span>*</span></label>
@@ -441,14 +434,14 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="return-comment" placeholder="Describe the issue in detail (optional but helpful)…"></textarea>
+            <textarea id="return-comment" placeholder="Describe the issue in detail (optional)…"></textarea>
           </div>
           <div class="form-group">
-            <label>Upload Images / Videos <span style="color:var(--gray);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></label>
+            <label>Upload Images / Videos</label>
             <div class="file-upload-box">
               <input type="file" id="return-files" accept="image/*,video/*" multiple onchange="updateFileLabel()"/>
               <i class="fas fa-cloud-upload-alt"></i>
-              <p>Click to upload or drag &amp; drop photos / videos</p>
+              <p>Click to upload or drag photos / videos</p>
               <p class="file-names" id="file-label"></p>
             </div>
           </div>
@@ -463,7 +456,7 @@
       <div class="modal-success" id="return-success-view">
         <i class="fas fa-check-circle"></i>
         <h3>Return Request Submitted!</h3>
-        <p>Your return request has been received. We'll review it within 24–48 hours. A confirmation email has been sent to you.</p>
+        <p>Your return request has been received. We'll update the tracking info shortly.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('return-modal')">Close</button>
       </div>
     </div>
@@ -477,7 +470,7 @@
       <div id="cancel-form-view">
         <div class="modal-icon cancel-icon"><i class="fas fa-times-circle"></i></div>
         <h2>Cancel Order</h2>
-        <p class="modal-sub">We're sorry to hear you'd like to cancel. Please let us know the reason so we can serve you better.</p>
+        <p class="modal-sub">Please select the reason for canceling this order.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Cancellation <span>*</span></label>
@@ -493,7 +486,7 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="cancel-comment" placeholder="Any additional details (optional)…"></textarea>
+            <textarea id="cancel-comment" placeholder="Additional details (optional)…"></textarea>
           </div>
           <button class="btn btn-danger modal-submit-btn" id="cancel-submit-btn" onclick="submitCancellation()">
             <span class="btn-text"><i class="fas fa-times-circle"></i> Submit Cancellation Request</span>
@@ -505,8 +498,8 @@
 
       <div class="modal-success" id="cancel-success-view">
         <i class="fas fa-check-circle"></i>
-        <h3>Cancellation Request Submitted!</h3>
-        <p>Your cancellation request has been received and is being reviewed. A confirmation email has been sent to you.</p>
+        <h3>Cancellation Submitted!</h3>
+        <p>Your cancellation request has been received and order marked canceled successfully.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('cancel-modal')">Close</button>
       </div>
     </div>
@@ -539,7 +532,7 @@
       </div>
       <div class="footer-col">
         <h4>Contact Us</h4>
-        <p><i class="fas fa-envelope"></i> <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a></p>
+        <p><i class="fas fa-envelope"></i> bunofeedhelpdesk@gmail.com</p>
         <p><i class="fas fa-map-marker-alt"></i> Bareilly, UP, India</p>
       </div>
     </div>
@@ -552,25 +545,27 @@
   <!-- ═══════════ SCRIPT ═══════════ -->
   <script src="api.js"></script>
   <script>
-    // API config loaded from api.js (window.BUNOFEED_API)
     let currentOrder = null;
 
-    /* ── Hamburger ── */
-    document.getElementById('hamburger').addEventListener('click', function(){
-      this.classList.toggle('active');
-      this.setAttribute('aria-expanded', this.classList.contains('active'));
-      document.getElementById('navLinks').classList.toggle('open');
-    });
+    /* ---- Hamburger Menu ---- */
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('open');
+        hamburger.classList.toggle('active', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+    }
 
-    /* ── Track Order ── */
     async function trackOrder() {
       const raw = document.getElementById('order-id-input').value.trim();
-const phone = document.getElementById('phone-input').value.trim();
+      const phone = document.getElementById('phone-input').value.trim();
 
-if (!raw || !phone) {
-  showError('Please enter both Order ID and Phone Number.');
-  return;
-}
+      if (!raw || !phone) {
+        showError('Please enter both Order ID and Phone Number.');
+        return;
+      }
 
       hideAll();
       show('state-loading');
@@ -580,40 +575,37 @@ if (!raw || !phone) {
         hide('state-loading');
 
         if (json.status !== 'success' || !json.order) {
-          showError(json.message || 'Order not found. Please check your Order ID and try again.');
+          showError(json.message || 'Order not found. Check ID and phone and try again.');
           return;
         }
         currentOrder = json.order;
         renderOrder(json.order);
       } catch(err) {
         hide('state-loading');
-        showError('Network error. Please check your connection and try again.');
+        showError('Network error. Check connection and try again.');
       }
     }
-    document.getElementById('order-id-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
 
-    /* ── Render Order ── */
     function renderOrder(o) {
-      document.getElementById('r-order-id').textContent       = o.orderId       || '—';
-      document.getElementById('r-date').textContent           = o.dateTime      || '—';
-      document.getElementById('r-name').textContent           = o.customerName  || '—';
-      document.getElementById('r-phone').textContent          = o.phone         || '—';
-      document.getElementById('r-product').textContent        = o.productName   || '—';
-      document.getElementById('r-qty').textContent            = o.qty           || '—';
-      document.getElementById('r-price').textContent          = o.price   ? `₹${o.price}`  : '—';
-      document.getElementById('r-total').textContent          = o.total   ? `₹${o.total}`  : '—';
-      document.getElementById('r-payment-id').textContent     = o.paymentId     || '—';
-      document.getElementById('r-payment-status').textContent = o.paymentStatus || '—';
-      document.getElementById('r-address').textContent =
-        (o.address && o.pincode) ? `${o.address} – ${o.pincode}` : (o.address || '—');
+      document.getElementById('r-order-id').textContent       = o.orderId;
+      document.getElementById('r-date').textContent           = o.dateTime;
+      document.getElementById('r-name').textContent           = o.customerName;
+      document.getElementById('r-phone').textContent          = o.phone;
+      document.getElementById('r-product').textContent        = o.productName;
+      document.getElementById('r-qty').textContent            = o.qty;
+      document.getElementById('r-price').textContent          = o.price ? `₹${o.price}` : '—';
+      document.getElementById('r-total').textContent          = o.total ? `₹${o.total}` : '—';
+      document.getElementById('r-payment-id').textContent     = o.paymentId;
+      document.getElementById('r-payment-status').textContent = o.paymentStatus;
+      document.getElementById('r-address').textContent       = o.address + ' – ' + o.pincode;
 
       const orderStatus  = (o.orderStatus  || '').trim();
       const returnStatus = (o.returnStatus || '').trim();
       const refundStatus = (o.refundStatus || '').trim();
 
-      const osBadge = makeBadge(orderStatus,  'order');
-      const rsBadge = makeBadge(returnStatus, 'return');
-      const rfBadge = makeBadge(refundStatus, 'refund');
+      const osBadge = makeBadge(orderStatus);
+      const rsBadge = makeBadge(returnStatus);
+      const rfBadge = makeBadge(refundStatus);
 
       setBadge('r-order-status-badge', osBadge, orderStatus  || 'Pending');
       setBadge('r-order-status-mini',  osBadge, orderStatus  || 'Pending');
@@ -622,23 +614,22 @@ if (!raw || !phone) {
 
       document.getElementById('result-status-bar').style.background = osBadge.barColor;
 
-      /* Button logic */
       const ls = orderStatus.toLowerCase();
       const lr = returnStatus.toLowerCase();
       const activeRequests = ['requested return','requested cancellation','cancelled',
                               'return request approved','return received'];
 
       const returnEnabled = ls === 'delivered' && !activeRequests.includes(lr);
-      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr);
+      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr) && ls !== 'cancelled';
 
       const btnR = document.getElementById('btn-return');
       const btnC = document.getElementById('btn-cancel');
       btnR.disabled = !returnEnabled;
       btnC.disabled = !cancelEnabled;
-      btnR.title = returnEnabled ? '' : (ls !== 'delivered' ? 'Available only after delivery.' : 'A request already exists.');
-      btnC.title = cancelEnabled ? '' : (ls === 'delivered' ? 'Order delivered — use Return instead.' : 'A request already exists.');
 
       show('order-result-card');
+      
+      document.getElementById('order-result-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function setBadge(id, badge, text) {
@@ -647,7 +638,6 @@ if (!raw || !phone) {
       el.innerHTML = badge.icon + ' ' + text;
     }
 
-    /* ── Badge helper ── */
     function makeBadge(status) {
       const s = (status || '').toLowerCase().trim();
       if (!s || s === 'none' || s === '—')     return { cls:'badge-default',   icon:'<i class="fas fa-minus"></i>',              barColor:'#dee2e6' };
@@ -662,12 +652,9 @@ if (!raw || !phone) {
       if (s.includes('return received'))        return { cls:'badge-return',    icon:'<i class="fas fa-undo"></i>',               barColor:'#fd7e14' };
       if (s.includes('refund processed'))       return { cls:'badge-refund',    icon:'<i class="fas fa-rupee-sign"></i>',         barColor:'#20c997' };
       if (s === 'refunded')                     return { cls:'badge-refund',    icon:'<i class="fas fa-check-double"></i>',       barColor:'#20c997' };
-      if (s.includes('refund failed'))          return { cls:'badge-cancelled', icon:'<i class="fas fa-exclamation-circle"></i>', barColor:'#dc3545' };
-      if (s.includes('refund rejected'))        return { cls:'badge-cancelled', icon:'<i class="fas fa-times-circle"></i>',       barColor:'#dc3545' };
       return { cls:'badge-default', icon:'<i class="fas fa-info-circle"></i>', barColor:'#6c757d' };
     }
 
-    /* ── Modals ── */
     function openReturnModal() {
       resetModal('return');
       document.getElementById('return-modal').classList.add('open');
@@ -706,7 +693,6 @@ if (!raw || !phone) {
         files.length ? Array.from(files).map(f=>f.name).join(', ') : '';
     }
 
-    /* ── Submit Return ── */
     async function submitReturn() {
       const reason  = document.getElementById('return-reason').value.trim();
       const comment = document.getElementById('return-comment').value.trim();
@@ -736,7 +722,6 @@ if (!raw || !phone) {
       }
     }
 
-    /* ── Submit Cancellation ── */
     async function submitCancellation() {
       const reason  = document.getElementById('cancel-reason').value.trim();
       const comment = document.getElementById('cancel-comment').value.trim();
@@ -754,6 +739,7 @@ if (!raw || !phone) {
         if (json.status==='success') {
           document.getElementById('cancel-form-view').style.display    = 'none';
           document.getElementById('cancel-success-view').style.display = 'block';
+          currentOrder.orderStatus = 'Cancelled';
           currentOrder.returnStatus = 'Requested Cancellation';
           renderOrder(currentOrder);
         } else {
@@ -766,7 +752,6 @@ if (!raw || !phone) {
       }
     }
 
-    /* ── Helpers ── */
     function show(id)  { document.getElementById(id).style.display='block'; }
     function hide(id)  { document.getElementById(id).style.display='none';  }
     function hideAll() { hide('state-loading'); hide('state-error'); hide('order-result-card'); }

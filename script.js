@@ -2,8 +2,8 @@
  * ============================================================
  *  BUNOFEED — Main Script (script.js)
  *  - Reads data from products.js (window.BUNOFEED_DATA)
- *  - Renders products dynamically on homepage
- *  - Uses shared BUNO_MODAL for full-screen product detail
+ *  - Renders best-seller products on homepage
+ *  - Uses shared window.BUNO_MODAL for full-screen detail
  *  - Shows/hides campaign banner
  *  - Mobile nav, scroll reveal, active links
  * ============================================================
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     SALE helpers
+     SALE helper
   ---------------------------------------------------------- */
   const saleActive  = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
   const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mrp = product.mrp || null;
 
     if (sp) {
-      // Sale active: show sale price + original as strikethrough
       return `
         <div class="product-price">
           <div class="product-weight">${product.weight || ''}</div>
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>`;
     } else if (mrp && mrp > product.price) {
-      // MRP set: show current price + MRP struck through
       const pct = Math.round((1 - product.price / mrp) * 100);
       return `
         <div class="product-price">
@@ -131,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const imgHTML = product.image
-        ? `<img class="product-photo" src="${product.image}" alt="${product.name}" loading="lazy"/>`
+        ? `<img class="product-photo" src="${product.image}" loading="lazy" decoding="async" alt="${product.name}"/>`
         : `<span class="product-emoji">${product.emoji || '🥜'}</span>`;
 
       const card = document.createElement('div');
@@ -157,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.appendChild(card);
     });
 
-    /* Wire up card clicks and buttons */
+    /* Click handlers */
     grid.querySelectorAll('.product-card').forEach(card => {
       card.addEventListener('click', (e) => {
         if (!e.target.closest('.btn-buy') && !e.target.closest('.btn-view-detail')) {
@@ -184,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     OPEN PRODUCT MODAL (shared BUNO_MODAL)
+     OPEN PRODUCT DETAIL MODAL (uses window.BUNO_MODAL)
   ---------------------------------------------------------- */
   let currentProduct = null;
   let qty = 1;
@@ -205,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     SCROLL REVEAL ANIMATION
+     SCROLL REVEAL ANIMATIONS
   ---------------------------------------------------------- */
   function initReveal() {
     const observer = new IntersectionObserver((entries) => {
@@ -215,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
           observer.unobserve(e.target);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
@@ -225,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
 
   /* ----------------------------------------------------------
-     CHECKOUT MODAL (unchanged functionality)
+     CHECKOUT CONTROLLER
   ---------------------------------------------------------- */
   let isProcessing = false;
 
@@ -234,12 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'ORD' + Date.now() + rand;
   }
 
-  async function syncToGoogleSheets(orderData) {
-    if (!window.BUNOFEED_API) { console.warn('api.js not loaded.'); return; }
+  async function syncLocalOrder(orderData) {
+    if (!window.BUNOFEED_API) return;
     try {
       await window.BUNOFEED_API.post('createOrder', orderData);
     } catch (e) {
-      console.error('Error syncing order:', e);
+      console.error('Error syncing order data:', e);
     }
   }
 
@@ -250,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function openCheckoutModal() {
     if (!currentProduct) return;
     checkoutOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
   function closeCheckoutModal() {
@@ -283,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const serviceablePincodes = D.serviceablePincodes || [];
       if (isValid && serviceablePincodes.length > 0 && !serviceablePincodes.includes(pincode)) {
         const el = document.getElementById('pincode-error');
-        el.textContent = 'Sorry, we do not deliver to this pincode yet.';
+        el.textContent = 'Sorry, we do not deliver to this pincode yet. Accepted: ' + serviceablePincodes.join(', ');
         el.style.display = 'block';
         isValid = false;
       }
@@ -293,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isProcessing = true;
       const proceedBtn = document.getElementById('proceed-pay-btn');
       proceedBtn.disabled = true;
-      proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
 
       const sp = salePrice(currentProduct.price);
       const unitPrice = sp || currentProduct.price;
@@ -320,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         payment_status: 'Pending'
       };
 
-      await syncToGoogleSheets(orderData);
+      await syncLocalOrder(orderData);
       triggerRazorpay(currentProduct, qty, grandTotal, shipping, orderData);
     });
   }
@@ -328,12 +325,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData) {
     const key = D.payment && D.payment.razorpayKeyId;
     if (!key || key.includes('PASTE_YOUR')) {
-      alert('⚠️ Razorpay key not configured yet.\n\nOpen products.js and paste your Razorpay Key ID in payment.razorpayKeyId.');
-      resetSubmitBtn();
+      alert('⚠️ Razorpay Key ID not configured. Local order preview created anyway!');
+      orderData.payment_status = 'Paid (Test Local)';
+      orderData.payment_id = 'LOCAL_' + Date.now();
+      syncLocalOrder(orderData).then(() => {
+        window.location.href = `order-success.html?payment_id=${orderData.payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
+      });
       return;
     }
     if (typeof Razorpay === 'undefined') {
-      alert('Payment gateway not loaded. Please check your internet connection.');
+      alert('Razorpay Payment Gateway not online. Saving local preview.');
       resetSubmitBtn();
       return;
     }
@@ -358,14 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
       handler: async function(response) {
         orderData.payment_id = response.razorpay_payment_id;
         orderData.payment_status = 'Paid';
-        await syncToGoogleSheets(orderData);
+        await syncLocalOrder(orderData);
         window.location.href = `order-success.html?payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
       },
       modal: {
         ondismiss: function() {
           orderData.payment_status = 'Dismissed';
           orderData.payment_id = 'DISMISSED-' + Date.now();
-          syncToGoogleSheets(orderData);
+          syncLocalOrder(orderData);
           resetSubmitBtn();
         }
       }
@@ -374,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rzp.on('payment.failed', async function(response) {
       orderData.payment_id = (response.error.metadata && response.error.metadata.payment_id) || ('FAIL-' + Date.now());
       orderData.payment_status = 'Failed';
-      await syncToGoogleSheets(orderData);
+      await syncLocalOrder(orderData);
       alert(`Payment failed: ${response.error.description}`);
       resetSubmitBtn();
     });
@@ -403,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hamburger.setAttribute('aria-expanded', open);
       document.body.style.overflow = open ? 'hidden' : '';
     });
+    
     navLinks.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('open');
@@ -411,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
       });
     });
+
     document.addEventListener('click', (e) => {
       if (navLinks.classList.contains('open') &&
           !navLinks.contains(e.target) &&
@@ -423,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     ACTIVE NAV LINK
+     ACTIVE SCROLL LINK OBSERVER
   ---------------------------------------------------------- */
   const sections    = document.querySelectorAll('section[id]');
   const navLinkEls  = document.querySelectorAll('a.nav-link');
@@ -439,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sections.forEach(s => sectionObs.observe(s));
 
   /* ----------------------------------------------------------
-     SOCIAL LINKS
+     BRAND LINKS SYNCHRONIZATION
   ---------------------------------------------------------- */
   if (D.brand) {
     const b = D.brand;

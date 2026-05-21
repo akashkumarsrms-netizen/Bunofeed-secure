@@ -71,6 +71,11 @@
     width:100%;padding:13px;background:var(--orange);color:var(--white);
     border:none;border-radius:10px;font-family:var(--font-h);font-weight:700;
     font-size:1rem;cursor:pointer;transition:.2s;margin-top:.5rem;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
   }
   .login-btn:hover { background:var(--orange-lt); }
   .login-error { color:var(--danger);font-size:.82rem;margin-top:.7rem;display:none;font-weight:600; }
@@ -88,7 +93,6 @@
     display:flex;flex-direction:column;
     transition:transform .3s ease;
   }
-  /* Logo area — centred image, no text */
   .sidebar-logo {
     padding:0rem 0;
     display:flex;align-items:center;justify-content:center;
@@ -168,11 +172,16 @@
     background:var(--lt-gray);border:none;cursor:pointer;
     padding:7px 14px;border-radius:8px;font-family:var(--font-h);
     font-weight:600;font-size:.8rem;color:var(--gray);transition:.2s;
+    min-height:36px;
   }
   .topbar-logout:hover { background:var(--danger);color:var(--white); }
   .hamburger-admin {
     display:none;background:none;border:none;cursor:pointer;
-    padding:6px;flex-direction:column;gap:5px;
+    padding:10px;flex-direction:column;gap:5px;
+    min-width:44px;
+    min-height:44px;
+    align-items:center;
+    justify-content:center;
   }
   .hamburger-admin span { display:block;width:22px;height:2px;background:var(--dark);border-radius:2px; }
 
@@ -224,9 +233,10 @@
 
   /* ---- Buttons ---- */
   .btn { display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
-    padding:9px 20px;border-radius:8px;font-family:var(--font-h);font-weight:700;
+    padding:10px 20px;border-radius:8px;font-family:var(--font-h);font-weight:700;
     font-size:.82rem;cursor:pointer;transition:.2s;border:2px solid transparent;
-    -webkit-appearance:none; }
+    -webkit-appearance:none;
+    min-height:40px; }
   .btn-orange { background:var(--orange);color:var(--white);border-color:var(--orange); }
   .btn-orange:hover { background:var(--orange-lt); }
   .btn-brown  { background:var(--brown);color:var(--white);border-color:var(--brown); }
@@ -238,7 +248,7 @@
   .btn-success{ background:var(--success);color:var(--white);border-color:var(--success); }
   .btn-success:hover{ opacity:.85; }
   .btn-sm { padding:6px 14px;font-size:.76rem; }
-  .btn-xs { padding:4px 10px;font-size:.72rem; }
+  .btn-xs { padding:6px 10px;font-size:.72rem; }
 
   /* ---- Toggle Switch ---- */
   .toggle-wrap { display:flex;align-items:center;gap:.7rem; }
@@ -266,9 +276,10 @@
   }
   .form-label span { color:var(--danger); }
   .form-input, .form-select, .form-textarea {
-    padding:10px 12px;border:2px solid var(--border);border-radius:8px;
+    padding:11px 12px;border:2px solid var(--border);border-radius:8px;
     font-family:var(--font-b);font-size:.92rem;color:var(--dark);
     transition:.2s;outline:none;background:var(--white);width:100%;
+    min-height:44px;
   }
   .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--orange); }
   .form-textarea { resize:vertical;min-height:90px; }
@@ -306,20 +317,26 @@
   }
   .image-entry-num .primary-tag {
     background:var(--orange);color:var(--white);
-    font-size:.65rem;padding:1px 6px;border-radius:50px;margin-left:4px;
+    font-size:.65rem;padding:2px 8px;border-radius:50px;margin-left:4px;
   }
   .image-remove-btn {
     background:none;border:none;cursor:pointer;
-    color:var(--danger);font-size:.9rem;padding:4px;border-radius:6px;transition:.2s;
+    color:var(--danger);font-size:.9rem;padding:10px;border-radius:6px;transition:.2s;
     flex-shrink:0;
+    min-width:44px;
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
   .image-remove-btn:hover { background:rgba(220,53,69,.1); }
   .add-image-btn {
     display:flex;align-items:center;gap:.5rem;
-    padding:.55rem 1rem;border:2px dashed var(--border);
+    padding:.75rem 1rem;border:2px dashed var(--border);
     border-radius:8px;background:none;cursor:pointer;
     font-family:var(--font-h);font-weight:700;font-size:.8rem;color:var(--gray);
     width:100%;justify-content:center;transition:.2s;margin-top:.4rem;
+    min-height:44px;
   }
   .add-image-btn:hover { border-color:var(--orange);color:var(--orange);background:rgba(255,107,0,.04); }
   .img-count-note {
@@ -395,7 +412,7 @@
   }
   .edit-modal-header h3 { font-family:var(--font-h);font-weight:800;font-size:1.1rem;color:var(--dark); }
   .edit-modal-close {
-    width:32px;height:32px;border-radius:8px;border:none;
+    width:36px;height:36px;border-radius:8px;border:none;
     background:var(--lt-gray);cursor:pointer;display:flex;align-items:center;
     justify-content:center;font-size:.9rem;color:var(--gray);transition:.2s;
   }
@@ -475,7 +492,7 @@
 ============================================================== -->
 <div id="admin-shell">
 
-  <!-- Sidebar — icon-only with hover tooltips -->
+  <!-- Sidebar -->
   <aside class="admin-sidebar" id="admin-sidebar">
     <div class="sidebar-logo">
       <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed"/>
@@ -857,7 +874,6 @@
       <div class="form-group">
         <label class="form-label">Category</label>
         <select class="form-select" id="edit-category">
-          <!-- Populated dynamically from adminData.categories -->
         </select>
       </div>
       <div class="form-group" style="grid-column:1/-1">
@@ -869,40 +885,32 @@
         <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
       </div>
       <div class="form-group">
-        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional — shown crossed out)</span></label>
-        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399 — leave blank if no strikethrough"/>
-        <span class="form-hint">If set, product cards and modal will show this as the original price with a strikethrough, and the actual price as discounted.</span>
+        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional)</span></label>
+        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399"/>
+        <span class="form-hint">If set, product cards and modal will show this as original.</span>
       </div>
       <div class="form-group">
         <label class="form-label">Weight / Size</label>
         <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
       </div>
 
-      <!-- =====================================================
-           VARIANTS SECTION
-      ====================================================== -->
+      <!-- VARIANTS SECTION -->
       <div class="form-group">
-        <label class="form-label">Product Variants <span style="color:#888;font-weight:500;font-size:.78rem">(size / weight options)</span></label>
-        <span class="form-hint">Add variants like 250g, 500g, 1kg. Each variant has a label, selling price, and optional MRP. If no variants are added, the product price above is used.</span>
+        <label class="form-label">Product Variants</label>
+        <span class="form-hint">Add variants like 250g, 500g, 1kg.</span>
         <div id="edit-variants-list" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem;"></div>
         <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:.5rem;">
           <i class="fas fa-plus"></i> Add Variant
         </button>
       </div>
 
-      <!-- =====================================================
-           MULTI-IMAGE SECTION (up to 10 images)
-           The first image is used as the primary display image.
-           All images are stored in product.images[] array.
-           product.image remains the first URL for backwards compat.
-      ====================================================== -->
+      <!-- MULTI-IMAGE SECTION -->
       <div class="form-group" style="grid-column:1/-1">
         <div class="images-section">
           <div class="images-section-title">
             <i class="fas fa-images"></i> Product Images
-            <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.75rem;letter-spacing:0;">(up to 10 · first image = primary display)</span>
+            <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.75rem;letter-spacing:0;">(up to 10 · first image = primary)</span>
           </div>
-          <!-- Image entries rendered here -->
           <div id="image-entries-list"></div>
           <button type="button" class="add-image-btn" id="add-image-btn" onclick="addImageEntry()">
             <i class="fas fa-plus-circle"></i> Add Image URL
@@ -940,34 +948,28 @@
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Feature Tags (comma separated)</label>
-        <input type="text" class="form-input" id="edit-features" placeholder="High Protein, No Palm Oil, Vegan, No Added Sugar"/>
+        <input type="text" class="form-input" id="edit-features" placeholder="High Protein, No Palm Oil, Vegan"/>
       </div>
 
-      <!-- =====================================================
-           PRODUCT DETAIL FIELDS (synced with website modal)
-      ====================================================== -->
+      <!-- DETAILS ACCORDIONS -->
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label"><i class="fas fa-list" style="color:var(--orange)"></i> Ingredients</label>
-        <textarea class="form-textarea" id="edit-ingredients" placeholder="e.g. Roasted Peanuts (95%), Dark Cocoa Powder (4%), Salt (1%). No added sugar..." style="min-height:80px"></textarea>
-        <span class="form-hint">Displayed in "Ingredients" section on product detail page</span>
+        <textarea class="form-textarea" id="edit-ingredients" placeholder="e.g. Roasted Peanuts (95%)..." style="min-height:80px"></textarea>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label"><i class="fas fa-star" style="color:var(--orange)"></i> Key Benefits</label>
-        <textarea class="form-textarea" id="edit-keyBenefits" placeholder="e.g. High in plant-based protein • Rich dark chocolate flavour • No palm oil..." style="min-height:80px"></textarea>
-        <span class="form-hint">Displayed in "Key Benefits" section on product detail page. Use • to separate points.</span>
+        <textarea class="form-textarea" id="edit-keyBenefits" placeholder="e.g. High in plant protein..." style="min-height:80px"></textarea>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label"><i class="fas fa-snowflake" style="color:var(--orange)"></i> Storage Info</label>
-        <textarea class="form-textarea" id="edit-storageInfo" placeholder="e.g. Store in a cool, dry place. Keep lid tightly closed after opening..." style="min-height:70px"></textarea>
-        <span class="form-hint">Displayed in "Storage Info" section on product detail page</span>
+        <textarea class="form-textarea" id="edit-storageInfo" placeholder="e.g. Store in a cool dry place..." style="min-height:70px"></textarea>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label"><i class="fas fa-exclamation-triangle" style="color:var(--orange)"></i> Allergen Info</label>
-        <textarea class="form-textarea" id="edit-allergenInfo" placeholder="e.g. May contain traces of nuts and soy. Always read the full label..." style="min-height:70px"></textarea>
-        <span class="form-hint">Displayed in "Allergen Info" section on product detail page</span>
+        <textarea class="form-textarea" id="edit-allergenInfo" placeholder="e.g. Contains peanuts..." style="min-height:70px"></textarea>
       </div>
 
-    </div><!-- end form-grid -->
+    </div>
 
     <div style="display:flex;flex-direction:column;gap:.8rem;padding:1rem;background:var(--off-white);border-radius:10px;margin-bottom:1rem;">
       <label class="toggle-wrap">
@@ -998,23 +1000,18 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script src="products.js"></script>
 <script>
 /* ==============================================================
-   ADMIN PANEL SCRIPT — Bunofeed
-   ⚠️  CHANGE PASSWORD BELOW
+   ADMIN PANEL SCRIPT
 ============================================================== */
-
-/* ---- CREDENTIALS ---- */
 const ADMIN_CREDENTIALS = {
   username: 'admin',
-  password: 'bunofeed2026',   // ← CHANGE THIS PASSWORD
+  password: 'bunofeed2026',
 };
 
-/* ---- Default categories (used if products.js has none) ---- */
 const DEFAULT_CATEGORIES = [
   { name: 'Peanut Butter', slug: 'peanut-butter' },
   { name: 'Oats',          slug: 'oats' },
@@ -1022,14 +1019,10 @@ const DEFAULT_CATEGORIES = [
   { name: 'Other',         slug: 'other' },
 ];
 
-/* ---- State ---- */
 let adminData = null;
 let editingProductIndex = -1;
-let currentImageUrls = [];   // working array for multi-image editor
+let currentImageUrls = [];
 
-/* ================================================================
-   LOGIN
-================================================================ */
 document.getElementById('login-btn').addEventListener('click', attemptLogin);
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') attemptLogin();
@@ -1053,12 +1046,8 @@ document.getElementById('logout-btn').addEventListener('click', () => {
   document.getElementById('login-pass').value = '';
 });
 
-/* ================================================================
-   INIT
-================================================================ */
 function initAdmin() {
   adminData = JSON.parse(JSON.stringify(window.BUNOFEED_DATA));
-  // Ensure categories array exists
   if (!adminData.categories || !Array.isArray(adminData.categories)) {
     adminData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   }
@@ -1070,9 +1059,6 @@ function initAdmin() {
   loadBrandForm();
 }
 
-/* ================================================================
-   SIDEBAR NAVIGATION
-================================================================ */
 document.querySelectorAll('.sidebar-link').forEach(link => {
   link.addEventListener('click', () => switchPanel(link.dataset.panel));
 });
@@ -1092,16 +1078,12 @@ function switchPanel(name) {
   if (name === 'export') generateExport();
 }
 
-/* Mobile sidebar toggle */
 document.getElementById('hamburger-admin').addEventListener('click', () => {
   const sb   = document.getElementById('admin-sidebar');
   const open = sb.classList.toggle('open');
   document.body.style.overflow = open ? 'hidden' : '';
 });
 
-/* ================================================================
-   DASHBOARD
-================================================================ */
 function renderDashboard() {
   const products = adminData.products || [];
   const visible  = products.filter(p => p.visible !== false).length;
@@ -1125,7 +1107,7 @@ function renderDashboard() {
     </div>
     <div class="stat-card">
       <div class="stat-icon blue"><i class="fas fa-layer-group"></i></div>
-      <div class="stat-info"><strong>${catCount}</strong><span>Categories${saleOn ? ' · Sale On' : ''}${campOn ? ' · Banner On' : ''}</span></div>
+      <div class="stat-info"><strong>${catCount}</strong><span>Categories</span></div>
     </div>`;
 
   document.getElementById('dashboard-product-list').innerHTML =
@@ -1133,9 +1115,6 @@ function renderDashboard() {
   wireProductListActions('dashboard-product-list');
 }
 
-/* ================================================================
-   PRODUCTS
-================================================================ */
 function renderProductList() {
   const list = document.getElementById('admin-product-list');
   list.innerHTML = adminData.products.map((p, i) => productListItemHTML(p, i, false)).join('');
@@ -1145,7 +1124,6 @@ function renderProductList() {
 function productListItemHTML(p, i, compact) {
   const sp = adminData.sale && adminData.sale.active
     ? Math.round(p.price * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
-  // Use first image from images[] or fallback to image field
   const primaryImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
   const imgCount   = (p.images && p.images.length > 1) ? `<span class="meta-chip new-chip" title="Multiple images">${p.images.length} imgs</span>` : '';
   const imgHTML = primaryImg
@@ -1197,9 +1175,6 @@ function wireProductListActions(containerId) {
 
 document.getElementById('add-product-btn').addEventListener('click', () => openEditModal(-1));
 
-/* ================================================================
-   EDIT MODAL — open / close / save / delete
-================================================================ */
 function openEditModal(idx) {
   editingProductIndex = idx;
   const isNew = idx === -1;
@@ -1231,13 +1206,10 @@ function openEditModal(idx) {
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
   document.getElementById('edit-mrp').value            = p.mrp || '';
-  // Load variants
+  
   renderVariantsEditor(p.variants || []);
-
-  // Populate category dropdown from adminData.categories
   populateCategorySelect(p.category || '');
 
-  // Build images array: prefer p.images[], fall back to p.image string
   if (p.images && p.images.length > 0) {
     currentImageUrls = [...p.images];
   } else if (p.image && p.image.trim()) {
@@ -1257,10 +1229,6 @@ function populateCategorySelect(selectedSlug) {
   sel.innerHTML = cats.map(c =>
     `<option value="${c.slug}" ${c.slug === selectedSlug ? 'selected' : ''}>${c.name}</option>`
   ).join('');
-  // Add a custom "Other" if none exist
-  if (cats.length === 0) {
-    sel.innerHTML = '<option value="other">Other</option>';
-  }
 }
 
 function closeEditModal() {
@@ -1282,41 +1250,34 @@ function saveEditedProduct() {
   let id = document.getElementById('edit-product-id').value.trim();
   if (!id) id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
-  // Clean image URLs — remove empties
   const cleanedImages = currentImageUrls.filter(u => u && u.trim());
   const primaryImage  = cleanedImages.length > 0 ? cleanedImages[0] : '';
 
   const updated = {
-  id,
-  name,
-  tagline:     document.getElementById('edit-tagline').value.trim(),
-  description: document.getElementById('edit-description').value.trim(),
-  price,
-  mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
-  weight:      document.getElementById('edit-weight').value.trim(),
+    id,
+    name,
+    tagline:     document.getElementById('edit-tagline').value.trim(),
+    description: document.getElementById('edit-description').value.trim(),
+    price,
+    mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
+    weight:      document.getElementById('edit-weight').value.trim(),
+    variants:    collectVariants(),
+    image:       primaryImage,
+    images:      cleanedImages,
+    emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
+    badge:       document.getElementById('edit-badge').value.trim() || null,
+    badgeType:   document.getElementById('edit-badgeType').value || null,
+    bgClass:     document.getElementById('edit-bgClass').value,
+    category:    document.getElementById('edit-category').value,
+    features,
+    ingredients: document.getElementById('edit-ingredients').value.trim(),
+    keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
+    storageInfo: document.getElementById('edit-storageInfo').value.trim(),
+    allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
+    visible:     document.getElementById('edit-visible').checked,
+    bestSeller:  document.getElementById('edit-bestseller').checked,
+  };
 
-  variants:    collectVariants(),
-
-  image:       primaryImage,
-  images:      cleanedImages,
-
-  emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
-  badge:       document.getElementById('edit-badge').value.trim() || null,
-  badgeType:   document.getElementById('edit-badgeType').value || null,
-
-  bgClass:     document.getElementById('edit-bgClass').value,
-  category:    document.getElementById('edit-category').value,
-
-  features,
-
-  ingredients: document.getElementById('edit-ingredients').value.trim(),
-  keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
-  storageInfo: document.getElementById('edit-storageInfo').value.trim(),
-  allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
-
-  visible:     document.getElementById('edit-visible').checked,
-  bestSeller:  document.getElementById('edit-bestseller').checked,
-};
   if (editingProductIndex === -1) {
     adminData.products.push(updated);
     toast(`"${name}" added!`, 'success');
@@ -1343,9 +1304,6 @@ function deleteCurrentProduct() {
   toast(`"${name}" deleted`, 'info');
 }
 
-/* ================================================================
-   MULTI-IMAGE MANAGEMENT
-================================================================ */
 const MAX_IMAGES = 10;
 
 function renderImageEntries() {
@@ -1363,8 +1321,8 @@ function renderImageEntries() {
     const thumb = document.createElement('div');
     thumb.className = 'image-entry-thumb';
     thumb.innerHTML = url
-      ? `<img src="${url}" alt="Image ${i+1}" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\\'font-size:1.4rem\\'>🖼️</span>'">`
-      : '<span style="font-size:1.4rem">🖼️</span>';
+      ? `<img src="${url}" alt="Img ${i+1}" onerror="this.parentNode.innerHTML='🖼️'">`
+      : '🖼️';
 
     const inputWrap = document.createElement('div');
     inputWrap.style.cssText = 'display:flex;flex-direction:column;gap:.25rem;';
@@ -1399,21 +1357,17 @@ function addImageEntry() {
   }
   currentImageUrls.push('');
   renderImageEntries();
-  // Focus the new input
-  const inputs = document.querySelectorAll('#image-entries-list .form-input');
-  if (inputs.length) inputs[inputs.length - 1].focus();
 }
 
 function updateImageUrl(idx, value) {
   currentImageUrls[idx] = value.trim();
-  // Update thumb live
   const entries = document.querySelectorAll('#image-entries-list .image-entry');
   if (entries[idx]) {
     const thumb = entries[idx].querySelector('.image-entry-thumb');
     if (value.trim()) {
-      thumb.innerHTML = `<img src="${value.trim()}" alt="Preview" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\\'font-size:1.4rem\\'>❌</span>'">`; 
+      thumb.innerHTML = `<img src="${value.trim()}" alt="Preview" onerror="this.parentNode.innerHTML='❌'">`; 
     } else {
-      thumb.innerHTML = '<span style="font-size:1.4rem">🖼️</span>';
+      thumb.innerHTML = '🖼️';
     }
   }
 }
@@ -1423,7 +1377,6 @@ function removeImageEntry(idx) {
   renderImageEntries();
 }
 
-/* Close modal on outside click / Escape */
 document.getElementById('edit-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeEditModal();
 });
@@ -1431,21 +1384,17 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeEditModal();
 });
 
-/* ================================================================
-   CATEGORIES
-================================================================ */
 function renderCategoryList() {
   const cats    = adminData.categories || [];
   const listEl  = document.getElementById('cat-list');
 
-  // Auto-fill slug from name
   document.getElementById('new-cat-name').addEventListener('input', function() {
     const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     document.getElementById('new-cat-slug').value = slug;
   });
 
   if (cats.length === 0) {
-    listEl.innerHTML = '<p style="color:var(--gray);font-size:.88rem;padding:.5rem 0;">No categories yet. Add one below.</p>';
+    listEl.innerHTML = '<p style="color:var(--gray);font-size:.88rem;padding:.5rem 0;">No categories yet.</p>';
     return;
   }
 
@@ -1496,10 +1445,7 @@ function addCategory() {
 function deleteCategory(idx) {
   const cat = adminData.categories[idx];
   const prodCount = (adminData.products||[]).filter(p => p.category === cat.slug).length;
-  const msg = prodCount > 0
-    ? `Delete category "${cat.name}"?\n\n${prodCount} product(s) use this category. They won't be deleted, but their category value will be orphaned.`
-    : `Delete category "${cat.name}"?`;
-  if (!confirm(msg)) return;
+  if (!confirm(`Delete category "${cat.name}"? products assigned to it will have their category orphaned.`)) return;
   adminData.categories.splice(idx, 1);
   renderCategoryList();
   renderDashboard();
@@ -1531,9 +1477,6 @@ function saveCatEdit() {
   toast(`Category updated to "${name}"`, 'success');
 }
 
-/* ================================================================
-   OFFERS
-================================================================ */
 function loadOffersForm() {
   const c = adminData.campaign || {};
   const s = adminData.sale     || {};
@@ -1583,9 +1526,6 @@ function saveOffers() {
   toast('Offer settings saved!', 'success');
 }
 
-/* ================================================================
-   PAYMENT
-================================================================ */
 function loadPaymentForm() {
   const p = adminData.payment || {};
   document.getElementById('rzp-key').value   = p.razorpayKeyId || '';
@@ -1605,9 +1545,6 @@ function savePayment() {
   toast('Payment settings saved!', 'success');
 }
 
-/* ================================================================
-   BRAND
-================================================================ */
 function loadBrandForm() {
   const b = adminData.brand || {};
   document.getElementById('brand-email').value     = b.email          || '';
@@ -1632,9 +1569,6 @@ function saveBrand() {
   toast('Brand settings saved!', 'success');
 }
 
-/* ================================================================
-   GLOBAL SAVE / EXPORT
-================================================================ */
 function markUnsaved() {
   document.getElementById('topbar-save-badge').style.display = 'inline-flex';
   document.getElementById('global-save-btn').style.display   = 'inline-flex';
@@ -1672,9 +1606,6 @@ function downloadExport() {
   toast('products.js downloaded! Replace the file in your project.', 'success');
 }
 
-/* ================================================================
-   TOAST
-================================================================ */
 function toast(msg, type = 'success') {
   const el    = document.getElementById('toast');
   const icons = { success:'fas fa-check-circle', error:'fas fa-times-circle', info:'fas fa-info-circle' };
@@ -1685,9 +1616,6 @@ function toast(msg, type = 'success') {
   window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-/* ============================================================
-   VARIANT EDITOR
-   ============================================================ */
 function renderVariantsEditor(variants) {
   const list = document.getElementById('edit-variants-list');
   list.innerHTML = '';
@@ -1700,10 +1628,10 @@ function addVariantRow(v, i) {
   row.className = 'variant-row';
   row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:var(--off-white);border-radius:8px;padding:.5rem .7rem;';
   row.innerHTML = `
-    <input type="text"   class="form-input variant-label" placeholder="Label (e.g. 500g)"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px"/>
-    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px"/>
-    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹) optional" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px"/>
-    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:.8rem;flex-shrink:0;" title="Remove variant">✕</button>`;
+    <input type="text"   class="form-input variant-label" placeholder="e.g. 500g"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹)" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:.8rem;flex-shrink:0;min-height:36px;" title="Remove variant">✕</button>`;
   list.appendChild(row);
 }
 
