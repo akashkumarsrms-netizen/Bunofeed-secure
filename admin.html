@@ -869,8 +869,25 @@
         <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
       </div>
       <div class="form-group">
+        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional — shown crossed out)</span></label>
+        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399 — leave blank if no strikethrough"/>
+        <span class="form-hint">If set, product cards and modal will show this as the original price with a strikethrough, and the actual price as discounted.</span>
+      </div>
+      <div class="form-group">
         <label class="form-label">Weight / Size</label>
         <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
+      </div>
+
+      <!-- =====================================================
+           VARIANTS SECTION
+      ====================================================== -->
+      <div class="form-group">
+        <label class="form-label">Product Variants <span style="color:#888;font-weight:500;font-size:.78rem">(size / weight options)</span></label>
+        <span class="form-hint">Add variants like 250g, 500g, 1kg. Each variant has a label, selling price, and optional MRP. If no variants are added, the product price above is used.</span>
+        <div id="edit-variants-list" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem;"></div>
+        <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:.5rem;">
+          <i class="fas fa-plus"></i> Add Variant
+        </button>
       </div>
 
       <!-- =====================================================
@@ -1213,6 +1230,9 @@ function openEditModal(idx) {
   document.getElementById('edit-allergenInfo').value   = p.allergenInfo || '';
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
+  document.getElementById('edit-mrp').value            = p.mrp || '';
+  // Load variants
+  renderVariantsEditor(p.variants || []);
 
   // Populate category dropdown from adminData.categories
   populateCategorySelect(p.category || '');
@@ -1656,6 +1676,46 @@ function toast(msg, type = 'success') {
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
+
+/* ============================================================
+   VARIANT EDITOR
+   ============================================================ */
+function renderVariantsEditor(variants) {
+  const list = document.getElementById('edit-variants-list');
+  list.innerHTML = '';
+  (variants || []).forEach((v, i) => addVariantRow(v, i));
+}
+
+function addVariantRow(v, i) {
+  const list = document.getElementById('edit-variants-list');
+  const row = document.createElement('div');
+  row.className = 'variant-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:var(--off-white);border-radius:8px;padding:.5rem .7rem;';
+  row.innerHTML = `
+    <input type="text"   class="form-input variant-label" placeholder="Label (e.g. 500g)"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px"/>
+    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px"/>
+    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹) optional" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px"/>
+    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:.8rem;flex-shrink:0;" title="Remove variant">✕</button>`;
+  list.appendChild(row);
+}
+
+document.getElementById('add-variant-btn').addEventListener('click', () => {
+  addVariantRow(null, document.querySelectorAll('.variant-row').length);
+});
+
+function collectVariants() {
+  const rows = document.querySelectorAll('.variant-row');
+  if (rows.length === 0) return [];
+  const variants = [];
+  rows.forEach(row => {
+    const label = row.querySelector('.variant-label').value.trim();
+    const price = parseFloat(row.querySelector('.variant-price').value);
+    const mrp   = parseFloat(row.querySelector('.variant-mrp').value) || null;
+    if (label && price > 0) variants.push({ label, price, mrp });
+  });
+  return variants;
+}
+
 </script>
 </body>
 </html>

@@ -44,7 +44,11 @@ window.BUNOFEED_DATA = {
       "tagline": "Tasty, Crunchy & packed with protein.",
       "description": "Indulgent dark chocolate meets creamy roasted peanuts in a perfectly smooth spread crafted for taste and nutrition. Made with high-quality peanuts and rich cocoa, this protein-packed peanut butter delivers a deep chocolate flavor without compromising on wholesome ingredients.\nPerfect for:\n\n\nToasts & sandwiches\n\n\nSmoothies & shakes\n\n\nFruits & pancakes\n\n\nPre/post-workout meals\n\n\nStraight-from-the-jar cravings\n\n\nWhy you’ll love it:\n\n\nSmooth & creamy texture\n\n\nRich dark chocolate flavor\n\n\nGood source of plant-based protein\n\nEnergy-boosting healthy fats\n\n\nGreat for fitness & healthy snacking",
       "price": 1,
+      "mrp": null,
       "weight": "400g",
+      "variants": [
+        { "label": "400g", "price": 1, "mrp": null }
+      ],
       "image": "https://i.ibb.co/psxqc3J/1-removebg-preview.png",
       "images": [
         "https://i.ibb.co/psxqc3J/1-removebg-preview.png",
@@ -72,7 +76,13 @@ window.BUNOFEED_DATA = {
       "tagline": "Guilt-free chocolate indulgence.",
       "description": "Dark cocoa meets rich peanut butter for a treat you can feel good about. No refined sugar, no palm oil. Great as a spread, dip, or protein shake mix-in.",
       "price": 329,
+      "mrp": 399,
       "weight": "500g",
+      "variants": [
+        { "label": "250g", "price": 179, "mrp": 220 },
+        { "label": "500g", "price": 329, "mrp": 399 },
+        { "label": "900g", "price": 549, "mrp": 699 }
+      ],
       "badge": null,
       "badgeType": null,
       "bestSeller": true,
@@ -97,7 +107,12 @@ window.BUNOFEED_DATA = {
       "tagline": "Wholesome oats, heart-healthy goodness.",
       "description": "Quick-cooking whole grain rolled oats. Naturally high in beta-glucan fibre which supports heart health. Ideal for porridge, overnight oats, granola bars, and baking.",
       "price": 199,
+      "mrp": 249,
       "weight": "1kg",
+      "variants": [
+        { "label": "500g", "price": 109, "mrp": 139 },
+        { "label": "1kg", "price": 199, "mrp": 249 }
+      ],
       "badge": "New",
       "badgeType": "new",
       "bestSeller": false,
@@ -122,7 +137,12 @@ window.BUNOFEED_DATA = {
       "tagline": "Your perfect power-packed breakfast.",
       "description": "A premium blend of rolled oats, mixed nuts, seeds, and real dried fruits. Loaded with fibre, healthy fats, and natural energy. No artificial flavours or added sugar.",
       "price": 349,
+      "mrp": 429,
       "weight": "500g",
+      "variants": [
+        { "label": "500g", "price": 349, "mrp": 429 },
+        { "label": "1kg", "price": 649, "mrp": 799 }
+      ],
       "badge": null,
       "badgeType": null,
       "bestSeller": false,

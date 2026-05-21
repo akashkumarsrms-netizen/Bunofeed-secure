@@ -79,173 +79,6 @@
     .empty-state p  { color:var(--gray);font-size:1rem; }
 
     /* ======================================================
-       PRODUCT DETAIL MODAL
-    ====================================================== */
-    .modal-overlay {
-      display:none;position:fixed;inset:0;
-      background:rgba(0,0,0,.55);z-index:2000;
-      align-items:center;justify-content:center;
-      padding:1rem;
-      backdrop-filter:blur(4px);
-      -webkit-backdrop-filter:blur(4px);
-    }
-    .modal-overlay.open { display:flex; }
-
-    .modal {
-      background:var(--white);border-radius:20px;
-      max-width:860px;width:100%;
-      max-height:92vh;overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      box-shadow:0 24px 64px rgba(0,0,0,.25);
-      display:grid;grid-template-columns:1fr 1fr;
-      animation:modalIn .28s ease;
-    }
-    @keyframes modalIn {
-      from{opacity:0;transform:scale(.95) translateY(12px)}
-      to  {opacity:1;transform:scale(1) translateY(0)}
-    }
-
-    /* Modal left — image */
-    .modal-img-side {
-      display:flex;flex-direction:column;align-items:stretch;
-      font-size:7rem;border-radius:20px 0 0 20px;
-      min-height:320px;overflow:hidden;
-    }
-    .modal-main-img-wrap {
-      flex:1;width:100%;
-      display:flex;align-items:center;justify-content:center;
-      min-height:260px;overflow:hidden;
-    }
-    .modal-img-side img.modal-photo {
-  display:block;
-  width:100%;height:100%;
-  max-width:100%;max-height:100%;
-  object-fit:contain;padding:20px;
-  pointer-events:none;
-}
-    .modal-emoji { line-height:1; }
-
-    /* Thumbnail strip */
-    .modal-thumbs {
-      width:100%;display:flex;gap:8px;padding:10px 12px;
-      overflow-x:auto;background:rgba(0,0,0,.12);
-      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;
-      flex-shrink:0;
-    }
-    .modal-thumbs::-webkit-scrollbar { height:4px; }
-    .modal-thumbs::-webkit-scrollbar-thumb { background:rgba(255,255,255,.35);border-radius:4px; }
-    .modal-thumbs:empty { display:none; }
-    .modal-thumb {
-      width:56px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;
-      border:2px solid transparent;cursor:pointer;
-      transition:border-color .18s, transform .18s;background:#fff;
-    }
-    .modal-thumb:hover { transform:scale(1.05); }
-    .modal-thumb.active { border-color:#FF6B00;box-shadow:0 0 0 1px #FF6B00; }
-    .modal-thumb img { width:100%;height:100%;object-fit:contain;padding:4px; }
-    .modal-thumb-emoji {
-      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-      font-size:1.6rem;
-    }
-
-    /* Modal right — content */
-    .modal-body {
-      padding:2.2rem 2rem;display:flex;flex-direction:column;gap:1rem;
-      overflow-y:auto;
-    }
-    .modal-close {
-      position:absolute;top:1rem;right:1rem;
-      width:36px;height:36px;border-radius:50%;
-      background:rgba(0,0,0,.12);border:none;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      font-size:1rem;color:var(--white);transition:var(--transition);
-      z-index:10;-webkit-appearance:none;
-    }
-    .modal-close:hover { background:rgba(0,0,0,.3); }
-    .modal-badge-row { display:flex;gap:.5rem;flex-wrap:wrap; }
-    .modal-badge {
-      font-family:var(--font-head);font-weight:700;font-size:.72rem;
-      padding:4px 12px;border-radius:50px;
-    }
-    .modal-badge.bestseller { background:var(--brown);color:var(--white); }
-    .modal-badge.new        { background:#28a745;color:var(--white); }
-    .modal-badge.limited    { background:#dc3545;color:var(--white); }
-    .modal-badge.sale       { background:var(--orange);color:var(--white); }
-
-    .modal-name {
-      font-family:var(--font-head);font-size:1.5rem;font-weight:800;
-      color:var(--dark);line-height:1.2;
-    }
-    .modal-tagline { font-size:.97rem;color:var(--orange);font-weight:600; }
-    .modal-desc { color:var(--gray);font-size:.93rem;line-height:1.75; }
-
-    /* Features */
-    .modal-features {
-      display:flex;flex-wrap:wrap;gap:.5rem;
-    }
-    .modal-feature-chip {
-      background:rgba(255,107,0,.1);color:var(--brown);
-      font-size:.78rem;font-family:var(--font-head);font-weight:600;
-      padding:5px 12px;border-radius:50px;
-    }
-
-    /* Price row */
-    .modal-price-row {
-      display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
-      padding:.8rem 0;border-top:1px solid #f0e8e0;border-bottom:1px solid #f0e8e0;
-    }
-    .modal-price-main {
-      font-family:var(--font-head);font-size:1.7rem;font-weight:800;color:var(--brown);
-    }
-    .modal-price-sale { color:var(--orange); }
-    .modal-price-old  {
-      font-size:.95rem;color:var(--gray);text-decoration:line-through;font-weight:500;
-    }
-    .modal-weight-tag {
-      background:var(--off-white);padding:5px 14px;border-radius:50px;
-      font-size:.8rem;font-weight:600;color:var(--gray);font-family:var(--font-head);
-    }
-
-    /* Qty selector */
-    .modal-qty-row {
-      display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
-    }
-    .qty-label { font-family:var(--font-head);font-weight:700;font-size:.85rem;color:var(--dark); }
-    .qty-control {
-      display:flex;align-items:center;border:2px solid #e0d4cc;border-radius:50px;overflow:hidden;
-    }
-    .qty-btn {
-      width:36px;height:36px;background:none;border:none;cursor:pointer;
-      font-size:1.1rem;font-weight:700;color:var(--dark);transition:var(--transition);
-      -webkit-appearance:none;display:flex;align-items:center;justify-content:center;
-    }
-    .qty-btn:hover { background:var(--off-white); }
-    .qty-num {
-      min-width:32px;text-align:center;font-family:var(--font-head);
-      font-weight:700;font-size:.95rem;
-    }
-
-    /* Action buttons */
-    .modal-actions { display:flex;gap:.8rem;flex-wrap:wrap; }
-    .modal-actions .btn { flex:1;min-width:130px;justify-content:center; }
-
-    /* Nutrition/info accordion */
-    .modal-accordion { margin-top:.5rem; }
-    .accordion-item { border-top:1px solid #f0e8e0; }
-    .accordion-head {
-      display:flex;align-items:center;justify-content:space-between;
-      padding:.85rem 0;cursor:pointer;
-      font-family:var(--font-head);font-weight:700;font-size:.88rem;color:var(--dark);
-      background:none;border:none;width:100%;text-align:left;-webkit-appearance:none;
-    }
-    .accordion-head i { transition:transform var(--transition);color:var(--orange); }
-    .accordion-head.open i { transform:rotate(180deg); }
-    .accordion-body {
-      display:none;padding:.5rem 0 1rem;color:var(--gray);font-size:.88rem;line-height:1.7;
-    }
-    .accordion-body.open { display:block; }
-
-    /* ======================================================
        RESPONSIVE
     ====================================================== */
     @media(max-width:1024px){ .shop-grid{grid-template-columns:repeat(3,1fr);} }
@@ -311,63 +144,6 @@
   <section class="shop-section">
     <div class="shop-grid" id="shop-grid"></div>
   </section>
-
-  <!-- ======================================================
-       PRODUCT DETAIL MODAL
-  ====================================================== -->
-  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
-    <div class="modal" id="modal-box">
-      <button class="modal-close" id="modal-close" aria-label="Close">
-        <i class="fas fa-times"></i>
-      </button>
-
-      <!-- Left: image -->
-      <div class="modal-img-side peanut-bg" id="modal-img-side">
-        <div class="modal-main-img-wrap" id="modal-main-img-wrap">
-          <span class="modal-emoji" id="modal-emoji">🥜</span>
-        </div>
-        <div class="modal-thumbs" id="modal-thumbs"></div>
-      </div>
-
-      <!-- Right: info -->
-      <div class="modal-body">
-        <div class="modal-badge-row" id="modal-badges"></div>
-        <h2 class="modal-name" id="modal-product-name">Product Name</h2>
-        <p  class="modal-tagline" id="modal-tagline"></p>
-        <p  class="modal-desc"    id="modal-desc"></p>
-
-        <div class="modal-features" id="modal-features"></div>
-
-        <div class="modal-price-row">
-          <span class="modal-price-main" id="modal-price"></span>
-          <span class="modal-price-old"  id="modal-price-old" style="display:none"></span>
-          <span class="modal-weight-tag" id="modal-weight"></span>
-        </div>
-
-        <div class="modal-qty-row">
-          <span class="qty-label">Quantity:</span>
-          <div class="qty-control">
-            <button class="qty-btn" id="qty-minus" aria-label="Decrease quantity">−</button>
-            <span   class="qty-num"  id="qty-num">1</span>
-            <button class="qty-btn" id="qty-plus"  aria-label="Increase quantity">+</button>
-          </div>
-          <span style="font-size:.85rem;color:var(--gray)" id="modal-subtotal"></span>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn btn-primary" id="modal-buy-btn">
-            <i class="fas fa-bolt"></i> Buy Now
-          </button>
-          <a href="shop.html" class="btn btn-brown">
-            <i class="fas fa-arrow-left"></i> Back to Shop
-          </a>
-        </div>
-
-        <!-- Accordion -->
-        <div class="modal-accordion" id="modal-accordion"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- CHECKOUT MODAL -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
@@ -451,6 +227,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <!-- Data & API config -->
   <script src="products.js"></script>
+  <script src="modal.js"></script>
   <script src="api.js"></script>
   <script>
   /* ==============================================================
@@ -524,9 +301,7 @@
 
     function closeCheckoutModal() {
       checkoutOverlay.classList.remove('open');
-      if (!document.getElementById('modal-overlay').classList.contains('open')) {
-        document.body.style.overflow = '';
-      }
+      document.body.style.overflow = '';
     }
 
     if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
@@ -622,18 +397,15 @@
         ? `<img class="product-photo" src="${product.image}" alt="${product.name}" loading="lazy"/>`
         : `<span class="product-emoji">${product.emoji||'🥜'}</span>`;
 
-      const priceHTML = sp
-        ? `<div class="product-price">
-            <div class="product-weight">${product.weight||''}</div>
-            <div class="price-sale">
-              <span class="price-current">₹${sp}</span>
-              <span class="price-old">₹${product.price}</span>
-            </div>
-          </div>`
-        : `<div class="product-price">
-            <div class="product-weight">${product.weight||''}</div>
-            <div class="price-original">₹${product.price}</div>
-          </div>`;
+      let priceHTML;
+      if (sp) {
+        priceHTML = `<div class="product-price"><div class="product-weight">${product.weight||''}</div><div class="price-sale"><span class="price-current">₹${sp}</span><span class="price-old">₹${product.price}</span></div></div>`;
+      } else if (product.mrp && product.mrp > product.price) {
+        const pct = Math.round((1 - product.price / product.mrp) * 100);
+        priceHTML = `<div class="product-price"><div class="product-weight">${product.weight||''}</div><div class="price-sale"><span class="price-current">₹${product.price}</span><span class="price-old">₹${product.mrp}</span><span class="price-save-tag">${pct}% off</span></div></div>`;
+      } else {
+        priceHTML = `<div class="product-price"><div class="product-weight">${product.weight||''}</div><div class="price-original">₹${product.price}</div></div>`;
+      }
 
       const card = document.createElement('div');
       card.className = 'product-card reveal';
@@ -715,15 +487,30 @@
     renderGrid('all');
 
     /* ---- Modal ---- */
-    const overlay   = document.getElementById('modal-overlay');
-    const closeBtn  = document.getElementById('modal-close');
-    const qtyMinus  = document.getElementById('qty-minus');
-    const qtyPlus   = document.getElementById('qty-plus');
-    const qtyNum    = document.getElementById('qty-num');
-    const subtotal  = document.getElementById('modal-subtotal');
-    const buyBtn    = document.getElementById('modal-buy-btn');
+    const overlay   = null; // replaced by BUNO_MODAL
+    const closeBtn  = null;
+    const qtyMinus  = null;
+    const qtyPlus   = null;
+    const qtyNum    = null;
+    const subtotal  = null;
+    const buyBtn    = null;
 
     function openModal(id, focusBuy) {
+      // Delegate to shared BUNO_MODAL
+      if (window.BUNO_MODAL) {
+        const product = products.find(p => p.id === id);
+        if (product) {
+          currentProduct = product;
+          qty = 1;
+          window.BUNO_MODAL.open(product, (prod, quantity, unitPrice) => {
+            currentProduct = prod;
+            qty = quantity;
+            openCheckoutModal();
+          });
+        }
+      }
+      return; // rest of old code below is skipped
+      if (false) {
       const product = products.find(p => p.id === id);
       if (!product) return;
       currentProduct = product;
@@ -832,43 +619,13 @@
       if (focusBuy) {
         setTimeout(() => buyBtn.focus(), 100);
       }
+    } // end if(false)
     }
 
-    /* Qty controls */
-    qtyMinus.addEventListener('click', () => {
-      if (qty > 1) {
-        qty--;
-        qtyNum.textContent = qty;
-        updateSubtotal();
-      }
-    });
-    qtyPlus.addEventListener('click', () => {
-      qty++;
-      qtyNum.textContent = qty;
-      updateSubtotal();
-    });
-    function updateSubtotal() {
-      if (!currentProduct) return;
-      const sp = salePrice(currentProduct.price);
-      const price = sp || currentProduct.price;
-      subtotal.textContent = `Total: ₹${price * qty}`;
-    }
-
-    /* Close modal */
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    /* Qty controls, close modal, buy now — now handled by shared BUNO_MODAL */
+    function updateSubtotal() { /* no-op */ }
+    function closeModal() { if (window.BUNO_MODAL) window.BUNO_MODAL.close(); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-    function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
-      currentProduct = null;
-    }
-
-    /* Buy Now — Flow */
-    buyBtn.addEventListener('click', () => {
-      if (!currentProduct) return;
-      openCheckoutModal();
-    });
 
     /* ---- Razorpay ---- */
     function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData) {
