@@ -1287,28 +1287,36 @@ function saveEditedProduct() {
   const primaryImage  = cleanedImages.length > 0 ? cleanedImages[0] : '';
 
   const updated = {
-    id,
-    name,
-    tagline:     document.getElementById('edit-tagline').value.trim(),
-    description: document.getElementById('edit-description').value.trim(),
-    price,
-    weight:      document.getElementById('edit-weight').value.trim(),
-    image:       primaryImage,
-    images:      cleanedImages,
-    emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
-    badge:       document.getElementById('edit-badge').value.trim() || null,
-    badgeType:   document.getElementById('edit-badgeType').value || null,
-    bgClass:     document.getElementById('edit-bgClass').value,
-    category:    document.getElementById('edit-category').value,
-    features,
-    ingredients: document.getElementById('edit-ingredients').value.trim(),
-    keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
-    storageInfo: document.getElementById('edit-storageInfo').value.trim(),
-    allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
-    visible:     document.getElementById('edit-visible').checked,
-    bestSeller:  document.getElementById('edit-bestseller').checked,
-  };
+  id,
+  name,
+  tagline:     document.getElementById('edit-tagline').value.trim(),
+  description: document.getElementById('edit-description').value.trim(),
+  price,
+  mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
+  weight:      document.getElementById('edit-weight').value.trim(),
 
+  variants:    collectVariants(),
+
+  image:       primaryImage,
+  images:      cleanedImages,
+
+  emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
+  badge:       document.getElementById('edit-badge').value.trim() || null,
+  badgeType:   document.getElementById('edit-badgeType').value || null,
+
+  bgClass:     document.getElementById('edit-bgClass').value,
+  category:    document.getElementById('edit-category').value,
+
+  features,
+
+  ingredients: document.getElementById('edit-ingredients').value.trim(),
+  keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
+  storageInfo: document.getElementById('edit-storageInfo').value.trim(),
+  allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
+
+  visible:     document.getElementById('edit-visible').checked,
+  bestSeller:  document.getElementById('edit-bestseller').checked,
+};
   if (editingProductIndex === -1) {
     adminData.products.push(updated);
     toast(`"${name}" added!`, 'success');
