@@ -386,11 +386,11 @@ ul { list-style: none; }
 }
 .hero-img-wrap img.hero-photo {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 5px solid rgba(255,107,0,0.35);
-  will-change: transform;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0;
+  border: none;
+  display: block;
 }
 .food-circle {
   position: absolute;
