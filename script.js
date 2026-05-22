@@ -142,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="product-info">
           <h3>${product.name}</h3>
-          <p>${product.description}</p>
           <div class="product-footer">
             ${buildPriceHTML(product)}
             <div class="product-card-btns">

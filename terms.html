@@ -1,226 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Terms of Service – Bunofeed</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="legal.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Terms & Conditions | Bunofeed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="/legal.css"/>
 </head>
 <body>
 
-  <!-- ===== NAVBAR ===== -->
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo">
+      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
-      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="index.html#shop" class="nav-link">Products</a>
-        <a href="index.html#about" class="nav-link">About</a>
-        <a href="index.html#contact" class="nav-link">Contact</a>
-        <button class="search-btn"><i class="fas fa-search"></i></button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="/index.html"      class="nav-link">Home</a>
+        <a href="/shop.html"       class="nav-link">Products</a>
+        <a href="/orders.html"     class="nav-link">My Orders</a>
+        <a href="/about.html"      class="nav-link">About Us</a>
+        <a href="/index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- ===== PAGE HERO ===== -->
+  <!-- Legal Hero -->
   <section class="legal-hero">
     <div class="legal-hero-inner">
-      <p class="section-tag">Legal</p>
-      <h1>Terms of Service</h1>
-      <p>Last updated: April 15, 2026</p>
+      <div class="section-tag">User Standards</div>
+      <h1>Terms & Conditions</h1>
+      <p>Last Updated: May 22, 2026. Please read our operating terms before purchase.</p>
     </div>
   </section>
 
-  <!-- ===== CONTENT ===== -->
-  <section class="legal-body">
+  <!-- Legal Body Layout -->
+  <div class="legal-body">
     <div class="legal-container">
 
-      <!-- Sidebar TOC -->
+      <!-- TOC sidebar -->
       <aside class="legal-toc">
-        <h4>Contents</h4>
+        <h4>User Contract</h4>
         <ul>
-          <li><a href="#acceptance">1. Acceptance of Terms</a></li>
-          <li><a href="#use">2. Use of Website</a></li>
-          <li><a href="#products">3. Products & Orders</a></li>
-          <li><a href="#payment">4. Payment</a></li>
-          <li><a href="#shipping">5. Shipping & Delivery</a></li>
-          <li><a href="#returns">6. Returns & Refunds</a></li>
-          <li><a href="#ip">7. Intellectual Property</a></li>
-          <li><a href="#liability">8. Limitation of Liability</a></li>
-          <li><a href="#changes">9. Changes to Terms</a></li>
-          <li><a href="#contact-legal">10. Contact Us</a></li>
+          <li><a href="#agreement">1. Agreement to Terms</a></li>
+          <li><a href="#product-pricing">2. Products & Pricing</a></li>
+          <li><a href="#user-checkout">3. Checkout details</a></li>
+          <li><a href="#cancel-returns">4. Cancel & Return Terms</a></li>
+          <li><a href="#intellectual">5. Brand Rights</a></li>
+          <li><a href="#liability">6. Limitation of Liability</a></li>
+          <li><a href="#indemnity">7. Indemnity Contract</a></li>
+          <li><a href="#contact-us">8. Helpdesk Contacts</a></li>
         </ul>
       </aside>
 
-      <!-- Main Content -->
-      <article class="legal-content">
-
+      <!-- Legal Content -->
+      <div class="legal-content">
         <div class="legal-notice">
-          <i class="fas fa-info-circle"></i>
-          Please read these Terms of Service carefully before using the Bunofeed website or purchasing our products. By accessing our site, you agree to be bound by these terms.
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>Important Note: Bunofeed uses local storage simulations to handle order pipelines on our website. Standard checkout operates using Razorpay API structures. All purchases are bound by RBI rules.</div>
         </div>
 
-        <div class="legal-section" id="acceptance">
-          <h2><span class="section-num">01</span> Acceptance of Terms</h2>
-          <p>By accessing and using the Bunofeed website (<strong>bunofeed.com</strong>) and/or purchasing our products, you confirm that you are at least 18 years of age and agree to be legally bound by these Terms of Service. If you do not agree with any part of these terms, please do not use our website.</p>
-          <p>These terms apply to all visitors, users, and customers of Bunofeed.</p>
-        </div>
+        <section class="legal-section" id="agreement">
+          <h2><span class="section-num">1</span> Agreement to Terms</h2>
+          <p>By accessing our website and navigating the catalog features at <span class="app-url-text">bunofeed.in</span>, you acknowledge that you have read, understood, and accept these Terms of Service. If you disagree with any portion of these operating standards, you must discontinue website navigation immediately.</p>
+        </section>
 
-        <div class="legal-section" id="use">
-          <h2><span class="section-num">02</span> Use of Website</h2>
-          <p>You agree to use our website only for lawful purposes and in a manner that does not infringe the rights of others. You must not:</p>
+        <section class="legal-section" id="product-pricing">
+          <h2><span class="section-num">2</span> Products & Pricing accuracy</h2>
+          <p>We make every effort to display correct photos, pricing variables, packaging weights, and features for our peanut butter jars, oats, and mueslis. However:</p>
           <ul class="legal-list">
-            <li><i class="fas fa-times-circle"></i> Use the site in any way that violates applicable local, national, or international laws</li>
-            <li><i class="fas fa-times-circle"></i> Transmit unsolicited or unauthorized advertising material</li>
-            <li><i class="fas fa-times-circle"></i> Attempt to gain unauthorized access to any part of our website</li>
-            <li><i class="fas fa-times-circle"></i> Engage in any conduct that restricts or inhibits the use of our website by others</li>
-            <li><i class="fas fa-times-circle"></i> Upload or transmit any malicious code or harmful material</li>
+            <li><i class="fas fa-edit"></i> We reserve the right to change prices at any time without prior announcement.</li>
+            <li><i class="fas fa-ban"></i> We reserve the right to limit sales metrics to specific geographic postal codes.</li>
+            <li><i class="fas fa-tag"></i> Original MRPs may be struck-through during clearance sale campaigns.</li>
           </ul>
-        </div>
+        </section>
 
-        <div class="legal-section" id="products">
-          <h2><span class="section-num">03</span> Products & Orders</h2>
-          <p>All products displayed on our website are subject to availability. We reserve the right to discontinue any product at any time without notice.</p>
-          <p>By placing an order, you confirm that:</p>
+        <section class="legal-section" id="user-checkout">
+          <h2><span class="section-num">3</span> User Obligations at Checkout</h2>
+          <p>When completing purchase checkpoints in our store checkout form:</p>
           <ul class="legal-list">
-            <li><i class="fas fa-check-circle"></i> All information provided is accurate and complete</li>
-            <li><i class="fas fa-check-circle"></i> You are authorized to use the payment method provided</li>
-            <li><i class="fas fa-check-circle"></i> You have reviewed any allergen or dietary information relevant to you</li>
+            <li><i class="fas fa-user-check"></i> You must supply accurate legal billing names and responsive phone/email addresses.</li>
+            <li><i class="fas fa-times-circle"></i> Providing fake shipping coordinates or invalid pincodes will result in order cancellation.</li>
+            <li><i class="fas fa-shield-alt"></i> Card information is processed securely. Users are liable for any card authorisations made under their accounts.</li>
           </ul>
-          <p>We reserve the right to refuse or cancel any order at our sole discretion, including orders that appear to be placed by resellers or distributors without prior agreement.</p>
-        </div>
+        </section>
 
-        <div class="legal-section" id="payment">
-          <h2><span class="section-num">04</span> Payment</h2>
-          <p>All prices listed on our website are in <strong>Indian Rupees (₹)</strong> and are inclusive of applicable taxes unless otherwise stated. We accept the following payment methods:</p>
-          <ul class="legal-list">
-            <li><i class="fas fa-check-circle"></i> Credit & Debit Cards (Visa, Mastercard, RuPay)</li>
-            <li><i class="fas fa-check-circle"></i> UPI (Google Pay, PhonePe, Paytm)</li>
-            <li><i class="fas fa-check-circle"></i> Net Banking</li>
-            
-          </ul>
-          <p>Payment is processed securely. Bunofeed does not store your card details on our servers.</p>
-        </div>
+        <section class="legal-section" id="cancel-returns">
+          <h2><span class="section-num">4</span> Cancellations and Refund Policy</h2>
+          <p>We want you to be completely satisfied with your premium nutrition purchase. Here is our contract:</p>
+          <h3>Order Cancellations</h3>
+          <p>Orders can only be cancelled while their status is "Placed". Once the package is shipped (marked "Shipped" or "Delivered"), cancellations are locked. Cancellations are processed immediately in the <strong>My Orders</strong> tab, and refunds are credited back to your original source of payment within 5-7 business days.</p>
+          <h3>Easy 7-Day Returns</h3>
+          <p>We offer a hassle-free 7-day return policy for any products that arrive damaged, deformed, expired, or incorrect. Please initiate your return request from the <strong>My Orders</strong> page or contact support. Once approved, reverse pick-up is initialized and complete refund/replacement is issued.</p>
+        </section>
 
-        <div class="legal-section" id="shipping">
-          <h2><span class="section-num">05</span> Shipping & Delivery</h2>
-          <p>We deliver across India. Estimated delivery times are:</p>
-          <div class="info-cards">
-            <div class="info-card">
-              <i class="fas fa-city"></i>
-              <strong>Metro Cities</strong>
-              <span>3–5 Business Days</span>
-            </div>
-            <div class="info-card">
-              <i class="fas fa-map-marker-alt"></i>
-              <strong>Other Cities</strong>
-              <span>5–7 Business Days</span>
-            </div>
-            <div class="info-card">
-              <i class="fas fa-mountain"></i>
-              <strong>Remote Areas</strong>
-              <span>7–10 Business Days</span>
-            </div>
-          </div>
-          <p>Bunofeed is not liable for delays caused by courier partners, natural events, or circumstances beyond our control. Shipping charges, if applicable, will be clearly shown at checkout.</p>
-        </div>
+        <section class="legal-section" id="intellectual">
+          <h2><span class="section-num">5</span> Intellectual Property</h2>
+          <p>All logos, typography, visual graphics, recipes, slogans, product names, and layout representations on this website are the pure property of Bunofeed Foods Private Limited. You are prohibited from copying, distributing, republishing, or mimicking any visual theme element without our written consent.</p>
+        </section>
 
-        <div class="legal-section" id="returns">
-          <h2><span class="section-num">06</span> Returns & Refunds</h2>
-          <p>We take quality seriously. If you receive a damaged, defective, or incorrect product, please contact us within <strong>48 hours</strong> of delivery with photos of the issue.</p>
-          <ul class="legal-list">
-            <li><i class="fas fa-check-circle"></i> Eligible returns will receive a full refund or replacement</li>
-            <li><i class="fas fa-check-circle"></i> Refunds are processed within 5–7 business days</li>
-            <li><i class="fas fa-times-circle"></i> Opened or partially consumed products are not eligible for return unless defective</li>
-            <li><i class="fas fa-times-circle"></i> Change of mind returns are not accepted</li>
-          </ul>
-          <p>To initiate a return, email us at <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a> with your order number.</p>
-        </div>
+        <section class="legal-section" id="liability">
+          <h2><span class="section-num">6</span> Limitation of Liability</h2>
+          <p>To the maximum extent permitted by Indian law, Bunofeed and its team members will not be liable for any direct, indirect, random, or punitive damages resulting from product consumption without consulting a health certified nutritionist, especially if users have pre-existing nut allergies.</p>
+        </section>
 
-        <div class="legal-section" id="ip">
-          <h2><span class="section-num">07</span> Intellectual Property</h2>
-          <p>All content on this website — including the Bunofeed logo, product images, text, graphics, and design — is the exclusive property of Bunofeed and is protected by Indian and international copyright and trademark laws.</p>
-          <p>You may not reproduce, distribute, or use any content from this website without our prior written permission.</p>
-        </div>
+        <section class="legal-section" id="indemnity">
+          <h2><span class="section-num">7</span> Indemnification</h2>
+          <p>You agree to indemnify and hold harmless Bunofeed and its employees from any claims, losses, costs, or court liabilities resulting from your breach of these terms, or your wrongful actions while inspecting our code properties.</p>
+        </section>
 
-        <div class="legal-section" id="liability">
-          <h2><span class="section-num">08</span> Limitation of Liability</h2>
-          <p>To the fullest extent permitted by law, Bunofeed shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability in any matter shall not exceed the amount paid by you for the specific product in question.</p>
-          <p>Product descriptions and nutritional information are provided in good faith. Always consult a healthcare professional before making significant dietary changes.</p>
-        </div>
-
-        <div class="legal-section" id="changes">
-          <h2><span class="section-num">09</span> Changes to Terms</h2>
-          <p>Bunofeed reserves the right to update or modify these Terms of Service at any time. Changes will be posted on this page with the updated date. Your continued use of the website after any changes constitutes your acceptance of the new terms.</p>
-          <p>We encourage you to review this page periodically.</p>
-        </div>
-
-        <div class="legal-section" id="contact-legal">
-          <h2><span class="section-num">10</span> Contact Us</h2>
-          <p>If you have any questions about these Terms of Service, please reach out:</p>
+        <section class="legal-section" id="contact-us">
+          <h2><span class="section-num">8</span> Store Helpdesk Contacts</h2>
+          <p>Questions regarding our legal terms or other services can be raised with our manager at:</p>
           <div class="contact-box">
-            <div><i class="fas fa-envelope"></i> <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a></div>
-            
-            
+            <div><i class="fas fa-envelope"></i> <span>bunofeedhelpdesk@gmail.com</span></div>
+            <div><i class="fas fa-map-marker-alt"></i> <span>Bunofeed Foods Private Limited, Uttar Pradesh, India</span></div>
           </div>
-        </div>
+        </section>
+      </div>
 
-      </article>
     </div>
-  </section>
+  </div>
 
-  <!-- ===== FOOTER ===== -->
+  <!-- Standard Footer -->
   <footer class="footer">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
-        <p>Your companion in healthy living. Honest food for real people.</p>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-facebook"></i></a>
-          <a href="#"><i class="fab fa-youtube"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>Quick Links</h4>
-        <a href="index.html">Home</a>
-        <a href="index.html#shop">Products</a>
-        <a href="index.html#about">About</a>
-       
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <a href="terms.html">Terms of Service</a>
-        <a href="privacy.html">Privacy Policy</a>
-      </div>
-      <div class="footer-col">
-        <h4>Contact Us</h4>
-        <p><i class="fas fa-envelope"></i> bunofeedhelpdesk@gmail.com</p>
-        
- 
-        
-      </div>
-    </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved. | <a href="terms.html" style="color:var(--orange)">Terms of Service</a> | <a href="privacy.html" style="color:var(--orange)">Privacy Policy</a></p>
+      <p>© 2026 Bunofeed. All rights reserved.</p>
     </div>
   </footer>
- 
 
-  <script>
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    hamburger.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-      hamburger.classList.toggle('active');
-    });
-  </script>
+  <script src="/products.js"></script>
+  <script src="/script.js"></script>
 </body>
 </html>

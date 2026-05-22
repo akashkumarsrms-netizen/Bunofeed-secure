@@ -514,6 +514,8 @@
         height: 100%;
         max-height: 92dvh;
         margin-top: auto;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       #buno-modal-overlay.open {
         align-items: flex-end;
@@ -524,8 +526,8 @@
       #buno-modal-img-col {
         width: 100%;
         flex-shrink: 0;
-        height: 70vh;
-        min-height: 500px;
+        height: 380px;
+        min-height: unset;
         border-radius: 24px 24px 0 0;
       }
       #buno-modal-main-img img {
@@ -544,10 +546,9 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       }
       #buno-modal-body {
-        flex: 1;
+        flex: none;
         padding: 1.8rem 1.5rem 2.2rem;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-y: visible;
       }
       #buno-modal-name { font-size: 1.45rem; }
       #buno-modal-price { font-size: 1.7rem; }
@@ -556,10 +557,11 @@
     @media (max-width: 480px) {
       #buno-modal {
         max-height: 94dvh;
+        overflow-y: auto;
       }
       #buno-modal-img-col {
-        height: 68vh;
-        min-height: 400px;
+        height: 350px;
+        min-height: unset;
       }
       .buno-actions { flex-direction: column; gap: 0.75rem; }
       .buno-actions .btn { flex: unset; width: 100%; }
