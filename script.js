@@ -173,6 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (product) {
           currentProduct = product;
           qty = 1;
+          selectedUnitPrice = salePrice(product.price) || product.price;
+          selectedVariantLabel = product.weight || '';
           openCheckoutModal();
         }
       });
@@ -186,21 +188,28 @@ document.addEventListener('DOMContentLoaded', () => {
   ---------------------------------------------------------- */
   let currentProduct = null;
   let qty = 1;
+  let selectedUnitPrice = null;
+  let selectedVariantLabel = '';
 
   function openProductModal(id) {
     const product = (D.products || []).find(p => p.id === id);
     if (!product) return;
     currentProduct = product;
     qty = 1;
+    selectedUnitPrice = null;
+    selectedVariantLabel = '';
 
     if (window.BUNO_MODAL) {
-      window.BUNO_MODAL.open(product, (prod, quantity, unitPrice) => {
+      window.BUNO_MODAL.open(product, (prod, quantity, unitPrice, variantLabel) => {
         currentProduct = prod;
         qty = quantity;
+        selectedUnitPrice = unitPrice;
+        selectedVariantLabel = variantLabel || '';
         openCheckoutModal();
       });
     }
   }
+  window.BUNO_OPEN_MODAL = openProductModal;
 
   /* ----------------------------------------------------------
      SCROLL REVEAL ANIMATIONS
@@ -292,12 +301,15 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = true;
       proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
 
-      const sp = salePrice(currentProduct.price);
-      const unitPrice = sp || currentProduct.price;
+      // Logical checkout variant dynamic price calculation
+      const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
       const totalAmount = unitPrice * qty;
       const shipping = D.shipping && totalAmount < D.shipping.freeShippingAbove ? D.shipping.shippingCharge : 0;
       const grandTotal = totalAmount + shipping;
       const orderId = generateOrderId();
+
+      // Bundle chosen variant size cleanly in product name
+      const displayProductName = selectedVariantLabel ? `${currentProduct.name} (${selectedVariantLabel})` : currentProduct.name;
 
       const orderData = {
         order_id: orderId,
@@ -308,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         address: address,
         pincode: pincode,
         product_id: currentProduct.id,
-        product_name: currentProduct.name,
+        product_name: displayProductName,
         quantity: qty,
         product_price: unitPrice,
         total_amount: grandTotal,
@@ -318,18 +330,18 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       await syncLocalOrder(orderData);
-      triggerRazorpay(currentProduct, qty, grandTotal, shipping, orderData);
+      triggerRazorpay(currentProduct, qty, grandTotal, shipping, orderData, displayProductName);
     });
   }
 
-  function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData) {
+  function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData, displayProductName) {
     const key = D.payment && D.payment.razorpayKeyId;
     if (!key || key.includes('PASTE_YOUR')) {
       alert('⚠️ Razorpay Key ID not configured. Local order preview created anyway!');
       orderData.payment_status = 'Paid (Test Local)';
       orderData.payment_id = 'LOCAL_' + Date.now();
       syncLocalOrder(orderData).then(() => {
-        window.location.href = `order-success.html?payment_id=${orderData.payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
+        window.location.href = `order-success.html?order_id=${orderData.order_id}&payment_id=${orderData.payment_id}&product=${encodeURIComponent(displayProductName)}&qty=${quantity}&total=${grandTotal}`;
       });
       return;
     }
@@ -344,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
       amount: grandTotal * 100,
       currency: D.payment.currency || 'INR',
       name: D.payment.businessName || 'Bunofeed',
-      description: `${product.name} × ${quantity}${shippingAmt > 0 ? ` + ₹${shippingAmt} shipping` : ' (Free Shipping)'}`,
+      description: `${displayProductName} × ${quantity}${shippingAmt > 0 ? ` + ₹${shippingAmt} shipping` : ' (Free Shipping)'}`,
       image: D.payment.logoUrl || '',
       theme: { color: D.payment.themeColor || '#FF6B00' },
       prefill: {
@@ -360,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         orderData.payment_id = response.razorpay_payment_id;
         orderData.payment_status = 'Paid';
         await syncLocalOrder(orderData);
-        window.location.href = `order-success.html?payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(product.name)}&qty=${quantity}&total=${grandTotal}`;
+        window.location.href = `order-success.html?order_id=${orderData.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayProductName)}&qty=${quantity}&total=${grandTotal}`;
       },
       modal: {
         ondismiss: function() {
