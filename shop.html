@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/style.css"/>
   <style>
     /* ── Catalog Page Specific Styles ── */
     .shop-header {
@@ -87,18 +87,18 @@
   <!-- ═══════════ NAVBAR ═══════════ -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo" aria-label="Bunofeed Home">
+      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="index.html"      class="nav-link">Home</a>
-        <a href="shop.html"       class="nav-link active">Products</a>
-        <a href="orders.html"     class="nav-link">My Orders</a>
-        <a href="protein-calculator.html" class="nav-url">Nutritional Tool</a>
-        <a href="index.html#contact" class="nav-link">Contact</a>
+        <a href="/index.html"      class="nav-link">Home</a>
+        <a href="/shop.html"       class="nav-link active">Products</a>
+        <a href="/orders.html"     class="nav-link">My Orders</a>
+        <a href="/about.html"      class="nav-link">About Us</a>
+        <a href="/index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
@@ -192,15 +192,15 @@
       </div>
       <div class="footer-col">
         <h4>Store Menu</h4>
-        <a href="index.html">Home</a>
-        <a href="shop.html">Products</a>
-        <a href="orders.html">My Orders</a>
-        <a href="protein-calculator.html">Protein Calculator</a>
+        <a href="/index.html">Home</a>
+        <a href="/shop.html">Products</a>
+        <a href="/orders.html">My Orders</a>
+        <a href="/about.html">About Us</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="terms.html">Terms of Service</a>
-        <a href="privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>Support</h4>
@@ -208,16 +208,16 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved. | <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a></p>
+      <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms</a> | <a href="/privacy.html">Privacy</a></p>
     </div>
   </footer>
 
   <!-- Scripts -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="products.js"></script>
-  <script src="api.js"></script>
-  <script src="modal.js"></script>
-  <script src="script.js"></script>
+  <script src="/products.js"></script>
+  <script src="/api.js"></script>
+  <script src="/modal.js"></script>
+  <script src="/script.js"></script>
   <script>
     /**
      * Catalog rendering and real-time filtering engine.
@@ -334,7 +334,6 @@
             </div>
             <div class="product-info">
               <h3>${p.name}</h3>
-              <p>${p.tagline || p.description}</p>
               <div class="product-footer">
                 ${buildPriceMarkup(p)}
                 <div class="product-card-btns">
@@ -348,6 +347,15 @@
         });
 
         // Connect click listeners
+        catalogGrid.querySelectorAll('.product-card').forEach(card => {
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', (e) => {
+            if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn')) {
+              if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(card.querySelector('[data-id]').dataset.id);
+            }
+          });
+        });
+
         catalogGrid.querySelectorAll('.c-view-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
