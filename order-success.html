@@ -79,6 +79,7 @@
       <p>You'll receive a confirmation email shortly. We'll notify you once your order ships.</p>
 
       <div class="order-details" id="order-details">
+        <div class="order-row"><span>Order ID</span><span id="order-id">—</span></div>
         <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
         <div class="order-row"><span>Product</span><span id="pay-product">—</span></div>
         <div class="order-row"><span>Quantity</span><span id="pay-qty">—</span></div>
@@ -94,6 +95,7 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
+    document.getElementById('order-id').textContent      = params.get('order_id') || '—';
     document.getElementById('pay-id').textContent      = params.get('payment_id') || '—';
     document.getElementById('pay-product').textContent = params.get('product')    || '—';
     document.getElementById('pay-qty').textContent     = params.get('qty')        || '—';
