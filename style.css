@@ -599,7 +599,7 @@ ul { list-style: none; }
   font-family: var(--font-head);
   font-size: 1.2rem;
   font-weight: 800;
-  color: var(--brown);
+  color: #000000;
 }
 .price-sale {
   display: flex;
@@ -610,11 +610,11 @@ ul { list-style: none; }
   font-family: var(--font-head);
   font-size: 1.2rem;
   font-weight: 800;
-  color: #d32f2f; /* explicit sale price visibility */
+  color: #000000; /* actual price color is black */
 }
 .price-sale .price-old {
   font-size: 0.85rem;
-  color: var(--gray);
+  color: #d32f2f; /* Struck through price in red for consistency */
   text-decoration: line-through;
 }
 .price-save-tag {

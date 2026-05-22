@@ -300,7 +300,7 @@
       font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem;
       color: #555;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.1s;
+      transition: border-color 0.2s, background 0.2s, color 0.16s, transform 0.1s;
       -webkit-appearance: none;
       min-height: 44px;
     }
@@ -319,11 +319,11 @@
     }
     #buno-modal-price {
       font-family: 'Montserrat', sans-serif; font-size: 2rem;
-      font-weight: 800; color: #6B2D0E;
+      font-weight: 800; color: #000000;
     }
     #buno-modal-mrp {
-      font-size: 1.1rem; color: #aaa;
-      text-decoration: line-through; font-weight: 500;
+      font-size: 1.1rem; color: #d32f2f; /* Cutted price in red */
+      text-decoration: line-through; font-weight: 600;
       display: none;
     }
     #buno-modal-discount-badge {
@@ -448,6 +448,17 @@
       position: relative;
     }
     #buno-fullscreen-img {
+      max-width: 95%;
+      max-height: 85%;
+      object-fit: contain;
+      will-change: transform;
+      transform: translate3d(0, 0, 0) scale(1);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      contain: layout paint;
+    }
+
+    #buno-fullscreen-img-container img {
       max-width: 95%;
       max-height: 85%;
       object-fit: contain;
@@ -710,7 +721,6 @@
   let _isPinching = false;
   let _lastPinchDistance = 0;
   let _doubleTapTimer = null;
-  let _touchHistory = [];
 
   /* Scroll locking history to prevent body jumping on iOS Safari */
   let _scrollTopHistory = 0;
@@ -736,14 +746,14 @@
     _imgIndex = idx;
 
     const src = _images[idx];
-    const current = mainImgWrap.querySelector('img');
 
     function showImg(imgEl) {
       mainImgWrap.innerHTML = '';
       mainImgWrap.appendChild(imgEl);
     }
 
-    if (instant || !current) {
+    const currentImg = mainImgWrap.querySelector('img');
+    if (instant || !currentImg) {
       const img = new Image();
       img.src = src;
       img.decoding = 'async';
@@ -751,7 +761,7 @@
       img.style.opacity = '1';
       showImg(img);
     } else {
-      current.style.opacity = '0';
+      currentImg.style.opacity = '0';
       const img = new Image();
       img.decoding = 'async';
       img.onload = () => {
@@ -880,7 +890,7 @@
 
     fsViewer.classList.add('open');
     requestAnimationFrame(() => {
-      fsViewer.style.background = 'rgba(5, 2, 1, 0.96)';
+      fsViewer.style.background = 'rgba(5, 2, 1, 0.95)';
     });
 
     // Disable gestures on rest of screen
@@ -993,7 +1003,11 @@
     if (_isDragging && _zoomScale === 1 && _isSwiping) {
       const dx = e.changedTouches[0].clientX - _swipeStartX;
       if (Math.abs(dx) > 50) {
-        dx < 0 ? setImage(_imgIndex + 1) : setImage(_imgIndex - 1);
+        if (dx < 0) {
+          setImage(_imgIndex + 1);
+        } else {
+          setImage(_imgIndex - 1);
+        }
       }
     } else if (_zoomScale > 1) {
       // Soft boundaries snapback
@@ -1044,12 +1058,12 @@
   /* ---- Price calculations ---- */
   function getVariantPrice() {
     const product = _product;
-    if (!product) return { price: 0, mrp: null };
+    if (!product) return { price: 0, mrp: null, label: '' };
     if (product.variants && product.variants.length > 0 && _variantIdx < product.variants.length) {
       const v = product.variants[_variantIdx];
-      return { price: v.price, mrp: v.mrp || null };
+      return { price: v.price, mrp: v.mrp || null, label: v.label };
     }
-    return { price: product.price, mrp: product.mrp || null };
+    return { price: product.price, mrp: product.mrp || null, label: '' };
   }
 
   function updatePriceDisplay() {
@@ -1124,7 +1138,7 @@
   buyBtn.addEventListener('click', () => {
     if (!_product || !_onBuy) return;
 
-    const { price } = getVariantPrice();
+    const { price, label: variantLabel } = getVariantPrice();
     const D = window.BUNOFEED_DATA;
     let unitPrice = price;
 
@@ -1139,7 +1153,7 @@
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        _onBuy(_product, _qty, unitPrice);
+        _onBuy(_product, _qty, unitPrice, variantLabel);
       });
     });
   });
