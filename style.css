@@ -393,7 +393,7 @@ ul { list-style: none; }
   max-height: 600px;
   max-width: 600px;
   object-fit: contain;
-  object-position: right center;
+  object-position: bottom right;
   display: block;
   border-radius: 0 !important;
   border: none !important;
