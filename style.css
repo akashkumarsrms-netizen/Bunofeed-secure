@@ -371,7 +371,7 @@ ul { list-style: none; }
   position: absolute;
 
   /* MOVE LEFT / RIGHT */
-  right: 50px;
+  right: 10px;
 
   /* MOVE UP / DOWN */
   top: 120px;
