@@ -367,25 +367,16 @@ ul { list-style: none; }
 }
 
 /* Hero Right Visuals */
-.hero{
-  position: relative;
-  min-height: 100vh;
-}
-
 .hero-image{
   position: absolute;
 
-  top: 50%;
-  right: 0;
+  /* MOVE LEFT / RIGHT */
+  right: 50px;
 
-  transform: translateY(-50%);
+  /* MOVE UP / DOWN */
+  top: 120px;
 
   width: 45%;
-
-  display: flex;
-  justify-content: flex-end;
-
-  padding-right: 40px;
 
   z-index: 1;
 }
@@ -403,6 +394,7 @@ ul { list-style: none; }
   border-radius: 0 !important;
   border: none !important;
 }
+
 /* ============================================================
    FEATURES STRIP
    ============================================================ */
