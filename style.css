@@ -385,7 +385,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  transform: translate(40px, 100px); /* X = left/right, Y = up/down */
+  transform: translate(-40px, 100px); /* X = left/right, Y = up/down */
 }
 
 .hero-photo {
