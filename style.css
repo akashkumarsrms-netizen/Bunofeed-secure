@@ -370,7 +370,7 @@ ul { list-style: none; }
 .hero-image {
   position: absolute;
   right: 0;
-  bottom: 30;
+  bottom: 0;
   top: 0;
   width: 100%;
   z-index: 1;
