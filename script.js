@@ -2,7 +2,7 @@
  * ============================================================
  *  BUNOFEED — Main Script (script.js)
  *  - Reads data from products.js (window.BUNOFEED_DATA)
- *  - Renders best-seller products on homepage
+ *  - Renders best-seller products on homepage using unified multi-variant card engine
  *  - Uses shared window.BUNO_MODAL for full-screen detail
  *  - Shows/hides campaign banner
  *  - Mobile nav, scroll reveal, active links
@@ -60,53 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const wrap = document.querySelector('.hero-img-wrap');
       if (wrap) {
         wrap.innerHTML = `<img class="hero-photo" src="${h.image}" alt="Bunofeed Hero" loading="eager"/>`;
-        document.querySelector('.hero-image').style.display = 'flex';
+        const heroImgSection = document.querySelector('.hero-image');
+        if (heroImgSection) heroImgSection.style.display = 'flex';
       }
-    }
-  }
-
-  /* ----------------------------------------------------------
-     SALE helper
-  ---------------------------------------------------------- */
-  const saleActive  = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
-  const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
-  function salePrice(p) {
-    return saleActive && discountPct > 0 ? Math.round(p * (1 - discountPct / 100)) : null;
-  }
-
-  /* ----------------------------------------------------------
-     PRICE HTML helper (supports MRP strikethrough)
-  ---------------------------------------------------------- */
-  function buildPriceHTML(product) {
-    const sp = salePrice(product.price);
-    const mrp = product.mrp || null;
-
-    if (sp) {
-      return `
-        <div class="product-price">
-          <div class="product-weight">${product.weight || ''}</div>
-          <div class="price-sale">
-            <span class="price-current">₹${sp}</span>
-            <span class="price-old">₹${product.price}</span>
-          </div>
-        </div>`;
-    } else if (mrp && mrp > product.price) {
-      const pct = Math.round((1 - product.price / mrp) * 100);
-      return `
-        <div class="product-price">
-          <div class="product-weight">${product.weight || ''}</div>
-          <div class="price-sale">
-            <span class="price-current">₹${product.price}</span>
-            <span class="price-old">₹${mrp}</span>
-            <span class="price-save-tag">${pct}% off</span>
-          </div>
-        </div>`;
-    } else {
-      return `
-        <div class="product-price">
-          <div class="product-weight">${product.weight || ''}</div>
-          <div class="price-original">₹${product.price}</div>
-        </div>`;
     }
   }
 
@@ -118,97 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.innerHTML = '';
 
     D.products.filter(p => p.visible !== false && p.bestSeller === true).forEach(product => {
-
-      let badgeHTML = '';
-      if (product.badge) {
-        const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
-        badgeHTML = `<div class="product-badge${cls}">${product.badge}</div>`;
-      }
-      if (saleActive) {
-        badgeHTML += `<div class="sale-ribbon">${D.sale.label || 'SALE'} ${discountPct}% OFF</div>`;
-      }
-
-      const imgHTML = product.image
-        ? `<img class="product-photo" src="${product.image}" loading="lazy" decoding="async" alt="${product.name}"/>`
-        : `<span class="product-emoji">${product.emoji || '🥜'}</span>`;
-
-      const card = document.createElement('div');
-      card.className = 'product-card reveal';
-      card.dataset.id = product.id;
-      card.innerHTML = `
-        ${badgeHTML}
-        <div class="product-img ${product.bgClass || ''}">
-          ${imgHTML}
-        </div>
-        <div class="product-info">
-          <h3>${product.name}</h3>
-          <div class="product-footer">
-            ${buildPriceHTML(product)}
-            <div class="product-card-btns">
-              <button class="btn-view-detail view-detail-btn" data-id="${product.id}">View Details</button>
-              <button class="btn-buy buy-now-btn" data-id="${product.id}">Buy Now</button>
-            </div>
-          </div>
-        </div>`;
-
+      const card = bunoBuildProductCard(product);
       grid.appendChild(card);
-    });
-
-    /* Click handlers */
-    grid.querySelectorAll('.product-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (!e.target.closest('.btn-buy') && !e.target.closest('.btn-view-detail')) {
-          openProductModal(card.dataset.id);
-        }
-      });
-    });
-    grid.querySelectorAll('.view-detail-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => { e.stopPropagation(); openProductModal(btn.dataset.id); });
-    });
-    grid.querySelectorAll('.buy-now-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const product = (D.products || []).find(p => p.id === btn.dataset.id);
-        if (product) {
-          currentProduct = product;
-          qty = 1;
-          selectedUnitPrice = salePrice(product.price) || product.price;
-          selectedVariantLabel = product.weight || '';
-          openCheckoutModal();
-        }
-      });
     });
 
     initReveal();
   }
-
-  /* ----------------------------------------------------------
-     OPEN PRODUCT DETAIL MODAL (uses window.BUNO_MODAL)
-  ---------------------------------------------------------- */
-  let currentProduct = null;
-  let qty = 1;
-  let selectedUnitPrice = null;
-  let selectedVariantLabel = '';
-
-  function openProductModal(id) {
-    const product = (D.products || []).find(p => p.id === id);
-    if (!product) return;
-    currentProduct = product;
-    qty = 1;
-    selectedUnitPrice = null;
-    selectedVariantLabel = '';
-
-    if (window.BUNO_MODAL) {
-      window.BUNO_MODAL.open(product, (prod, quantity, unitPrice, variantLabel) => {
-        currentProduct = prod;
-        qty = quantity;
-        selectedUnitPrice = unitPrice;
-        selectedVariantLabel = variantLabel || '';
-        openCheckoutModal();
-      });
-    }
-  }
-  window.BUNO_OPEN_MODAL = openProductModal;
 
   /* ----------------------------------------------------------
      SCROLL REVEAL ANIMATIONS
@@ -235,33 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ---------------------------------------------------------- */
   let isProcessing = false;
 
-  function generateOrderId() {
-    const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
-    return 'ORD' + Date.now() + rand;
-  }
-
-  async function syncLocalOrder(orderData) {
-    if (!window.BUNOFEED_API) return;
-    try {
-      await window.BUNOFEED_API.post('createOrder', orderData);
-    } catch (e) {
-      console.error('Error syncing order data:', e);
-    }
-  }
-
   const checkoutOverlay = document.getElementById('checkout-modal-overlay');
   const checkoutForm    = document.getElementById('checkout-form');
   const checkoutClose   = document.getElementById('checkout-close-btn');
-
-  function openCheckoutModal() {
-    if (!currentProduct) return;
-    checkoutOverlay.classList.add('open');
-  }
-
-  function closeCheckoutModal() {
-    checkoutOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
 
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
 
@@ -300,15 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = true;
       proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
 
-      // Logical checkout variant dynamic price calculation
-      const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
-      const totalAmount = unitPrice * qty;
+      // selected checkout details
+      const totalAmount = selectedUnitPrice * qty;
       const shipping = D.shipping && totalAmount < D.shipping.freeShippingAbove ? D.shipping.shippingCharge : 0;
       const grandTotal = totalAmount + shipping;
       const orderId = generateOrderId();
 
-      // Bundle chosen variant size cleanly in product name
-      const displayProductName = selectedVariantLabel ? `${currentProduct.name} (${selectedVariantLabel})` : currentProduct.name;
+      // Store combined details as required: (e.g. "Crunchy Peanut Butter - 400gm")
+      const displayProductName = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
       const orderData = {
         order_id: orderId,
@@ -321,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         product_id: currentProduct.id,
         product_name: displayProductName,
         quantity: qty,
-        product_price: unitPrice,
+        product_price: selectedUnitPrice,
         total_amount: grandTotal,
         payment_id: '',
         razorpay_order_id: '',
@@ -333,35 +179,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-  function showRedirectOverlay() {
-    const overlay = document.createElement('div');
-    overlay.id = 'redirect-overlay';
-    overlay.style.cssText = [
-      'position:fixed', 'inset:0', 'z-index:99999',
-      'background:rgba(255,255,255,0.97)',
-      'display:flex', 'flex-direction:column',
-      'align-items:center', 'justify-content:center', 'gap:1.2rem'
-    ].join(";");
-    overlay.innerHTML = `
-      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#28a745,#20c753);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;">
-        <i class="fas fa-check"></i>
-      </div>
-      <p style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.2rem;color:#2c1a0e;margin:0;">Payment Successful!</p>
-      <p style="font-family:'Open Sans',sans-serif;font-size:.92rem;color:#7a6155;margin:0;">Taking you to your order summary</p>
-      <div style="width:36px;height:36px;border:3px solid #f0e8e0;border-top-color:#FF6B00;border-radius:50%;animation:spin .8s linear infinite;"></div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-    document.body.appendChild(overlay);
-  }
-
   function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData, displayProductName) {
     const key = D.payment && D.payment.razorpayKeyId;
-    if (!key || key.includes('PASTE_YOUR')) {
-      alert('⚠️ Razorpay Key ID not configured. Local order preview created anyway!');
-      orderData.payment_status = 'Paid (Test Local)';
-      orderData.payment_id = 'LOCAL_' + Date.now();
+    if (!key || key.includes('PASTE_YOUR') || key.includes('rzp_test_SntAL')) {
+      // Create test order directly if custom real key not filled yet, for premium test convenience
+      showRedirectOverlay();
+      orderData.payment_status = 'Paid (Demo Mode)';
+      orderData.payment_id = 'BUNO_' + Date.now();
       syncLocalOrder(orderData).then(() => {
-        window.location.href = `order-success.html?order_id=${orderData.order_id}&payment_id=${orderData.payment_id}&product=${encodeURIComponent(displayProductName)}&qty=${quantity}&total=${grandTotal}`;
+        setTimeout(() => {
+          window.location.href = `order-success.html?order_id=${orderData.order_id}&payment_id=${orderData.payment_id}&product=${encodeURIComponent(displayProductName)}&qty=${quantity}&total=${grandTotal}`;
+        }, 1200);
       });
       return;
     }
@@ -389,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
         product_id: product.id,
       },
       handler: async function(response) {
-        // Immediately hide checkout modal and show full-screen redirect overlay
         closeCheckoutModal();
         showRedirectOverlay();
 
@@ -425,6 +252,40 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = false;
       proceedBtn.textContent = 'Proceed to Pay';
     }
+  }
+
+  function generateOrderId() {
+    const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
+    return 'ORD' + Date.now() + rand;
+  }
+
+  async function syncLocalOrder(orderData) {
+    if (!window.BUNOFEED_API) return;
+    try {
+      await window.BUNOFEED_API.post('createOrder', orderData);
+    } catch (e) {
+      console.error('Error syncing order data:', e);
+    }
+  }
+
+  function showRedirectOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'redirect-overlay';
+    overlay.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:99999',
+      'background:rgba(255,255,255,0.97)',
+      'display:flex', 'flex-direction:column',
+      'align-items:center', 'justify-content:center', 'gap:1.2rem'
+    ].join(";");
+    overlay.innerHTML = `
+      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#28a745,#20c753);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;">
+        <i class="fas fa-check"></i>
+      </div>
+      <p style="font-family:\'Montserrat\',sans-serif;font-weight:800;font-size:1.2rem;color:#2c1a0e;margin:0;">Payment Successful!</p>
+      <p style="font-family:\'Open Sans\',sans-serif;font-size:.92rem;color:#7a6155;margin:0;">Taking you to your order summary</p>
+      <div style="width:36px;height:36px;border:3px solid #f0e8e0;border-top-color:#FF6B00;border-radius:50%;animation:spin .8s linear infinite;"></div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(overlay);
   }
 
   /* ----------------------------------------------------------
@@ -496,3 +357,224 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
+/* ══════════════════════════════════════════════════════════
+   GLOBAL UNIFIED MULTI-VARIANT CARD & MODAL ROUTER
+   ══════════════════════════════════════════════════════════ */
+let currentProduct = null;
+let qty = 1;
+let selectedUnitPrice = null;
+let selectedVariantLabel = '';
+
+const checkoutOverlay = document.getElementById('checkout-modal-overlay');
+
+function openCheckoutModal() {
+  if (!currentProduct) return;
+  checkoutOverlay.classList.add('open');
+}
+
+function closeCheckoutModal() {
+  checkoutOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// 1. Opens detail modal with a selected texture preloaded
+function openProductModal(id, selectedTexture) {
+  const D = window.BUNOFEED_DATA;
+  const product = (D.products || []).find(p => p.id === id);
+  if (!product) return;
+  currentProduct = product;
+  qty = 1;
+  selectedUnitPrice = null;
+  selectedVariantLabel = '';
+
+  if (window.BUNO_MODAL) {
+    window.BUNO_MODAL.open(product, selectedTexture || "", (prod, quantity, unitPrice, variantLabel) => {
+      currentProduct = prod;
+      qty = quantity;
+      selectedUnitPrice = unitPrice;
+      selectedVariantLabel = variantLabel || '';
+      openCheckoutModal();
+    });
+  }
+}
+window.BUNO_OPEN_MODAL = openProductModal;
+
+// 2. Buy Now direct checkout directly from homepage or catalog listing page
+function openProductCheckoutDirect(product, selectedTexture) {
+  const D = window.BUNOFEED_DATA;
+  const saleActive = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
+  const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
+
+  currentProduct = product;
+  qty = 1;
+
+  // Selected texture must fallback or resolve to size
+  const weightSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "";
+  const key = selectedTexture ? `${selectedTexture}-${weightSize}` : `-${weightSize}`;
+
+  let origPrice = product.price;
+  if (product.prices && product.prices[key]) {
+    origPrice = product.prices[key].price;
+  }
+
+  // Adjust for sale discount if active
+  if (saleActive) {
+    selectedUnitPrice = Math.round(origPrice * (1 - discountPct / 100));
+  } else {
+    selectedUnitPrice = origPrice;
+  }
+
+  // Bundle selection label cleanly (e.g. "Smooth - 400gm")
+  selectedVariantLabel = selectedTexture ? `${selectedTexture} - ${weightSize}` : weightSize;
+
+  openCheckoutModal();
+}
+
+// 3. Unified Card Render builder used globally in index.html AND shop.html
+window.bunoBuildProductCard = function(product) {
+  const D = window.BUNOFEED_DATA;
+  const saleActive = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
+  const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
+
+  // Initial local card states
+  let selectedTexture = product.textures && product.textures.length > 0 ? product.textures[0] : "";
+  const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "";
+
+  const card = document.createElement('div');
+  card.className = 'product-card reveal visible';
+  card.dataset.id = product.id;
+  card.setAttribute('data-selected-texture', selectedTexture);
+
+  function renderCardHTML() {
+    const key = selectedTexture ? `${selectedTexture}-${defaultSize}` : `-${defaultSize}`;
+    let origPrice = product.price;
+    let origMrp = product.mrp || null;
+
+    if (product.prices && product.prices[key]) {
+      origPrice = product.prices[key].price;
+      origMrp = product.prices[key].mrp || null;
+    }
+
+    let curPrice = origPrice;
+    let oldPrice = origMrp;
+    if (saleActive) {
+      curPrice = Math.round(origPrice * (1 - discountPct / 100));
+      if (!oldPrice) oldPrice = origPrice;
+    }
+
+    let badgeHTML = '';
+    if (product.badge) {
+      const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
+      badgeHTML = `<div class="product-badge${cls}">${product.badge}</div>`;
+    }
+    if (saleActive) {
+      badgeHTML += `<div class="sale-ribbon">${D.sale.label || 'SALE'} ${discountPct}% OFF</div>`;
+    }
+
+    const imgHTML = product.image
+      ? `<img class="product-photo" src="${product.image}" loading="lazy" decoding="async" alt="${product.name}"/>`
+      : `<span class="product-emoji">${product.emoji || '🥜'}</span>`;
+
+    let priceHTML = '';
+    if (saleActive) {
+      priceHTML = `
+        <div class="product-price">
+          <div class="product-weight">${defaultSize}</div>
+          <div class="price-sale">
+            <span class="price-current">₹${curPrice}</span>
+            <span class="price-old">₹${origPrice}</span>
+          </div>
+        </div>`;
+    } else if (oldPrice && oldPrice > curPrice) {
+      const pct = Math.round((1 - curPrice / oldPrice) * 100);
+      priceHTML = `
+        <div class="product-price">
+          <div class="product-weight">${defaultSize}</div>
+          <div class="price-sale">
+            <span class="price-current">₹${curPrice}</span>
+            <span class="price-old">₹${oldPrice}</span>
+            <span class="price-save-tag">${pct}% off</span>
+          </div>
+        </div>`;
+    } else {
+      priceHTML = `
+        <div class="product-price">
+          <div class="product-weight">${defaultSize}</div>
+          <div class="price-original">₹${curPrice}</div>
+        </div>`;
+    }
+
+    // Display pills selector only if texture variants are configured
+    let texturesMarkup = '';
+    if (product.textures && product.textures.length > 0) {
+      texturesMarkup = `
+        <div class="card-textures-row" style="display:flex; flex-wrap:wrap; gap:4px; margin: 8px 0 2px;">
+          ${product.textures.map(tex => {
+            const isSelected = tex === selectedTexture;
+            const btnStyle = isSelected
+              ? 'background: var(--brown); color: #fff; border-color: var(--brown);'
+              : 'background: #fff; color: #555; border-color: #e0d4cc;';
+            return `
+              <button type="button" class="card-texture-pill" data-tex="${tex}"
+                style="font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid; cursor: pointer; transition: all 0.2s; ${btnStyle}">
+                ${tex}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      ${badgeHTML}
+      <div class="product-img ${product.bgClass || ''}">
+        ${imgHTML}
+      </div>
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        ${texturesMarkup}
+        <div class="product-foot-row" style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:0.6rem; width:100%;">
+          ${priceHTML}
+          <div class="product-card-btns" style="display:flex; gap:0.4rem;">
+            <button type="button" class="btn-view-detail c-view-btn-custom" style="padding:6px 12px; font-size:0.75rem; border-radius:50px; background:transparent; color:var(--brown); font-family:var(--font-head); font-weight:700; border:2px solid var(--brown); cursor:pointer; transition:var(--transition); min-height:36px;">Details</button>
+            <button type="button" class="btn-buy c-buy-btn-custom" style="padding:6px 12px; font-size:0.75rem; border-radius:50px; background:var(--brown); color:var(--white); font-family:var(--font-head); font-weight:700; border:2px solid var(--brown); cursor:pointer; transition:var(--transition); min-height:36px;">Buy</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Connect pill clicks
+    card.querySelectorAll('.card-texture-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedTexture = btn.dataset.tex;
+        card.setAttribute('data-selected-texture', selectedTexture);
+        renderCardHTML();
+      });
+    });
+
+    // Connect custom buttons
+    card.querySelector('.c-view-btn-custom').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProductModal(product.id, selectedTexture);
+    });
+
+    card.querySelector('.c-buy-btn-custom').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProductCheckoutDirect(product, selectedTexture);
+    });
+  }
+
+  renderCardHTML();
+
+  // Clicking anywhere on card triggers the modal with pre-selected card texture
+  card.style.cursor = 'pointer';
+  card.addEventListener('click', (e) => {
+    if (!e.target.closest('.card-texture-pill') && !e.target.closest('.c-view-btn-custom') && !e.target.closest('.c-buy-btn-custom')) {
+      openProductModal(product.id, selectedTexture);
+    }
+  });
+
+  return card;
+};

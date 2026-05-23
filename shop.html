@@ -243,51 +243,13 @@
         // Add filter interactions
         catMenu.querySelectorAll('.filter-btn').forEach(btn => {
           btn.addEventListener('click', () => {
-            catMenu.querySelector('.filter-btn.active').classList.remove('active');
+            const activeNow = catMenu.querySelector('.filter-btn.active');
+            if (activeNow) activeNow.classList.remove('active');
             btn.classList.add('active');
             activeCategory = btn.dataset.slug;
             renderCollection();
           });
         });
-      }
-
-      const saleActive = D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
-      const discountPct = saleActive ? (D.sale.discountPercent || 0) : 0;
-      function salePrice(p) {
-        return saleActive && discountPct > 0 ? Math.round(p * (1 - discountPct / 100)) : null;
-      }
-
-      function buildPriceMarkup(p) {
-        const sp = salePrice(p.price);
-        const mrp = p.mrp || null;
-
-        if (sp) {
-          return `
-            <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
-              <div class="price-sale">
-                <span class="price-current">₹${sp}</span>
-                <span class="price-old">₹${p.price}</span>
-              </div>
-            </div>`;
-        } else if (mrp && mrp > p.price) {
-          const pct = Math.round((1 - p.price / mrp) * 100);
-          return `
-            <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
-              <div class="price-sale">
-                <span class="price-current">₹${p.price}</span>
-                <span class="price-old">₹${mrp}</span>
-                <span class="price-save-tag">${pct}% off</span>
-              </div>
-            </div>`;
-        } else {
-          return `
-            <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
-              <div class="price-original">₹${p.price}</div>
-            </div>`;
-        }
       }
 
       // 2. Render Catalog products based on chosen filter
@@ -310,65 +272,13 @@
         catalogGrid.style.display = 'grid';
 
         filtered.forEach(p => {
-          let badgeHTML = '';
-          if (p.badge) {
-            const cls = p.badgeType === 'new' ? ' new' : p.badgeType === 'limited' ? ' limited' : '';
-            badgeHTML = `<div class="product-badge${cls}">${p.badge}</div>`;
-          }
-          if (saleActive) {
-            badgeHTML += `<div class="sale-ribbon">${D.sale.label || 'SALE'} ${discountPct}% OFF</div>`;
-          }
-
-          const imgHTML = p.image
-            ? `<img class="product-photo" src="${p.image}" loading="lazy" decoding="async" alt="${p.name}"/>`
-            : `<span class="product-emoji">${p.emoji || '🥜'}</span>`;
-
-          const card = document.createElement('div');
-          card.className = 'product-card reveal visible'; // immediate presentation
-          card.innerHTML = `
-            ${badgeHTML}
-            <div class="product-img ${p.bgClass || ''}">
-              ${imgHTML}
-            </div>
-            <div class="product-info">
-              <h3>${p.name}</h3>
-              <div class="product-footer">
-                ${buildPriceMarkup(p)}
-                <div class="product-card-btns">
-                  <button class="btn-view-detail c-view-btn" data-id="${p.id}">View Details</button>
-                  <button class="btn-buy c-buy-btn" data-id="${p.id}">Buy Now</button>
-                </div>
-              </div>
-            </div>`;
-
+          const card = bunoBuildProductCard(p);
           catalogGrid.appendChild(card);
-        });
-
-        // Connect click listeners
-        catalogGrid.querySelectorAll('.product-card').forEach(card => {
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', (e) => {
-            if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn')) {
-              if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(card.querySelector('[data-id]').dataset.id);
-            }
-          });
-        });
-
-        catalogGrid.querySelectorAll('.c-view-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(btn.dataset.id);
-          });
-        });
-
-        catalogGrid.querySelectorAll('.c-buy-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(btn.dataset.id);
-          });
         });
       }
 
+      // Expose render collection so main script can call or update
+      window.BUNO_RENDER_COLLECTION = renderCollection;
       renderCollection();
     });
   </script>
