@@ -2,148 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Order Placed Successfully | Bunofeed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Confirmed – Bunofeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <style>
-    .success-panel {
+    .success-page {
       min-height: 80vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
       background: var(--off-white);
-      padding: 4rem 1.5rem;
     }
     .success-card {
       background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 3.5rem 2.5rem;
-      max-width: 580px; width: 100%;
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 520px;
+      width: 100%;
       text-align: center;
-      border: 1px solid rgba(139,69,19,0.06);
-      animation: finishBlow 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: 0 16px 48px rgba(107,45,14,0.14);
     }
-    @keyframes finishBlow {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
     .success-icon {
-      width: 80px; height: 80px;
-      border-radius: 50%; background: rgba(40, 167, 69, 0.1);
-      color: #28a745; display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem; margin: 0 auto 1.5rem;
+      width: 80px;height: 80px;border-radius: 50%;
+      background: linear-gradient(135deg,#28a745,#20c753);
+      display: flex;align-items: center;justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.2rem;color: #fff;
+      box-shadow: 0 8px 24px rgba(40,167,69,.3);
     }
     .success-card h1 {
-      font-family: var(--font-head); font-weight: 800;
-      font-size: 1.8rem; color: var(--brown-dark); margin-bottom: 0.5rem;
+      font-family: var(--font-head);font-size: 1.7rem;font-weight: 800;
+      color: var(--dark);margin-bottom: .5rem;
     }
-    .success-card p {
-      color: var(--gray); font-size: 0.95rem; line-height: 1.6;
-      margin-bottom: 2rem;
+    .success-card p { color: var(--gray);font-size: .97rem;line-height: 1.7;margin-bottom: .5rem; }
+    .order-details {
+      background: var(--off-white);border-radius: 12px;
+      padding: 1.2rem 1.5rem;margin: 1.5rem 0;text-align: left;
     }
-
-    /* Bill info */
-    .bill-summary {
-      background: var(--off-white);
-      border-radius: 10px;
-      padding: 1.5rem;
-      text-align: left;
-      margin-bottom: 2rem;
-      border: 1px solid #f2e9e2;
+    .order-row {
+      display: flex;justify-content: space-between;align-items: center;
+      padding: .45rem 0;border-bottom: 1px solid #f0e8e0;
+      font-size: .9rem;
     }
-    .bill-row {
-      display: flex; justify-content: space-between; font-size: 0.88rem;
-      color: var(--gray); margin-bottom: 0.5rem;
+    .order-row:last-child { border-bottom: none; }
+    .order-row span:first-child { color: var(--gray);font-weight: 500; }
+    .order-row span:last-child  { font-family: var(--font-head);font-weight: 700;color: var(--dark); }
+    .success-actions {
+      display: flex;gap: .8rem;flex-wrap: wrap;justify-content: center;margin-top: 1.5rem;
     }
-    .bill-row strong { color: var(--dark); }
-    
-    .bill-total {
-      display: flex; justify-content: space-between; font-size: 1.05rem;
-      font-weight: 700; color: var(--brown-dark);
-      margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid #f2e9e2;
-    }
-    .bill-total strong { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--orange); }
-
-    .btn-group { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
-    .btn-group .btn {
-      min-height: 46px; display: inline-flex; align-items: center; justify-content: center;
-      padding: 10px 24px; font-family: var(--font-head); font-weight: 700; font-size: 0.88rem;
+    .success-actions .btn { min-width: 140px; }
+    @media(max-width:480px){
+      .success-card{padding:2rem 1.2rem;}
+      .success-actions .btn{flex:1;}
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+      <a href="index.html" class="logo">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html"      class="nav-link">Home</a>
-        <a href="/shop.html"       class="nav-link">Products</a>
-        <a href="/orders.html"     class="nav-link">My Orders</a>
-        <a href="/about.html"      class="nav-link">About Us</a>
-        <a href="/index.html#contact" class="nav-link">Contact</a>
-      </nav>
     </div>
   </header>
 
-  <!-- Success layout -->
-  <div class="success-panel">
+  <div class="success-page">
     <div class="success-card">
       <div class="success-icon"><i class="fas fa-check"></i></div>
-      <h1>Order Placed Successfully!</h1>
-      <p>Thank you for choosing Bunofeed. Your food is carefully selected, balanced, and is heading your way shortly. We have shared a complete breakdown with shipping coordinates to your registered email address.</p>
+      <h1>Order Confirmed! 🎉</h1>
+      <p>Thank you for your order. Your payment was successful and we've received your order.</p>
+      <p>You'll receive a confirmation email shortly. We'll notify you once your order ships.</p>
 
-      <div class="bill-summary">
-        <div class="bill-row"><span>Billing Name:</span> <strong id="bill-cust-name">Akash Kumar</strong></div>
-        <div class="bill-row"><span>Mobile Number:</span> <strong id="bill-cust-phone">9876543210</strong></div>
-        <div class="bill-row"><span>Order Reference Code:</span> <strong id="bill-order-id" style="font-family: monospace;">BUNO-821739</strong></div>
-        <div class="bill-total"><span>Total Amount Paid:</span> <strong id="bill-total-price">₹499</strong></div>
+      <div class="order-details" id="order-details">
+        <div class="order-row"><span>Order ID</span><span id="order-id">—</span></div>
+        <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
+        <div class="order-row"><span>Product</span><span id="pay-product">—</span></div>
+        <div class="order-row"><span>Quantity</span><span id="pay-qty">—</span></div>
+        <div class="order-row"><span>Amount Paid</span><span id="pay-total">—</span></div>
       </div>
 
-      <div class="btn-group">
-        <a href="/index.html" class="btn btn-outline">Back to Homepage</a>
-        <a href="#" id="track-order-btn" class="btn btn-primary">Track Order Status</a>
+      <div class="success-actions">
+        <a href="shop.html"  class="btn btn-primary">Continue Shopping</a>
+        <a href="index.html" class="btn btn-brown">Back to Home</a>
       </div>
     </div>
   </div>
 
-  <!-- Standard Footer -->
-  <footer class="footer">
-    <div class="footer-bottom" style="border-top:none;">
-      <p>© 2026 Bunofeed. All rights reserved.</p>
-    </div>
-  </footer>
-
   <script>
-    /**
-     * Retrieve local summary of the last completed order transaction.
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      const order = JSON.parse(localStorage.getItem('bunofeed_latest_order'));
-      if (order) {
-        document.getElementById('bill-cust-name').textContent = order.customer.name;
-        document.getElementById('bill-cust-phone').textContent = order.customer.phone;
-        document.getElementById('bill-order-id').textContent = order.id;
-        document.getElementById('bill-total-price').textContent = `₹${order.total}`;
-        
-        // Link directly to tracker
-        document.getElementById('track-order-btn').href = `/orders.html?order_id=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.customer.phone)}`;
-      } else {
-        // Fallback for missing transaction context
-        document.getElementById('track-order-btn').href = '/orders.html';
-      }
-    });
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('order-id').textContent      = params.get('order_id') || '—';
+    document.getElementById('pay-id').textContent      = params.get('payment_id') || '—';
+    document.getElementById('pay-product').textContent = params.get('product')    || '—';
+    document.getElementById('pay-qty').textContent     = params.get('qty')        || '—';
+    const total = params.get('total');
+    document.getElementById('pay-total').textContent   = total ? `₹${total}` : '—';
   </script>
-
 </body>
 </html>
