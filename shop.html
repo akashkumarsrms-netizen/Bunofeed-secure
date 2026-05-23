@@ -135,46 +135,44 @@
   </div>
 
   <!-- ═══════════ CHECKOUT OVERLAY MODAL ═══════════ -->
-  <div class="checkout-modal-overlay" id="checkout-modal-overlay" aria-hidden="true">
+  <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
       <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
-      <div class="checkout-header">
-        <div class="checkout-logo">
-          <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
-        </div>
-        <h2>Complete Your Checkout</h2>
-        <p>Please supply delivery info below. Payments are SSL encrypted.</p>
-      </div>
+      <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
         <div class="form-group">
-          <label class="form-label" for="cust-name">Full Name *</label>
-          <input type="text" id="cust-name" class="form-input" placeholder="e.g. Akash Kumar" required autocomplete="name" spellcheck="false"/>
-          <p class="error-msg" id="name-error">Please supply your full name.</p>
+          <label>Full Name <span>*</span></label>
+          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
+          <div class="error-msg" id="name-error">Please enter your full name</div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="cust-phone">Mobile Number *</label>
-          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required autocomplete="tel" spellcheck="false"/>
-          <p class="error-msg" id="phone-error">Please supply a valid 10-digit mobile number.</p>
+          <label>Mobile Number <span>*</span></label>
+          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10">
+          <div class="error-msg" id="phone-error">Please enter a valid 10-digit mobile number</div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="cust-email">Email Address *</label>
-          <input type="email" id="cust-email" class="form-input" placeholder="e.g. akash@gmail.com" required autocomplete="email" spellcheck="false"/>
-          <p class="error-msg" id="email-error">Please supply a valid email address.</p>
+          <label>Email ID <span>*</span></label>
+          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required>
+          <div class="error-msg" id="email-error">Please enter a valid email address</div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="cust-address">Delivery Address *</label>
-          <textarea id="cust-address" class="form-input" rows="3" placeholder="Flat, Street, Area name..." required autocomplete="street-address" spellcheck="false"></textarea>
-          <p class="error-msg" id="address-error">Please supply your delivery address.</p>
+          <label>Full Address <span>*</span></label>
+          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required>
+          <div class="error-msg" id="address-error">Please enter your delivery address</div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="cust-pincode">Pincode *</label>
-          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required autocomplete="postal-code" spellcheck="false"/>
-          <p class="error-msg" id="pincode-error">Please supply a valid 6-digit postal code.</p>
+          <label>Pincode <span>*</span></label>
+          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
+          <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
-        <button class="btn btn-primary" id="proceed-pay-btn" type="submit" style="width: 100%; margin-top: 1rem; min-height: 48px;">Proceed to Pay</button>
+        <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
+        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
+          Proceed to Pay
+        </button>
       </form>
     </div>
   </div>
+
 
   <!-- ═══════════ FOOTER ═══════════ -->
   <footer class="footer">
