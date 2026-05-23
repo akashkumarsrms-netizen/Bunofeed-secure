@@ -360,9 +360,103 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkoutForm    = document.getElementById('checkout-form');
   const checkoutClose   = document.getElementById('checkout-close-btn');
 
+  function parseWeightInKg(wstr) {
+    if (!wstr) return 0.5;
+    const clean = wstr.toLowerCase().replace(/\s+/g, '');
+    const val = parseFloat(clean);
+    if (isNaN(val)) return 0.5; // fallback
+    if (clean.endsWith('kg') || clean.endsWith('kilogram') || clean.endsWith('kilograms')) {
+      return val;
+    }
+    if (clean.endsWith('gm') || clean.endsWith('g') || clean.endsWith('grams') || clean.endsWith('gram')) {
+      return val / 1000;
+    }
+    if (val > 10) return val / 1000;
+    return val;
+  }
+
+  function extractWeightInKg(variantLabel, product) {
+    if (variantLabel) {
+      const parts = variantLabel.split(',').map(s => s.trim().toLowerCase());
+      for (const part of parts) {
+        if (part.includes('g') || part.includes('kg') || part.includes('gm') || part.includes('gram') || part.includes('kilogram')) {
+          return parseWeightInKg(part);
+        }
+      }
+      const match = variantLabel.match(/(\d+(?:\.\d+)?)\s*(kg|g|gm|kilogram|grams|gram)/i);
+      if (match) {
+        return parseWeightInKg(match[0]);
+      }
+    }
+    const defaultSize = (product.sizeVariants && product.sizeVariants.length > 0) ? product.sizeVariants[0] : (product.weight || '500g');
+    return parseWeightInKg(defaultSize);
+  }
+
+  window.updateCheckoutSummary = function() {
+    if (!currentProduct) return;
+    const pincodeEl = document.getElementById('cust-pincode');
+    const pincode = pincodeEl ? pincodeEl.value.trim() : '';
+
+    const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
+    const subtotal = unitPrice * qty;
+
+    const itemWeightKg = extractWeightInKg(selectedVariantLabel, currentProduct);
+    const totalWeightInKg = itemWeightKg * qty;
+
+    let ratePerKg = 0;
+    let isPincodeConfigured = false;
+    if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
+      isPincodeConfigured = true;
+      if (D.pincodeShipping && D.pincodeShipping[pincode] !== undefined) {
+        ratePerKg = Number(D.pincodeShipping[pincode]);
+      } else {
+        ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
+      }
+    } else {
+      ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
+    }
+
+    let shippingFee = Math.round(ratePerKg * totalWeightInKg);
+    if (D.shipping && subtotal >= D.shipping.freeShippingAbove) {
+      shippingFee = 0;
+    }
+
+    const grandTotal = subtotal + shippingFee;
+
+    const subtotalEl = document.getElementById('checkout-subtotal');
+    const weightEl = document.getElementById('checkout-weight');
+    const shippingEl = document.getElementById('checkout-shipping');
+    const totalEl = document.getElementById('checkout-total');
+    const shippingLabelEl = document.getElementById('checkout-shipping-label');
+
+    if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
+    if (weightEl) weightEl.textContent = `${totalWeightInKg.toFixed(2)} kg`;
+    
+    if (shippingEl) {
+      if (shippingFee === 0) {
+        shippingEl.textContent = 'FREE';
+        shippingEl.style.color = '#28a745';
+        shippingEl.style.fontWeight = '700';
+      } else {
+        shippingEl.textContent = `₹${shippingFee}`;
+        shippingEl.style.color = '';
+        shippingEl.style.fontWeight = '';
+      }
+    }
+    
+    if (shippingLabelEl) {
+      shippingLabelEl.textContent = isPincodeConfigured 
+        ? `Shipping (₹${ratePerKg}/kg):` 
+        : `Estimated Shipping (₹${ratePerKg}/kg):`;
+    }
+
+    if (totalEl) totalEl.textContent = `₹${grandTotal}`;
+  }
+
   function openCheckoutModal() {
     if (!currentProduct) return;
     checkoutOverlay.classList.add('open');
+    window.updateCheckoutSummary();
   }
 
   function closeCheckoutModal() {
@@ -371,6 +465,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
+
+  const pincodeInput = document.getElementById('cust-pincode');
+  if (pincodeInput) {
+    pincodeInput.addEventListener('input', window.updateCheckoutSummary);
+  }
 
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', async (e) => {
@@ -407,21 +506,20 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = true;
       proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
 
-      // Logical checkout variant dynamic price calculation
-      const defaultSize = (currentProduct.sizeVariants && currentProduct.sizeVariants.length > 0) ? currentProduct.sizeVariants[0] : (currentProduct.weight || '');
       const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
-      
       const totalProductAmount = unitPrice * qty;
 
-      // Pincode wise custom shipping charges lookups
-      let shippingFee = 0;
+      const itemWeightKg = extractWeightInKg(selectedVariantLabel, currentProduct);
+      const totalWeightInKg = itemWeightKg * qty;
+
+      let ratePerKg = 0;
       if (D.pincodeShipping && D.pincodeShipping[pincode] !== undefined) {
-        shippingFee = Number(D.pincodeShipping[pincode]);
+        ratePerKg = Number(D.pincodeShipping[pincode]);
       } else {
-        shippingFee = D.shipping ? Number(D.shipping.shippingCharge) : 0;
+        ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
       }
 
-      // apply Free Shipping Logic
+      let shippingFee = Math.round(ratePerKg * totalWeightInKg);
       if (D.shipping && totalProductAmount >= D.shipping.freeShippingAbove) {
         shippingFee = 0;
       }
@@ -429,8 +527,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const grandTotal = totalProductAmount + shippingFee;
       const orderId = generateOrderId();
 
-      // Bundle chosen variant texture & size cleanly in product name
-      const displayProductName = selectedVariantLabel ? `${currentProduct.name} (${selectedVariantLabel})` : currentProduct.name;
+      // Ensure name contains variant details: Dark chocolate peanut butter (900gm, Crunchy)
+      let displayProductName = currentProduct.name;
+      if (selectedVariantLabel) {
+        let matches = selectedVariantLabel.split(',').map(s => s.trim());
+        if (matches.length > 1) {
+          displayProductName = `${currentProduct.name} (${matches[0]}, ${matches[1]})`;
+        } else {
+          displayProductName = `${currentProduct.name} (${selectedVariantLabel})`;
+        }
+      }
 
       const orderData = {
         order_id: orderId,

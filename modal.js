@@ -305,22 +305,22 @@
       white-space: nowrap;
     }
     .modal-texture-select {
-      padding: 6px 30px 6px 12px;
-      border: 2px solid #e0d4cc;
-      border-radius: 8px;
+      padding: 4px 24px 4px 8px;
+      border: 1.5px solid #e0d4cc;
+      border-radius: 6px;
       font-family: 'Open Sans', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       outline: none;
-      background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B2D0E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 10px center;
-      background-size: 14px;
+      background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B2D0E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center;
+      background-size: 12px;
       appearance: none;
       -webkit-appearance: none;
       color: #1a1a1a;
       cursor: pointer;
       transition: border-color 0.2s, box-shadow 0.2s;
-      min-height: 38px;
+      min-height: 32px;
       width: auto;
-      min-width: 150px;
+      max-width: 140px;
     }
     .modal-texture-select:focus {
       border-color: #FF6B00;
@@ -607,10 +607,6 @@
     /* Prevent page scroll utility */
     body.buno-lock-scroll {
       overflow: hidden !important;
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      left: 0; top: 0;
     }
   `;
   document.head.appendChild(style);

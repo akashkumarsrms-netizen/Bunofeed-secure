@@ -769,17 +769,17 @@
             <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Default Shipping Charge (₹)</label>
+            <label class="form-label">Default Shipping Charge per KG (₹/kg)</label>
             <input type="number" class="form-input" id="ship-charge" placeholder="e.g. 60"/>
-            <span class="form-hint">Applied when order total is below the free shipping threshold and pin code doesn't have an individual charge set.</span>
+            <span class="form-hint">Applied per kg of total order weight when order total is below the free shipping threshold and pin code doesn't have an individual charge set.</span>
           </div>
         </div>
       </div>
 
       <div class="card" style="margin-top:1.5rem;">
-        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Serviceable Pincodes & shipping charges</div>
+        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Serviceable Pincodes & shipping charges per KG</div>
         <p style="color:var(--gray);font-size:.85rem;margin-bottom:1rem;">
-          Configure serviceable pin codes and set individual shipping charges for each. If the list is empty, any pin-code will be allowed with the default shipping charge above.
+          Configure serviceable pin codes and set weight-based shipping rates per KG (₹/kg) for each. If the list is empty, any pin-code will be allowed with the default shipping rate per KG above.
         </p>
         
         <!-- Pincode configuration list -->
@@ -787,7 +787,7 @@
           <thead>
             <tr>
               <th>Pin Code</th>
-              <th>Shipping Cost (₹)</th>
+               <th>Shipping Cost per KG (₹/kg)</th>
               <th style="width: 80px;">Action</th>
             </tr>
           </thead>
@@ -803,7 +803,7 @@
             <input type="text" class="form-input" id="add-pin-code" max-length="6" placeholder="e.g. 243201"/>
           </div>
           <div class="form-group" style="flex:1;min-width:140px;">
-            <label class="form-label">Shipping Cost (₹)</label>
+            <label class="form-label">Shipping Cost per KG (₹/kg)</label>
             <input type="number" class="form-input" id="add-pin-shipping" placeholder="e.g. 50" min="0"/>
           </div>
           <button class="btn btn-orange" onclick="addNewPincodeRate()">Add Pin Code</button>
@@ -958,34 +958,43 @@
       <div class="form-group" style="grid-column: 1/-1; background: var(--off-white); padding: 1rem; border-radius: 8px; border: 1.5px solid var(--border);">
         <label class="form-label"><i class="fas fa-mortar-pestle"></i> Texture / Type Variants (e.g. Smooth, Crunchy) <span>*</span></label>
         <span class="form-hint">Enter your texture variants for this product. Use commas to separate multiple textures. If empty, the product won't have texture types (e.g. oats, muesli).</span>
-        <input type="text" class="form-input" id="edit-textures" placeholder="e.g. Smooth, Crunchy, Crispy, Dark Chocolate" onchange="regenerateCombinationsTable()"/>
+        <input type="text" class="form-input" id="edit-textures" placeholder="e.g. Smooth, Crunchy, Crispy, Dark Chocolate" onchange="renderTextureBasePricesInputs(); regenerateCombinationsTable()"/>
       </div>
 
       <!-- WEIGHT / SIZE MULTI-VARIANTS MANAGEMENT -->
       <div class="form-group" style="grid-column: 1/-1; background: var(--off-white); padding: 1rem; border-radius: 8px; border: 1.5px solid var(--border);">
         <label class="form-label"><i class="fas fa-weight"></i> Weights / Sizes (e.g. 200g, 500g, 1kg) <span>*</span></label>
         <span class="form-hint">Enter available weights/sizes for this product. Use commas to separate multiple sizes. E.g., 200g, 400g, 500g, 1kg</span>
-        <input type="text" class="form-input" id="edit-sizes" placeholder="e.g. 200g, 400g, 500g, 1kg" onchange="regenerateCombinationsTable()"/>
+        <input type="text" class="form-input" id="edit-sizes" placeholder="e.g. 200g, 400g, 500g, 1kg" onchange="renderTextureBasePricesInputs(); regenerateCombinationsTable()"/>
       </div>
 
       <!-- AUTO-CALCULATION SETTINGS -->
-      <div class="form-group" style="grid-column: 1/-1; background: #eef9ff; padding: 1rem; border-radius: 8px; border: 1.5px solid #bce1f2;">
-        <label class="form-label" style="color: #0c5460;"><i class="fas fa-calculator"></i> Bulk Combinations Builder (Rupees per KG auto-calculating)</label>
-        <span class="form-hint">Input standard parameters below then hit "Bulk Build" to instantly populate the full combinations grid.</span>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top: 0.5rem; align-items:flex-end;">
+      <div class="form-group" style="grid-column: 1/-1; background: #fdfaf7; padding: 1.2rem; border-radius: 12px; border: 1.5px solid var(--orange-lt); box-shadow: 0 4px 12px rgba(255, 107, 0, 0.04);">
+        <label class="form-label" style="color: var(--brown); font-size: 0.9rem;"><i class="fas fa-calculator"></i> Real-Time Automated Pricing Engine</label>
+        <span class="form-hint" style="margin-bottom: 0.8rem; display: block;">MRP and Final prices are computed on-the-fly. Just set parameters and texture rates below — no manual math or cell editing needed!</span>
+        
+        <!-- Global inputs row -->
+        <div style="display:flex; gap:0.8rem; flex-wrap:wrap; margin-bottom: 1rem;">
           <div class="form-group" style="flex:1; min-width: 120px;">
-            <label class="form-label" style="font-size:0.7rem;">Base Cost (₹/kg)</label>
-            <input type="number" class="form-input" id="bulk-rate-kg" placeholder="e.g. 300" style="min-height:36px; padding: 6px 10px;"/>
+            <label class="form-label" style="font-size:0.7rem;">Profit Margin (%)</label>
+            <input type="number" class="form-input" id="edit-profitMargin" placeholder="e.g. 20" value="20" style="min-height:38px; padding: 6px 10px;" oninput="regenerateCombinationsTable()"/>
           </div>
-          <div class="form-group" style="flex:1; min-width: 100px;">
+          <div class="form-group" style="flex:1; min-width: 120px;">
             <label class="form-label" style="font-size:0.7rem;">GST Charge (%)</label>
-            <input type="number" class="form-input" id="bulk-gst" placeholder="18" value="18" style="min-height:36px; padding: 6px 10px;"/>
+            <input type="number" class="form-input" id="edit-gstPercent" placeholder="e.g. 18" value="18" style="min-height:38px; padding: 6px 10px;" oninput="regenerateCombinationsTable()"/>
           </div>
-          <div class="form-group" style="flex:1; min-width: 100px;">
+          <div class="form-group" style="flex:1; min-width: 120px;">
             <label class="form-label" style="font-size:0.7rem;">Discount (%)</label>
-            <input type="number" class="form-input" id="bulk-discount" placeholder="10" value="10" style="min-height:36px; padding: 6px 10px;"/>
+            <input type="number" class="form-input" id="edit-discountPercent" placeholder="e.g. 10" value="10" style="min-height:38px; padding: 6px 10px;" oninput="regenerateCombinationsTable()"/>
           </div>
-          <button type="button" class="btn btn-orange btn-sm" onclick="applyBulkPricingToTable()" style="height:36px; min-height:unset;">Bulk Build Grid</button>
+        </div>
+
+        <!-- Texture bases row -->
+        <div style="border-top: 1px dashed var(--border); padding-top: 1rem; margin-top: 0.5rem;">
+          <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0.5rem; display: block; color: var(--gray);"><i class="fas fa-dollar-sign"></i> Base Costs Per Variant (₹ per KG)</label>
+          <div id="texture-rates-container" style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <!-- Rendered dynamically -->
+          </div>
         </div>
       </div>
 
@@ -1135,6 +1144,7 @@ let adminData = null;
 let editingProductIndex = -1;
 let currentImageUrls = [];
 let localVariantPrices = {}; // keeps combination pricing locally during modal edit
+let localVariantPricesPerKg = {}; // keeps variant/texture base costs (₹/kg) locally during modal edit
 
 document.getElementById('login-btn').addEventListener('click', attemptLogin);
 document.addEventListener('keydown', e => {
@@ -1328,7 +1338,11 @@ function openEditModal(idx) {
     bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
     ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:'',
     textureVariants: ["Smooth", "Crunchy"], sizeVariants: ["500g", "1kg"],
-    variantPrices: {}
+    variantPrices: {},
+    gstPercent: 18,
+    profitMargin: 20,
+    discountPercent: 10,
+    variantBasePricePerKg: { "Smooth": 300, "Crunchy": 300 }
   } : adminData.products[idx];
 
   document.getElementById('edit-product-id').value     = p.id || '';
@@ -1348,7 +1362,8 @@ function openEditModal(idx) {
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
 
   // text areas of variants
-  document.getElementById('edit-textures').value       = (p.textureVariants || []).join(', ');
+  const texturesText = (p.textureVariants || []).join(', ');
+  document.getElementById('edit-textures').value       = texturesText;
   document.getElementById('edit-sizes').value          = (p.sizeVariants || []).join(', ');
 
   populateCategorySelect(p.category || '');
@@ -1362,12 +1377,86 @@ function openEditModal(idx) {
   }
   renderImageEntries();
 
+  // Load automated parameters or defaults
+  document.getElementById('edit-gstPercent').value = p.gstPercent !== undefined ? p.gstPercent : 18;
+  document.getElementById('edit-profitMargin').value = p.profitMargin !== undefined ? p.profitMargin : 20;
+  document.getElementById('edit-discountPercent').value = p.discountPercent !== undefined ? p.discountPercent : 10;
+
+  // Load variant base prices
+  localVariantPricesPerKg = JSON.parse(JSON.stringify(p.variantBasePricePerKg || {}));
+  
+  // Backward compatibility fallback populating localVariantPricesPerKg
+  const textures = parseInputList(texturesText);
+  if (textures.length === 0) {
+    if (localVariantPricesPerKg['default'] === undefined) {
+      let firstKey = Object.keys(p.variantPrices || {})[0];
+      if (firstKey && p.variantPrices[firstKey]) {
+        let comb = p.variantPrices[firstKey];
+        let weightKg = parseWeightInKg(firstKey.replace('default-', ''));
+        localVariantPricesPerKg['default'] = Math.round(comb.basePrice / weightKg / (1 + (p.profitMargin || 20)/100));
+      } else {
+        localVariantPricesPerKg['default'] = 200;
+      }
+    }
+  } else {
+    textures.forEach(t => {
+      if (localVariantPricesPerKg[t] === undefined) {
+        let found = false;
+        for (let key in p.variantPrices || {}) {
+          if (key.startsWith(t + '-')) {
+            let comb = p.variantPrices[key];
+            let weightKg = parseWeightInKg(key.replace(t + '-', ''));
+            localVariantPricesPerKg[t] = Math.round(comb.basePrice / weightKg / (1 + (p.profitMargin || 20)/100));
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          localVariantPricesPerKg[t] = 300;
+        }
+      }
+    });
+  }
+
+  // Render the Texture Base price inputs before building table
+  renderTextureBasePricesInputs();
+
   // local deep copy variants pricing map
   localVariantPrices = JSON.parse(JSON.stringify(p.variantPrices || {}));
   regenerateCombinationsTable();
 
   document.getElementById('edit-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function renderTextureBasePricesInputs() {
+  const container = document.getElementById('texture-rates-container');
+  if (!container) return;
+
+  const textures = parseInputList(document.getElementById('edit-textures').value);
+  container.innerHTML = '';
+
+  if (textures.length === 0) {
+    const defaultVal = localVariantPricesPerKg['default'] || 300;
+    container.innerHTML = `
+      <div class="form-group" style="flex:1; min-width: 160px; margin-bottom: 0;">
+        <label class="form-label" style="font-size:0.72rem; margin-bottom: 4px;">Default Base Cost (₹/kg) <span>*</span></label>
+        <input type="number" class="form-input texture-kg-rate" data-texture="default" value="${defaultVal}" style="min-height:36px; padding: 4px 8px;" oninput="localVariantPricesPerKg['default']=parseFloat(this.value)||0; regenerateCombinationsTable()"/>
+      </div>
+    `;
+  } else {
+    textures.forEach(t => {
+      const defaultVal = localVariantPricesPerKg[t] || 300;
+      const col = document.createElement('div');
+      col.className = 'form-group';
+      col.style.cssText = 'flex:1; min-width:160px; margin-bottom: 0;';
+      col.innerHTML = `
+        <label class="form-label" style="font-size:0.72rem; margin-bottom: 4px;">${t} Base Cost (₹/kg) <span>*</span></label>
+        <input type="number" class="form-input texture-kg-rate" data-texture="${t}" value="${defaultVal}" style="min-height:36px; padding: 4px 8px;" oninput="localVariantPricesPerKg['${t}']=parseFloat(this.value)||0; regenerateCombinationsTable()"/>
+      `;
+      container.appendChild(col);
+    });
+  }
 }
 
 function parseInputList(vstr) {
@@ -1391,7 +1480,8 @@ function parseWeightInKg(wstr) {
 
 function regenerateCombinationsTable() {
   const tbody = document.getElementById('variant-combinations-tbody');
-  
+  if (!tbody) return;
+
   const textures = parseInputList(document.getElementById('edit-textures').value);
   const sizes = parseInputList(document.getElementById('edit-sizes').value);
 
@@ -1401,6 +1491,11 @@ function regenerateCombinationsTable() {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--gray)">Please enter at least one weight/size above to build pricing combos.</td></tr>';
     return;
   }
+
+  // Read current parameters from the inputs
+  const gstPercent = parseFloat(document.getElementById('edit-gstPercent').value) || 0;
+  const profitMargin = parseFloat(document.getElementById('edit-profitMargin').value) || 0;
+  const discountPercent = parseFloat(document.getElementById('edit-discountPercent').value) || 0;
 
   // Generate lists of combination rows
   let combinations = [];
@@ -1417,12 +1512,17 @@ function regenerateCombinationsTable() {
   }
 
   combinations.forEach(comb => {
-    let stored = localVariantPrices[comb.key] || {
-      basePrice: 100, gstPercent: 18, mrp: 118, discountPercent: 10, price: 106, profit: 6
-    };
-
-    // Calculate dynamic helper text weights
     const weightKg = parseWeightInKg(comb.size);
+    const textKey = comb.texture || 'default';
+    const baseKgRate = parseFloat(localVariantPricesPerKg[textKey]) || 300;
+
+    // Calculate Dynamic Prices
+    const baseCostValue = baseKgRate * weightKg;
+    const calculatedBasePrice = Math.round(baseCostValue * (1 + profitMargin / 100));
+    const calculatedMrp = Math.round(calculatedBasePrice * (1 + gstPercent / 100));
+    const calculatedSalePrice = Math.round(calculatedMrp * (1 - discountPercent / 100));
+    const profit = Math.round(calculatedSalePrice - baseCostValue);
+
     const label = comb.texture ? `${comb.texture} (${comb.size})` : comb.size;
 
     const tr = document.createElement('tr');
@@ -1432,92 +1532,39 @@ function regenerateCombinationsTable() {
     tr.innerHTML = `
       <td>
         <strong>${label}</strong><br/>
-        <span style="font-size:0.75rem; color:var(--gray);">Weight: ${weightKg} kg</span>
+        <span style="font-size:0.75rem; color:var(--gray);">Weight: ${weightKg} kg | Raw Cost: ₹${Math.round(baseCostValue)}</span>
       </td>
       <td>
-        <input type="number" class="comb-inline-input comb-base" value="${stored.basePrice}" onchange="recalculateMatrixCombRow(this)"/>
+        <input type="number" class="comb-inline-input comb-base" value="${calculatedBasePrice}" readonly style="background:#fcfcfc; color:#555; font-weight:600; cursor:not-allowed;"/>
       </td>
       <td>
-        <input type="number" class="comb-inline-input comb-gst" value="${stored.gstPercent}" min="0" max="100" onchange="recalculateMatrixCombRow(this)"/>
+        <input type="number" class="comb-inline-input comb-gst" value="${gstPercent}" readonly style="background:#fcfcfc; color:#555; font-weight:600; cursor:not-allowed;"/>
       </td>
       <td>
-        <input type="number" class="comb-inline-input comb-mrp" value="${stored.mrp}" readonly style="background:#f9f9f9; color:#666; font-weight:600;"/>
+        <input type="number" class="comb-inline-input comb-mrp" value="${calculatedMrp}" readonly style="background:#fcfcfc; color:#555; font-weight:600; cursor:not-allowed;"/>
       </td>
       <td>
-        <input type="number" class="comb-inline-input comb-disc" value="${stored.discountPercent}" min="0" max="100" onchange="recalculateMatrixCombRow(this)"/>
+        <input type="number" class="comb-inline-input comb-disc" value="${discountPercent}" readonly style="background:#fcfcfc; color:#555; font-weight:600; cursor:not-allowed;"/>
       </td>
       <td>
-        <input type="number" class="comb-inline-input comb-sale" value="${stored.price}" onchange="recalculateMatrixCombRow(this, true)"/>
+        <input type="number" class="comb-inline-input comb-sale" value="${calculatedSalePrice}" readonly style="background:#eef9ff; color:var(--brown); font-weight:700; cursor:not-allowed;"/>
       </td>
       <td>
-        <span class="comb-profit-span" style="font-weight:700; color:${stored.profit >= 0 ? '#28a745' : '#dc3545'}">₹${stored.profit || 0}</span>
+        <span class="comb-profit-span" style="font-weight:700; color:${profit >= 0 ? '#28a745' : '#dc3545'}">₹${profit}</span>
       </td>
     `;
     tbody.appendChild(tr);
+
+    // Sync to localVariantPrices immediately
+    localVariantPrices[comb.key] = {
+      basePrice: calculatedBasePrice,
+      gstPercent: gstPercent,
+      mrp: calculatedMrp,
+      discountPercent: discountPercent,
+      price: calculatedSalePrice,
+      profit: profit
+    };
   });
-}
-
-function recalculateMatrixCombRow(inputEl, forceSalePriceOverride = false) {
-  const tr = inputEl.closest('tr');
-  const baseVal = parseFloat(tr.querySelector('.comb-base').value) || 0;
-  const gstPct  = parseFloat(tr.querySelector('.comb-gst').value) || 0;
-  const discPct = parseFloat(tr.querySelector('.comb-disc').value) || 0;
-  
-  const calcMrp = Math.round(baseVal + (baseVal * (gstPct / 100)));
-  tr.querySelector('.comb-mrp').value = calcMrp;
-
-  let salePrice = Math.round(calcMrp * (1 - (discPct / 100)));
-  
-  if (forceSalePriceOverride) {
-    salePrice = parseFloat(tr.querySelector('.comb-sale').value) || 0;
-    // reconstruct discount %
-    let computedGstMrp = calcMrp;
-    let computedDisc = computedGstMrp > 0 ? Math.round(((computedGstMrp - salePrice) / computedGstMrp) * 100) : 0;
-    tr.querySelector('.comb-disc').value = Math.max(0, computedDisc);
-  } else {
-    tr.querySelector('.comb-sale').value = salePrice;
-  }
-
-  const profit = Math.round(salePrice - baseVal);
-  const profitSpan = tr.querySelector('.comb-profit-span');
-  profitSpan.textContent = `₹${profit}`;
-  profitSpan.style.color = profit >= 0 ? '#28a745' : '#dc3545';
-
-  // sync to temporary pricing object map
-  const key = tr.dataset.key;
-  localVariantPrices[key] = {
-    basePrice: baseVal,
-    gstPercent: gstPct,
-    mrp: calcMrp,
-    discountPercent: parseFloat(tr.querySelector('.comb-disc').value) || 0,
-    price: salePrice,
-    profit: profit
-  };
-}
-
-function applyBulkPricingToTable() {
-  const ratePerKg = parseFloat(document.getElementById('bulk-rate-kg').value);
-  const gstPct    = parseFloat(document.getElementById('bulk-gst').value) || 0;
-  const discPct   = parseFloat(document.getElementById('bulk-discount').value) || 0;
-
-  if (isNaN(ratePerKg) || ratePerKg <= 0) {
-    toast('Please enter a valid Base Cost per KG', 'error');
-    return;
-  }
-
-  const rows = document.querySelectorAll('#variant-combinations-tbody tr');
-  rows.forEach(tr => {
-    const weightKg = parseFloat(tr.dataset.weight) || 0.5;
-    const baseCalculated = Math.round(ratePerKg * weightKg);
-
-    tr.querySelector('.comb-base').value = baseCalculated;
-    tr.querySelector('.comb-gst').value  = gstPct;
-    tr.querySelector('.comb-disc').value = discPct;
-
-    recalculateMatrixCombRow(tr.querySelector('.comb-base'));
-  });
-
-  toast('Pre-built full matrix combinations successfully!', 'success');
 }
 
 function populateCategorySelect(selectedSlug) {
@@ -1601,6 +1648,10 @@ function saveEditedProduct() {
     textureVariants: textures,
     sizeVariants:    sizes,
     variantPrices:   finalPrices,
+    gstPercent:      parseFloat(document.getElementById('edit-gstPercent').value) || 18,
+    profitMargin:    parseFloat(document.getElementById('edit-profitMargin').value) || 20,
+    discountPercent: parseFloat(document.getElementById('edit-discountPercent').value) || 10,
+    variantBasePricePerKg: localVariantPricesPerKg,
     image:       primaryImage,
     images:      cleanedImages,
     emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
