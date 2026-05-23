@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <!-- SEO -->
   <meta name="description" content="Bunofeed – Natural peanut butter, rolled oats & muesli. Clean ingredients, no preservatives, high protein. Shop on Amazon & Flipkart."/>
   <meta name="theme-color" content="#6B2D0E"/>
-  <!-- iOS Web App -->
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
   <title>Bunofeed – Companion in your Healthy Lifestyle</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <!-- Styles -->
   <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
@@ -63,7 +58,8 @@
         <span class="hero-highlight">Healthy Lifestyle</span>
       </h1>
       <p class="hero-desc" id="hero-desc">
-        Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.   </p>
+        Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.
+      </p>
       <div class="hero-btns">
         <a href="#shop" class="btn btn-primary" id="hero-cta">
           <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Now
@@ -87,7 +83,6 @@
         </a>
       </div>
     </div>
-    <!-- Hero visual: replaced with image if products.js hero.image is set -->
     <div class="hero-image">
       <div class="hero-img-wrap">
         <img 
@@ -115,12 +110,10 @@
       <i class="fas fa-dumbbell" aria-hidden="true"></i>
       <span>High Protein</span>
     </div>
-
   </section>
 
   <!-- =========================================================
-       BEST SELLERS (homepage only — bestSeller: true products)
-       Populated dynamically from products.js via script.js
+       BEST SELLERS (homepage only)
        ========================================================= -->
   <section class="products" id="shop">
     <div class="section-header">
@@ -128,7 +121,6 @@
       <h2>Customer <span>Favourites</span></h2>
       <p class="section-desc">Our most loved products — handcrafted with clean ingredients.</p>
     </div>
-    <!-- Best-seller cards injected here by script.js -->
     <div class="products-grid" id="products-grid"></div>
     <div style="text-align:center;margin-top:2.5rem;">
       <a href="/shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
@@ -136,9 +128,6 @@
       </a>
     </div>
   </section>
-
-  <!-- Why Choose Us and About sections removed to separate /about.html page -->
-
 
   <!-- =========================================================
        CUSTOMER FEEDBACK SECTION
@@ -207,6 +196,40 @@
           <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
+
+        <!-- ORDER SUMMARY PANEL -->
+        <div id="checkout-summary" style="background:#fffaf6; border: 1.5px solid #eae1d8; padding: 14px; border-radius: 8px; margin: 1.2rem 0; font-family: inherit; font-size: 0.9rem;">
+          <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--brown); font-weight: 800; border-bottom: 1.5px solid #eae1d8; padding-bottom: 6px;"><i class="fas fa-shopping-basket"></i> Order Summary</h4>
+          <div id="checkout-item-row" style="display:flex; justify-content:space-between; margin-bottom: 8px; border-bottom: 1px dashed #eae1d8; padding-bottom: 8px; font-size: 0.88rem;">
+            <span style="font-weight: 600; color: var(--brown);">Item:</span>
+            <span id="checkout-item-details" style="font-weight:700; color: #2c1a0e; text-align: right; max-width: 70%;">Product (Size) × Qty</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+            <span>Product Subtotal:</span>
+            <span id="checkout-subtotal" style="font-weight:600; color: #2c1a0e;">₹0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 5px; font-size: 0.82rem; color: #666;">
+            <span>Taxable Value (Before Tax):</span>
+            <span id="checkout-taxable-base">₹0.00</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 8px; font-size: 0.82rem; color: #666; border-bottom: 1px dashed #eae1d8; padding-bottom: 6px;">
+            <span id="checkout-gst-label">GST (18% Included):</span>
+            <span id="checkout-gst-amount">₹0.00</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+            <span>Total Weight:</span>
+            <span id="checkout-weight" style="font-weight:600; color: #2c1a0e;">0.00 kg</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+            <span id="checkout-shipping-label">Shipping Rate:</span>
+            <span id="checkout-shipping" style="font-weight:600; color: #2c1a0e;">₹0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-weight: 800; border-top: 1.5px dashed #eae1d8; padding-top: 8px; margin-top: 8px; color: var(--orange); font-size: 1.15rem;">
+            <span>Grand Total:</span>
+            <span id="checkout-total">₹0</span>
+          </div>
+        </div>
+
         <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
         <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
           Proceed to Pay
@@ -272,11 +295,7 @@
     </div>
   </footer>
 
-  <!-- Razorpay SDK (required for Buy Now on homepage) -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <!-- =========================================================
-       SCRIPTS
-       ========================================================= -->
   <script src="/products.js"></script>
   <script src="/api.js"></script>
   <script src="/modal.js"></script>
