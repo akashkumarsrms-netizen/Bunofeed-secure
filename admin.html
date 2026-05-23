@@ -353,7 +353,7 @@
     border:2px solid transparent;transition:.2s;
   }
   .cat-item:hover { border-color:var(--orange-lt); }
-  .cat-item-name { font-family:var(--font-h);font-weight:700;font-size:0.9rem;color:var(--dark); }
+  .cat-item-name { font-family:var(--font-h);font-weight:700;font-size:.9rem;color:var(--dark); }
   .cat-item-slug { font-size:.75rem;color:var(--gray);font-family:monospace;background:var(--lt-gray);padding:2px 7px;border-radius:4px;display:inline-block;margin-top:2px; }
   .cat-item-count { font-size:.78rem;color:var(--gray);white-space:nowrap; }
   .cat-item-actions { display:flex;gap:.4rem;flex-shrink:0; }
@@ -880,39 +880,28 @@
         <label class="form-label">Description <span>*</span></label>
         <textarea class="form-textarea" id="edit-description" placeholder="Full product description..."></textarea>
       </div>
+      <div class="form-group">
+        <label class="form-label">Price (₹) <span>*</span></label>
+        <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional)</span></label>
+        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399"/>
+        <span class="form-hint">If set, product cards and modal will show this as original.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Weight / Size</label>
+        <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
+      </div>
 
-      <!-- UPGRADED MULTI-VARIANT SECTION -->
-      <div class="form-group" style="grid-column: 1/-1; background: var(--off-white); padding: 1.1rem; border-radius: 12px; border: 1px solid var(--border); margin: 0.5rem 0;">
-        <h4 style="font-family: var(--font-h); font-weight: 800; font-size: 0.9rem; color: var(--dark); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase;">
-          <i class="fas fa-sliders-h" style="color: var(--orange);"></i> Multi-Variant Settings
-        </h4>
-        
-        <!-- Textures array manager -->
-        <div class="form-group" style="margin-bottom: 1rem;">
-          <label class="form-label" style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em;">1. Texture / Type Variants (Flavors) <span style="font-weight:500; text-transform:none; color:var(--gray)">(Optional - e.g. Crunchy, Smooth, Dark Chocolate)</span></label>
-          <div id="textures-manager-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 0.4rem 0;"></div>
-          <div style="display: flex; gap: 0.5rem;">
-            <input type="text" class="form-input" id="new-texture-input" placeholder="e.g. Smooth" style="min-height:36px; height:36px; padding:6px 12px; font-size:0.85rem; flex:1;" />
-            <button type="button" class="btn btn-orange btn-xs font-bold" onclick="addTextureFromAdmin()" style="min-height:36px; height:36px; padding:0 14px;"><i class="fas fa-plus"></i> Add Type</button>
-          </div>
-        </div>
-
-        <!-- Sizes array manager -->
-        <div class="form-group" style="margin-bottom: 1rem;">
-          <label class="form-label" style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em;">2. Size / Weight Variants <span style="color:var(--danger)">*</span> <span style="font-weight:500; text-transform:none; color:var(--gray)">(At least one required - e.g. 200g, 400g, 1kg)</span></label>
-          <div id="sizes-manager-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 0.4rem 0;"></div>
-          <div style="display: flex; gap: 0.5rem;">
-            <input type="text" class="form-input" id="new-size-input" placeholder="e.g. 500g" style="min-height:36px; height:36px; padding:6px 12px; font-size:0.85rem; flex:1;" />
-            <button type="button" class="btn btn-orange btn-xs font-bold" onclick="addSizeFromAdmin()" style="min-height:36px; height:36px; padding:0 14px;"><i class="fas fa-plus"></i> Add Size</button>
-          </div>
-        </div>
-
-        <!-- Matrix pricing table -->
-        <div class="form-group">
-          <label class="form-label" style="font-size: 0.75rem; font-weight: 800; border-top: 1px solid var(--border); padding-top: 0.8rem; margin-top: 0.4rem; letter-spacing: 0.02em;">3. Pricing Matrix per Combination <span style="color:var(--danger)">*</span></label>
-          <span class="form-hint" style="margin-bottom: 0.4rem;">Set individual Price and optional MRP for each variant choice combinations below.</span>
-          <div id="pricing-matrix-container" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.4rem;"></div>
-        </div>
+      <!-- VARIANTS SECTION -->
+      <div class="form-group">
+        <label class="form-label">Product Variants</label>
+        <span class="form-hint">Add variants like 250g, 500g, 1kg.</span>
+        <div id="edit-variants-list" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem;"></div>
+        <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:.5rem;">
+          <i class="fas fa-plus"></i> Add Variant
+        </button>
       </div>
 
       <!-- MULTI-IMAGE SECTION -->
@@ -977,7 +966,7 @@
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label"><i class="fas fa-exclamation-triangle" style="color:var(--orange)"></i> Allergen Info</label>
-        <textarea class="form-textarea" id="edit-allergenInfo" placeholder="e.g. Inside peanuts..." style="min-height:70px"></textarea>
+        <textarea class="form-textarea" id="edit-allergenInfo" placeholder="e.g. Contains peanuts..." style="min-height:70px"></textarea>
       </div>
 
     </div>
@@ -1033,11 +1022,6 @@ const DEFAULT_CATEGORIES = [
 let adminData = null;
 let editingProductIndex = -1;
 let currentImageUrls = [];
-
-/* Local in-flight multi-variant lists for active modal editor */
-let currentEditingTextures = [];
-let currentEditingSizes = [];
-let currentEditingPricesObj = {};
 
 document.getElementById('login-btn').addEventListener('click', attemptLogin);
 document.addEventListener('keydown', e => {
@@ -1146,9 +1130,6 @@ function productListItemHTML(p, i, compact) {
     ? `<img src="${primaryImg}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`
     : `${p.emoji || '🥜'}`;
 
-  // Multi-variant size display
-  const weightText = p.sizes ? p.sizes.join(', ') : (p.weight || '');
-
   return `
     <div class="product-list-item" data-idx="${i}">
       <div class="product-list-img ${p.bgClass||'peanut-bg'}">${imgHTML}</div>
@@ -1156,7 +1137,7 @@ function productListItemHTML(p, i, compact) {
         <h4>${p.name}</h4>
         <p>${(p.description||'').substring(0,70)}${p.description && p.description.length>70?'…':''}</p>
         <div class="meta">
-          <span class="meta-chip price">₹${p.price}${sp?` → ₹${sp}`:''} · ${weightText}</span>
+          <span class="meta-chip price">₹${p.price}${sp?` → ₹${sp}`:''} · ${p.weight||''}</span>
           <span class="meta-chip ${p.visible!==false?'visible':'hidden'}">${p.visible!==false?'Visible':'Hidden'}</span>
           ${p.bestSeller?'<span class="meta-chip bs">Homepage</span>':''}
           ${p.badge?`<span class="meta-chip new-chip">${p.badge}</span>`:''}
@@ -1201,17 +1182,18 @@ function openEditModal(idx) {
   document.getElementById('delete-product-btn').style.display = isNew ? 'none' : 'inline-flex';
 
   const p = isNew ? {
-    id:'', name:'', tagline:'', description:'', price:199, weight:'500g',
+    id:'', name:'', tagline:'', description:'', price:'', weight:'',
     badge:'', badgeType:'', images:[], image:'', emoji:'🥜',
     bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
-    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:'',
-    textures:[], sizes:['500g'], prices:{}
+    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:''
   } : adminData.products[idx];
 
   document.getElementById('edit-product-id').value     = p.id || '';
   document.getElementById('edit-name').value           = p.name || '';
   document.getElementById('edit-tagline').value        = p.tagline || '';
   document.getElementById('edit-description').value    = p.description || '';
+  document.getElementById('edit-price').value          = p.price || '';
+  document.getElementById('edit-weight').value         = p.weight || '';
   document.getElementById('edit-emoji').value          = p.emoji || '🥜';
   document.getElementById('edit-badge').value          = p.badge || '';
   document.getElementById('edit-badgeType').value      = p.badgeType || '';
@@ -1223,30 +1205,9 @@ function openEditModal(idx) {
   document.getElementById('edit-allergenInfo').value   = p.allergenInfo || '';
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
-
-  // Set default matrices for backward compatibility migration
-  currentEditingTextures = p.textures ? [...p.textures] : [];
-  currentEditingSizes = p.sizes ? [...p.sizes] : (p.weight ? [p.weight] : ["500g"]);
-  currentEditingPricesObj = p.prices ? JSON.parse(JSON.stringify(p.prices)) : {};
-
-  // Backward compatible migration of single size variants in matrix
-  if (Object.keys(currentEditingPricesObj).length === 0) {
-    if (p.variants && p.variants.length > 0) {
-      currentEditingSizes = p.variants.map(v => v.label);
-      p.variants.forEach(v => {
-        currentEditingPricesObj[`-${v.label}`] = { price: v.price, mrp: v.mrp || null };
-      });
-    } else {
-      const defSz = currentEditingSizes[0] || "500g";
-      currentEditingPricesObj[`-${defSz}`] = { price: p.price || 199, mrp: p.mrp || null };
-    }
-  }
-
-  // Draw pill managers and matrix grid UI elements
-  renderTexturesManager();
-  renderSizesManager();
-  renderPricingMatrix();
-
+  document.getElementById('edit-mrp').value            = p.mrp || '';
+  
+  renderVariantsEditor(p.variants || []);
   populateCategorySelect(p.category || '');
 
   if (p.images && p.images.length > 0) {
@@ -1279,42 +1240,9 @@ function closeEditModal() {
 
 function saveEditedProduct() {
   const name  = document.getElementById('edit-name').value.trim();
-  if (!name) { toast('Product name is required', 'error'); return; }
-
-  if (!currentEditingSizes || currentEditingSizes.length === 0) {
-    toast('At least one size/weight variant is required!', 'error');
-    return;
-  }
-
-  // Scrape Pricing combination values from dynamic pricing inputs
-  const finalPricesObj = {};
-  let priceMatrixValid = true;
-
-  const rows = document.querySelectorAll('.matrix-pricing-row');
-  rows.forEach(row => {
-    const priceNode = row.querySelector('.matrix-price-input');
-    const mrpNode = row.querySelector('.matrix-mrp-input');
-    const key = priceNode.dataset.key;
-    const price = parseFloat(priceNode.value);
-    const mrp = parseFloat(mrpNode.value) || null;
-
-    if (isNaN(price) || price <= 0) {
-      priceMatrixValid = false;
-      return;
-    }
-    finalPricesObj[key] = { price: price, mrp: mrp };
-  });
-
-  if (!priceMatrixValid) {
-    toast('Valid Price is required for all combinations in the Pricing Matrix!', 'error');
-    return;
-  }
-
-  // Set the default baseline prices (using the first selection combination)
-  const baseKey = currentEditingTextures.length > 0 
-    ? `${currentEditingTextures[0]}-${currentEditingSizes[0]}`
-    : `-${currentEditingSizes[0]}`;
-  const baseData = finalPricesObj[baseKey] || { price: 199, mrp: null };
+  const price = parseFloat(document.getElementById('edit-price').value);
+  if (!name)        { toast('Product name is required', 'error'); return; }
+  if (isNaN(price)) { toast('Valid price is required',  'error'); return; }
 
   const featureStr = document.getElementById('edit-features').value;
   const features   = featureStr.split(',').map(f => f.trim()).filter(Boolean);
@@ -1330,20 +1258,10 @@ function saveEditedProduct() {
     name,
     tagline:     document.getElementById('edit-tagline').value.trim(),
     description: document.getElementById('edit-description').value.trim(),
-    price:       baseData.price,
-    mrp:         baseData.mrp,
-    weight:      currentEditingSizes[0],
-    textures:    currentEditingTextures,
-    sizes:       currentEditingSizes,
-    prices:      finalPricesObj,
-    // flat variants mapper for backwards compatibilities
-    variants:    Object.keys(finalPricesObj).map(k => {
-      return {
-        label: k.startsWith('-') ? k.replace('-','') : k.replace('-',' - '),
-        price: finalPricesObj[k].price,
-        mrp: finalPricesObj[k].mrp || null
-      };
-    }),
+    price,
+    mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
+    weight:      document.getElementById('edit-weight').value.trim(),
+    variants:    collectVariants(),
     image:       primaryImage,
     images:      cleanedImages,
     emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
@@ -1698,200 +1616,41 @@ function toast(msg, type = 'success') {
   window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-/* ============================================================
-   UPGRADED MULTI-VARIANT RENDERING LOGIC
-   ============================================================ */
+function renderVariantsEditor(variants) {
+  const list = document.getElementById('edit-variants-list');
+  list.innerHTML = '';
+  (variants || []).forEach((v, i) => addVariantRow(v, i));
+}
 
-window.renderTexturesManager = function() {
-  const container = document.getElementById('textures-manager-pills');
-  container.innerHTML = '';
-  currentEditingTextures.forEach((tex, i) => {
-    const pill = document.createElement('div');
-    pill.style.cssText = 'display:inline-flex; align-items:center; gap:6px; background:#fff; border:1.5px solid var(--border); padding:4px 12px; border-radius:30px; font-size:0.83rem; font-weight:600;';
-    pill.innerHTML = `
-      <span onclick="editTextureName(${i})" style="cursor:pointer;" title="Click to edit name">${tex}</span>
-      <button type="button" onclick="removeTexturePill(${i})" style="border:none; background:none; cursor:pointer; color:#dc3545; font-size:0.75rem; margin-left:2px; font-weight:bold;">✕</button>
-    `;
-    container.appendChild(pill);
+function addVariantRow(v, i) {
+  const list = document.getElementById('edit-variants-list');
+  const row = document.createElement('div');
+  row.className = 'variant-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:var(--off-white);border-radius:8px;padding:.5rem .7rem;';
+  row.innerHTML = `
+    <input type="text"   class="form-input variant-label" placeholder="e.g. 500g"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹)" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
+    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:.8rem;flex-shrink:0;min-height:36px;" title="Remove variant">✕</button>`;
+  list.appendChild(row);
+}
+
+document.getElementById('add-variant-btn').addEventListener('click', () => {
+  addVariantRow(null, document.querySelectorAll('.variant-row').length);
+});
+
+function collectVariants() {
+  const rows = document.querySelectorAll('.variant-row');
+  if (rows.length === 0) return [];
+  const variants = [];
+  rows.forEach(row => {
+    const label = row.querySelector('.variant-label').value.trim();
+    const price = parseFloat(row.querySelector('.variant-price').value);
+    const mrp   = parseFloat(row.querySelector('.variant-mrp').value) || null;
+    if (label && price > 0) variants.push({ label, price, mrp });
   });
-};
-
-window.addTextureFromAdmin = function() {
-  const inp = document.getElementById('new-texture-input');
-  const val = inp.value.trim();
-  if (!val) return;
-  if (currentEditingTextures.includes(val)) {
-    toast('This texture variant already exists!', 'error');
-    return;
-  }
-  currentEditingTextures.push(val);
-  inp.value = '';
-  renderTexturesManager();
-  renderPricingMatrix();
-};
-
-window.editTextureName = function(idx) {
-  const oldVal = currentEditingTextures[idx];
-  const newVal = prompt('Edit Texture/Type Variant Name:', oldVal);
-  if (newVal === null) return;
-  const val = newVal.trim();
-  if (!val) return;
-  if (currentEditingTextures.includes(val) && val !== oldVal) {
-    toast('Variant name already exists!', 'error');
-    return;
-  }
-
-  // Rename keys in currentEditingPricesObj to keep price mapping synced!
-  currentEditingSizes.forEach(sz => {
-    const oldKey = `${oldVal}-${sz}`;
-    const newKey = `${val}-${sz}`;
-    if (currentEditingPricesObj[oldKey]) {
-      currentEditingPricesObj[newKey] = currentEditingPricesObj[oldKey];
-      delete currentEditingPricesObj[oldKey];
-    }
-  });
-
-  currentEditingTextures[idx] = val;
-  renderTexturesManager();
-  renderPricingMatrix();
-};
-
-window.removeTexturePill = function(idx) {
-  const val = currentEditingTextures[idx];
-  if (!confirm(`Remove texture type "${val}" and delete its custom pricing?`)) return;
-  
-  currentEditingSizes.forEach(sz => {
-    delete currentEditingPricesObj[`${val}-${sz}`];
-  });
-  currentEditingTextures.splice(idx, 1);
-  renderTexturesManager();
-  renderPricingMatrix();
-};
-
-window.renderSizesManager = function() {
-  const container = document.getElementById('sizes-manager-pills');
-  container.innerHTML = '';
-  currentEditingSizes.forEach((sz, i) => {
-    const pill = document.createElement('div');
-    pill.style.cssText = 'display:inline-flex; align-items:center; gap:6px; background:#fff; border:1.5px solid var(--border); padding:4px 12px; border-radius:30px; font-size:0.83rem; font-weight:600;';
-    pill.innerHTML = `
-      <span onclick="editSizeName(${i})" style="cursor:pointer;" title="Click to edit">${sz}</span>
-      <button type="button" onclick="removeSizePill(${i})" style="border:none; background:none; cursor:pointer; color:#dc3545; font-size:0.75rem; margin-left:2px; font-weight:bold;">✕</button>
-    `;
-    container.appendChild(pill);
-  });
-};
-
-window.addSizeFromAdmin = function() {
-  const inp = document.getElementById('new-size-input');
-  const val = inp.value.trim();
-  if (!val) return;
-  if (currentEditingSizes.includes(val)) {
-    toast('Size variant already exists!', 'error');
-    return;
-  }
-  currentEditingSizes.push(val);
-  inp.value = '';
-  renderSizesManager();
-  renderPricingMatrix();
-};
-
-window.editSizeName = function(idx) {
-  const oldVal = currentEditingSizes[idx];
-  const newVal = prompt('Edit Size/Weight Variant Name:', oldVal);
-  if (newVal === null) return;
-  const val = newVal.trim();
-  if (!val) return;
-  if (currentEditingSizes.includes(val) && val !== oldVal) {
-    toast('Size variant already exists!', 'error');
-    return;
-  }
-
-  // Rename pricing keys
-  if (currentEditingTextures.length > 0) {
-    currentEditingTextures.forEach(tex => {
-      const oldKey = `${tex}-${oldVal}`;
-      const newKey = `${tex}-${val}`;
-      if (currentEditingPricesObj[oldKey]) {
-        currentEditingPricesObj[newKey] = currentEditingPricesObj[oldKey];
-        delete currentEditingPricesObj[oldKey];
-      }
-    });
-  } else {
-    const oldKey = `-${oldVal}`;
-    const newKey = `-${val}`;
-    if (currentEditingPricesObj[oldKey]) {
-      currentEditingPricesObj[newKey] = currentEditingPricesObj[oldKey];
-      delete currentEditingPricesObj[oldKey];
-    }
-  }
-
-  currentEditingSizes[idx] = val;
-  renderSizesManager();
-  renderPricingMatrix();
-};
-
-window.removeSizePill = function(idx) {
-  if (currentEditingSizes.length <= 1) {
-    toast('At least one size/weight variant is required!', 'error');
-    return;
-  }
-  const val = currentEditingSizes[idx];
-  if (!confirm(`Remove size variant "${val}" and delete its custom pricing?`)) return;
-
-  if (currentEditingTextures.length > 0) {
-    currentEditingTextures.forEach(tex => {
-      delete currentEditingPricesObj[`${tex}-${val}`];
-    });
-  } else {
-    delete currentEditingPricesObj[`-${val}`];
-  }
-
-  currentEditingSizes.splice(idx, 1);
-  renderSizesManager();
-  renderPricingMatrix();
-};
-
-window.renderPricingMatrix = function() {
-  const container = document.getElementById('pricing-matrix-container');
-  container.innerHTML = '';
-
-  const permutations = [];
-  if (currentEditingTextures.length > 0) {
-    currentEditingTextures.forEach(tex => {
-      currentEditingSizes.forEach(sz => {
-        permutations.push({ texture: tex, size: sz });
-      });
-    });
-  } else {
-    currentEditingSizes.forEach(sz => {
-      permutations.push({ texture: '', size: sz });
-    });
-  }
-
-  if (permutations.length === 0) {
-    container.innerHTML = '<span style="font-size:0.8rem; color:var(--gray)">Add at least one size variant above to generate combinations.</span>';
-    return;
-  }
-
-  permutations.forEach(p => {
-    const key = p.texture ? `${p.texture}-${p.size}` : `-${p.size}`;
-    const existing = currentEditingPricesObj[key] || { price: '', mrp: '' };
-
-    const row = document.createElement('div');
-    row.className = 'matrix-pricing-row';
-    row.style.cssText = 'display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:0.5rem; align-items:center; background:#fff; border:1px solid var(--border); border-radius:8px; padding:0.5rem;';
-    
-    const displayLabel = p.texture ? `<strong>${p.texture}</strong> · ${p.size}` : `Standard · ${p.size}`;
-
-    row.innerHTML = `
-      <div style="font-size:0.83rem; color:var(--dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-left:4px;">${displayLabel}</div>
-      <input type="number" class="form-input matrix-price-input" data-key="${key}" placeholder="Price (₹)" value="${existing.price || ''}" min="1" style="font-size:0.83rem; height:32px; padding:4px 8px; min-height:32px;" required />
-      <input type="number" class="form-input matrix-mrp-input" data-key="${key}" placeholder="MRP (₹)" value="${existing.mrp || ''}" min="0" style="font-size:0.83rem; height:32px; padding:4px 8px; min-height:32px;" />
-    `;
-    container.appendChild(row);
-  });
-};
+  return variants;
+}
 
 </script>
 </body>
