@@ -505,23 +505,18 @@ window.bunoBuildProductCard = function(product) {
         </div>`;
     }
 
-    // Display pills selector only if texture variants are configured
+    // Display dropdown selector only if texture variants are configured
     let texturesMarkup = '';
     if (product.textures && product.textures.length > 0) {
       texturesMarkup = `
-        <div class="card-textures-row" style="display:flex; flex-wrap:wrap; gap:4px; margin: 8px 0 2px;">
-          ${product.textures.map(tex => {
-            const isSelected = tex === selectedTexture;
-            const btnStyle = isSelected
-              ? 'background: var(--brown); color: #fff; border-color: var(--brown);'
-              : 'background: #fff; color: #555; border-color: #e0d4cc;';
-            return `
-              <button type="button" class="card-texture-pill" data-tex="${tex}"
-                style="font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid; cursor: pointer; transition: all 0.2s; ${btnStyle}">
-                ${tex}
-              </button>
-            `;
-          }).join('')}
+        <div class="card-textures-row" style="margin: 8px 0 6px; width: 100%;">
+          <select class="card-texture-dropdown" aria-label="Select flavor"
+            style="width: 100%; font-family: var(--font-head); font-size: 0.75rem; font-weight: 700; padding: 8px 12px; border-radius: var(--radius); border: 2px solid #e0d4cc; background-color: var(--white); color: var(--brown); cursor: pointer; transition: all 0.2s; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B2D0E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 10px auto; padding-right: 32px;">
+            ${product.textures.map(tex => {
+              const isSelected = tex === selectedTexture;
+              return `<option value="${tex}" ${isSelected ? 'selected' : ''}>Type: ${tex}</option>`;
+            }).join('')}
+          </select>
         </div>
       `;
     }
@@ -534,25 +529,28 @@ window.bunoBuildProductCard = function(product) {
       <div class="product-info">
         <h3>${product.name}</h3>
         ${texturesMarkup}
-        <div class="product-foot-row" style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:0.6rem; width:100%;">
+        <div class="product-footer">
           ${priceHTML}
-          <div class="product-card-btns" style="display:flex; gap:0.4rem;">
-            <button type="button" class="btn-view-detail c-view-btn-custom" style="padding:6px 12px; font-size:0.75rem; border-radius:50px; background:transparent; color:var(--brown); font-family:var(--font-head); font-weight:700; border:2px solid var(--brown); cursor:pointer; transition:var(--transition); min-height:36px;">Details</button>
-            <button type="button" class="btn-buy c-buy-btn-custom" style="padding:6px 12px; font-size:0.75rem; border-radius:50px; background:var(--brown); color:var(--white); font-family:var(--font-head); font-weight:700; border:2px solid var(--brown); cursor:pointer; transition:var(--transition); min-height:36px;">Buy</button>
+          <div class="product-card-btns">
+            <button type="button" class="btn-view-detail c-view-btn-custom">Details</button>
+            <button type="button" class="btn-buy c-buy-btn-custom">Buy</button>
           </div>
         </div>
       </div>
     `;
 
-    // Connect pill clicks
-    card.querySelectorAll('.card-texture-pill').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        selectedTexture = btn.dataset.tex;
+    // Connect dropdown select changes
+    const selectEl = card.querySelector('.card-texture-dropdown');
+    if (selectEl) {
+      selectEl.addEventListener('change', (e) => {
+        selectedTexture = e.target.value;
         card.setAttribute('data-selected-texture', selectedTexture);
         renderCardHTML();
       });
-    });
+      selectEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
 
     // Connect custom buttons
     card.querySelector('.c-view-btn-custom').addEventListener('click', (e) => {
@@ -571,7 +569,7 @@ window.bunoBuildProductCard = function(product) {
   // Clicking anywhere on card triggers the modal with pre-selected card texture
   card.style.cursor = 'pointer';
   card.addEventListener('click', (e) => {
-    if (!e.target.closest('.card-texture-pill') && !e.target.closest('.c-view-btn-custom') && !e.target.closest('.c-buy-btn-custom')) {
+    if (!e.target.closest('.card-texture-dropdown') && !e.target.closest('.c-view-btn-custom') && !e.target.closest('.c-buy-btn-custom')) {
       openProductModal(product.id, selectedTexture);
     }
   });
