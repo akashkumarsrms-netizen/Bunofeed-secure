@@ -2,11 +2,9 @@
  * ============================================================
  *  BUNOFEED — Main Script (script.js)
  *  - Reads data from products.js (window.BUNOFEED_DATA)
- *  - Renders best-seller products on homepage with texture selector
- *  - Dynamic pricing and MRP on texture dropdown changes
- *  - Integrates with window.BUNO_MODAL of full-screen details
+ *  - Renders best-seller products on homepage
+ *  - Uses shared window.BUNO_MODAL for full-screen detail
  *  - Shows/hides campaign banner
- *  - Pincode-wise custom shipping charges and free shipping validation during checkout
  *  - Mobile nav, scroll reveal, active links
  * ============================================================
  */
@@ -77,117 +75,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     PRICE HTML helper (supports MRP strikethrough & multi-variant)
-     Gets pricing for a specific texture and size combination
+     PRICE HTML helper (supports MRP strikethrough)
   ---------------------------------------------------------- */
-  function getPricingForCombinations(product, texture, size) {
-    let hasTextures = product.textureVariants && product.textureVariants.length > 0;
-    let combinationKey = hasTextures ? `${texture}-${size}` : `default-${size}`;
-
-    const varPriceInfo = product.variantPrices && product.variantPrices[combinationKey];
-    if (varPriceInfo) {
-      return {
-        price: varPriceInfo.price,
-        mrp: varPriceInfo.mrp || null
-      };
-    }
-    return {
-      price: product.price,
-      mrp: product.mrp || null
-    };
-  }
-
-  window.buildCardDropdownsHTML = function(product) {
-    const textures = product.textureVariants || [];
-    const sizes = product.sizeVariants || [];
-    
-    let hasTextures = textures.length > 0;
-    let hasSizes = sizes.length > 0;
-    
-    if (!hasTextures && !hasSizes) return '';
-    
-    let html = `<div class="card-dropdowns-container">`;
-    
-    if (hasTextures) {
-      html += `
-        <div class="card-dropdown-group">
-          <label class="card-dropdown-label" title="Select Texture">Texture:</label>
-          <select class="card-variant-select card-texture-select" data-id="${product.id}" aria-label="Select Texture">
-            ${textures.map(t => `<option value="${t}">${t}</option>`).join('')}
-          </select>
-        </div>
-      `;
-    }
-    
-    if (hasSizes) {
-      html += `
-        <div class="card-dropdown-group">
-          <label class="card-dropdown-label" title="Select Weight">Pack Size:</label>
-          <select class="card-variant-select card-size-select" data-id="${product.id}" aria-label="Select Weight">
-            ${sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-          </select>
-        </div>
-      `;
-    }
-    
-    html += `</div>`;
-    return html;
-  };
-
-  window.updateCardPrice = function(productId, cardElement) {
-    const product = window.BUNOFEED_DATA.products.find(p => p.id === productId);
-    if (!product) return;
-    
-    const card = cardElement || document.querySelector(`.product-card[data-id="${productId}"]`);
-    if (!card) return;
-    
-    const textureSel = card.querySelector('.card-texture-select');
-    const sizeSel = card.querySelector('.card-size-select');
-    
-    const currentTexture = textureSel ? textureSel.value : '';
-    const currentSize = sizeSel ? sizeSel.value : '';
-    
-    const priceBox = card.querySelector(`#price-box-${productId}`);
-    if (priceBox) {
-      priceBox.outerHTML = window.buildPriceHTML(product, currentTexture, currentSize);
-    }
-  };
-
-  window.buildPriceHTML = function(product, selectedTexture, selectedSize) {
-    const defaultSize = selectedSize || ((product.sizeVariants && product.sizeVariants.length > 0) ? product.sizeVariants[0] : (product.weight || ''));
-    const { price, mrp } = getPricingForCombinations(product, selectedTexture || '', defaultSize);
-
-    const sp = salePrice(price);
-    const displayMrp = mrp;
-    const displayPrice = sp ? sp : price;
-
-    let displayWeight = defaultSize;
+  function buildPriceHTML(product) {
+    const sp = salePrice(product.price);
+    const mrp = product.mrp || null;
 
     if (sp) {
       return `
-        <div class="product-price" id="price-box-${product.id}">
-          <div class="product-weight">${displayWeight}</div>
+        <div class="product-price">
+          <div class="product-weight">${product.weight || ''}</div>
           <div class="price-sale">
-            <span class="price-current">₹${displayPrice}</span>
-            <span class="price-old">₹${price}</span>
+            <span class="price-current">₹${sp}</span>
+            <span class="price-old">₹${product.price}</span>
           </div>
         </div>`;
-    } else if (displayMrp && displayMrp > displayPrice) {
-      const pct = Math.round((1 - displayPrice / displayMrp) * 100);
+    } else if (mrp && mrp > product.price) {
+      const pct = Math.round((1 - product.price / mrp) * 100);
       return `
-        <div class="product-price" id="price-box-${product.id}">
-          <div class="product-weight">${displayWeight}</div>
+        <div class="product-price">
+          <div class="product-weight">${product.weight || ''}</div>
           <div class="price-sale">
-            <span class="price-current">₹${displayPrice}</span>
-            <span class="price-old">₹${displayMrp}</span>
+            <span class="price-current">₹${product.price}</span>
+            <span class="price-old">₹${mrp}</span>
             <span class="price-save-tag">${pct}% off</span>
           </div>
         </div>`;
     } else {
       return `
-        <div class="product-price" id="price-box-${product.id}">
-          <div class="product-weight">${displayWeight}</div>
-          <div class="price-original">₹${displayPrice}</div>
+        <div class="product-price">
+          <div class="product-weight">${product.weight || ''}</div>
+          <div class="price-original">₹${product.price}</div>
         </div>`;
     }
   }
@@ -224,10 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="product-info">
           <h3>${product.name}</h3>
-          ${window.buildCardDropdownsHTML(product)}
           <div class="product-footer">
-            ${window.buildPriceHTML(product, (product.textureVariants && product.textureVariants.length > 0) ? product.textureVariants[0] : '')}
+            ${buildPriceHTML(product)}
             <div class="product-card-btns">
+              <button class="btn-view-detail view-detail-btn" data-id="${product.id}">View Details</button>
               <button class="btn-buy buy-now-btn" data-id="${product.id}">Buy Now</button>
             </div>
           </div>
@@ -236,51 +154,26 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.appendChild(card);
     });
 
-    /* Click and variation change handlers */
-    grid.querySelectorAll('.card-variant-select').forEach(sel => {
-      sel.addEventListener('change', (e) => {
-        const pId = sel.dataset.id;
-        window.updateCardPrice(pId, sel.closest('.product-card'));
-      });
-      sel.addEventListener('click', (e) => e.stopPropagation());
-    });
-
+    /* Click handlers */
     grid.querySelectorAll('.product-card').forEach(card => {
       card.addEventListener('click', (e) => {
-        if (!e.target.closest('.btn-buy') && !e.target.closest('.card-variant-select')) {
-          const textureSel = card.querySelector('.card-texture-select');
-          const sizeSel = card.querySelector('.card-size-select');
-          openProductModal(card.dataset.id, textureSel ? textureSel.value : '', sizeSel ? sizeSel.value : '');
+        if (!e.target.closest('.btn-buy') && !e.target.closest('.btn-view-detail')) {
+          openProductModal(card.dataset.id);
         }
       });
+    });
+    grid.querySelectorAll('.view-detail-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openProductModal(btn.dataset.id); });
     });
     grid.querySelectorAll('.buy-now-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const product = (D.products || []).find(p => p.id === btn.dataset.id);
         if (product) {
-          const card = btn.closest('.product-card');
-          const textureSel = card ? card.querySelector('.card-texture-select') : null;
-          const sizeSel = card ? card.querySelector('.card-size-select') : null;
-          
-          const chosenTexture = textureSel ? textureSel.value : '';
-          const chosenSize = sizeSel ? sizeSel.value : ((product.sizeVariants && product.sizeVariants.length > 0) ? product.sizeVariants[0] : (product.weight || ''));
-
           currentProduct = product;
           qty = 1;
-
-          const combPricing = getPricingForCombinations(product, chosenTexture, chosenSize);
-          selectedUnitPrice = salePrice(combPricing.price) || combPricing.price;
-          
-          const formattedSize = window.BUNO_FORMAT_SIZE(chosenSize);
-          if (chosenTexture && formattedSize) {
-            selectedVariantLabel = `${formattedSize}, ${chosenTexture}`;
-          } else if (formattedSize) {
-            selectedVariantLabel = formattedSize;
-          } else {
-            selectedVariantLabel = chosenTexture;
-          }
-
+          selectedUnitPrice = salePrice(product.price) || product.price;
+          selectedVariantLabel = product.weight || '';
           openCheckoutModal();
         }
       });
@@ -297,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedUnitPrice = null;
   let selectedVariantLabel = '';
 
-  function openProductModal(id, preSelectedTexture, preSelectedSize) {
+  function openProductModal(id) {
     const product = (D.products || []).find(p => p.id === id);
     if (!product) return;
     currentProduct = product;
@@ -312,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedUnitPrice = unitPrice;
         selectedVariantLabel = variantLabel || '';
         openCheckoutModal();
-      }, preSelectedTexture, preSelectedSize);
+      });
     }
   }
   window.BUNO_OPEN_MODAL = openProductModal;
@@ -360,103 +253,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkoutForm    = document.getElementById('checkout-form');
   const checkoutClose   = document.getElementById('checkout-close-btn');
 
-  function parseWeightInKg(wstr) {
-    if (!wstr) return 0.5;
-    const clean = wstr.toLowerCase().replace(/\s+/g, '');
-    const val = parseFloat(clean);
-    if (isNaN(val)) return 0.5; // fallback
-    if (clean.endsWith('kg') || clean.endsWith('kilogram') || clean.endsWith('kilograms')) {
-      return val;
-    }
-    if (clean.endsWith('gm') || clean.endsWith('g') || clean.endsWith('grams') || clean.endsWith('gram')) {
-      return val / 1000;
-    }
-    if (val > 10) return val / 1000;
-    return val;
-  }
-
-  function extractWeightInKg(variantLabel, product) {
-    if (variantLabel) {
-      const parts = variantLabel.split(',').map(s => s.trim().toLowerCase());
-      for (const part of parts) {
-        if (part.includes('g') || part.includes('kg') || part.includes('gm') || part.includes('gram') || part.includes('kilogram')) {
-          return parseWeightInKg(part);
-        }
-      }
-      const match = variantLabel.match(/(\d+(?:\.\d+)?)\s*(kg|g|gm|kilogram|grams|gram)/i);
-      if (match) {
-        return parseWeightInKg(match[0]);
-      }
-    }
-    const defaultSize = (product.sizeVariants && product.sizeVariants.length > 0) ? product.sizeVariants[0] : (product.weight || '500g');
-    return parseWeightInKg(defaultSize);
-  }
-
-  window.updateCheckoutSummary = function() {
-    if (!currentProduct) return;
-    const pincodeEl = document.getElementById('cust-pincode');
-    const pincode = pincodeEl ? pincodeEl.value.trim() : '';
-
-    const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
-    const subtotal = unitPrice * qty;
-
-    const itemWeightKg = extractWeightInKg(selectedVariantLabel, currentProduct);
-    const totalWeightInKg = itemWeightKg * qty;
-
-    let ratePerKg = 0;
-    let isPincodeConfigured = false;
-    if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
-      isPincodeConfigured = true;
-      if (D.pincodeShipping && D.pincodeShipping[pincode] !== undefined) {
-        ratePerKg = Number(D.pincodeShipping[pincode]);
-      } else {
-        ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
-      }
-    } else {
-      ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
-    }
-
-    let shippingFee = Math.round(ratePerKg * totalWeightInKg);
-    if (D.shipping && subtotal >= D.shipping.freeShippingAbove) {
-      shippingFee = 0;
-    }
-
-    const grandTotal = subtotal + shippingFee;
-
-    const subtotalEl = document.getElementById('checkout-subtotal');
-    const weightEl = document.getElementById('checkout-weight');
-    const shippingEl = document.getElementById('checkout-shipping');
-    const totalEl = document.getElementById('checkout-total');
-    const shippingLabelEl = document.getElementById('checkout-shipping-label');
-
-    if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
-    if (weightEl) weightEl.textContent = `${totalWeightInKg.toFixed(2)} kg`;
-    
-    if (shippingEl) {
-      if (shippingFee === 0) {
-        shippingEl.textContent = 'FREE';
-        shippingEl.style.color = '#28a745';
-        shippingEl.style.fontWeight = '700';
-      } else {
-        shippingEl.textContent = `₹${shippingFee}`;
-        shippingEl.style.color = '';
-        shippingEl.style.fontWeight = '';
-      }
-    }
-    
-    if (shippingLabelEl) {
-      shippingLabelEl.textContent = isPincodeConfigured 
-        ? `Shipping (₹${ratePerKg}/kg):` 
-        : `Estimated Shipping (₹${ratePerKg}/kg):`;
-    }
-
-    if (totalEl) totalEl.textContent = `₹${grandTotal}`;
-  }
-
   function openCheckoutModal() {
     if (!currentProduct) return;
     checkoutOverlay.classList.add('open');
-    window.updateCheckoutSummary();
   }
 
   function closeCheckoutModal() {
@@ -465,11 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
-
-  const pincodeInput = document.getElementById('cust-pincode');
-  if (pincodeInput) {
-    pincodeInput.addEventListener('input', window.updateCheckoutSummary);
-  }
 
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', async (e) => {
@@ -506,37 +300,15 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = true;
       proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
 
+      // Logical checkout variant dynamic price calculation
       const unitPrice = selectedUnitPrice !== null ? selectedUnitPrice : (salePrice(currentProduct.price) || currentProduct.price);
-      const totalProductAmount = unitPrice * qty;
-
-      const itemWeightKg = extractWeightInKg(selectedVariantLabel, currentProduct);
-      const totalWeightInKg = itemWeightKg * qty;
-
-      let ratePerKg = 0;
-      if (D.pincodeShipping && D.pincodeShipping[pincode] !== undefined) {
-        ratePerKg = Number(D.pincodeShipping[pincode]);
-      } else {
-        ratePerKg = D.shipping ? Number(D.shipping.shippingCharge) : 50;
-      }
-
-      let shippingFee = Math.round(ratePerKg * totalWeightInKg);
-      if (D.shipping && totalProductAmount >= D.shipping.freeShippingAbove) {
-        shippingFee = 0;
-      }
-
-      const grandTotal = totalProductAmount + shippingFee;
+      const totalAmount = unitPrice * qty;
+      const shipping = D.shipping && totalAmount < D.shipping.freeShippingAbove ? D.shipping.shippingCharge : 0;
+      const grandTotal = totalAmount + shipping;
       const orderId = generateOrderId();
 
-      // Ensure name contains variant details: Dark chocolate peanut butter (900gm, Crunchy)
-      let displayProductName = currentProduct.name;
-      if (selectedVariantLabel) {
-        let matches = selectedVariantLabel.split(',').map(s => s.trim());
-        if (matches.length > 1) {
-          displayProductName = `${currentProduct.name} (${matches[0]}, ${matches[1]})`;
-        } else {
-          displayProductName = `${currentProduct.name} (${selectedVariantLabel})`;
-        }
-      }
+      // Bundle chosen variant size cleanly in product name
+      const displayProductName = selectedVariantLabel ? `${currentProduct.name} (${selectedVariantLabel})` : currentProduct.name;
 
       const orderData = {
         order_id: orderId,
@@ -557,9 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       await syncLocalOrder(orderData);
-      triggerRazorpay(currentProduct, qty, grandTotal, shippingFee, orderData, displayProductName);
+      triggerRazorpay(currentProduct, qty, grandTotal, shipping, orderData, displayProductName);
     });
   }
+
 
   function showRedirectOverlay() {
     const overlay = document.createElement('div');
@@ -583,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function triggerRazorpay(product, quantity, grandTotal, shippingAmt, orderData, displayProductName) {
     const key = D.payment && D.payment.razorpayKeyId;
-    if (!key || key.includes('PASTE_YOUR') || key.includes('rzp_test_XXXXXXXXX')) {
+    if (!key || key.includes('PASTE_YOUR')) {
       alert('⚠️ Razorpay Key ID not configured. Local order preview created anyway!');
       orderData.payment_status = 'Paid (Test Local)';
       orderData.payment_id = 'LOCAL_' + Date.now();
@@ -616,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         product_id: product.id,
       },
       handler: async function(response) {
+        // Immediately hide checkout modal and show full-screen redirect overlay
         closeCheckoutModal();
         showRedirectOverlay();
 
