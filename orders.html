@@ -3,173 +3,110 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Track Orders | Bunofeed</title>
+  <title>My Orders | Bunofeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/style.css"/>
   <style>
-    /* Track Orders Page CSS overrides */
-    .track-hero {
+    .orders-hero {
       background: var(--brown);
-      padding: 5rem 1.5rem 4rem;
+      padding: 4.5rem 1.5rem 3.5rem;
       text-align: center;
       position: relative;
     }
-    .track-hero::after {
+    .orders-hero::after {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(139,69,19,0.35) 0%, transparent 75%);
+      background: radial-gradient(ellipse at center, rgba(139,69,19,0.3) 0%, transparent 80%);
       pointer-events: none;
     }
-    .track-hero-inner { position: relative; z-index: 1; }
-    .track-hero h1 {
-      font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800; color: #fff; margin-bottom: 0.5rem;
+    .orders-hero h1 {
+      font-family: var(--font-head); font-size: 2.22rem; font-weight: 800; color: #fff; position: relative; z-index: 10;
     }
-    .track-hero p { color: rgba(255,255,255,0.7); font-size: 1rem; }
+    .orders-hero p { color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-top: 5px; position: relative; z-index: 10; }
 
-    .track-body {
+    .orders-view {
       background: var(--off-white);
-      padding: 4rem 1.5rem;
       min-height: 70vh;
+      padding: 3rem 1.5rem 5rem;
     }
-    .track-container {
+    .orders-container {
       max-width: 800px;
       margin: 0 auto;
     }
+    .orders-lookup-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e8ddd6;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+    }
+    .lookup-title {
+      font-family: var(--font-head); font-weight: 700; color: var(--brown-dark); font-size: 1.1rem; margin-bottom: 0.8rem;
+    }
+    .lookup-grid {
+      display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;
+    }
+    .lookup-input {
+      flex: 1; min-width: 200px; padding: 10px 14px; border: 2.3px solid #e0d4cc;
+      border-radius: 8px; font-family: var(--font-body); font-size: 0.9rem; outline: none;
+    }
+    .lookup-input:focus { border-color: var(--orange); }
 
-    /* ---- Search Card ---- */
-    .search-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 2.22rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 2.5rem;
-      text-align: center;
-      border: 1px solid rgba(139,69,19,0.06);
+    .orders-list {
+      display: flex; flex-direction: column; gap: 1rem;
     }
-    .search-card h3 {
-      font-family: var(--font-head); font-weight: 800;
-      font-size: 1.15rem; color: var(--brown-dark);
-      margin-bottom: 0.5rem;
+    .order-item-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e8ddd6;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      padding: 1.25rem;
+      position: relative;
     }
-    .search-card p { color: var(--gray); font-size: 0.88rem; margin-bottom: 1.5rem; }
-    
-    .search-form {
-      display: flex; gap: 0.6rem;
-      max-width: 500px; margin: 0 auto;
+    .order-badge-status {
+      position: absolute; right: 1.25rem; top: 1.25rem;
+      padding: 4px 10px; border-radius: 50px; font-family: var(--font-head);
+      font-weight: 700; font-size: 0.72rem; text-transform: uppercase;
     }
-    .search-form .form-input {
-      font-size: 0.95rem; line-height: 1.5;
-    }
-    .search-form .btn {
-      padding: 12px 28px; font-weight: 700; font-family: var(--font-head);
-      font-size: 0.88rem; flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
-    }
+    .status-pending { background: rgba(255, 107, 0, 0.12); color: var(--orange); }
+    .status-paid { background: rgba(40, 167, 69, 0.12); color: #28a745; }
+    .status-dismissed { background: #eee; color: #666; }
 
-    /* ---- Results ---- */
-    .results-heading {
-      font-family: var(--font-head); font-weight: 800;
-      font-size: 1.1rem; color: var(--brown-dark);
-      margin-bottom: 1.2rem; display: none;
+    .order-id-label {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; color: var(--brown-dark);
     }
-    .order-list { display: flex; flex-direction: column; gap: 1.5rem; }
-    
-    .order-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      border: 1px solid rgba(139,69,19,0.05);
-      animation: fadeInUp 0.4s ease;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .order-head {
-      background: var(--off-white);
-      padding: 1.15rem 1.6rem;
-      border-bottom: 1px solid #f2e9e2;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 0.8rem;
-    }
-    .order-meta div { font-size: 0.78rem; color: var(--gray); font-weight: 600; margin-bottom: 0.2rem; }
-    .order-meta strong {
-      font-family: var(--font-head); font-weight: 800;
-      font-size: 0.95rem; color: var(--brown-dark);
-    }
-    .order-badge {
-      font-family: var(--font-head); font-weight: 700;
-      font-size: 0.72rem; padding: 4px 10px; border-radius: 5 \times var(--radius);
-      text-transform: uppercase; letter-spacing: 0.05em;
-      border-radius: 50px;
-    }
-    /* status style maps */
-    .status-placed    { background: rgba(255,107,0,0.12); color: var(--orange); }
-    .status-cancelled { background: rgba(220,53,69,0.1); color: #dc3545; }
-    .status-refunded  { background: rgba(108,117,125,0.1); color: #6c757d; }
+    .order-date-label { font-size: 0.75rem; color: var(--gray); margin-top: 3px; }
 
-    .order-content { padding: 1.5rem 1.6rem; }
-    
-    /* Product row */
-    .order-item-detail {
-       display: flex; gap: 1.2rem; align-items: center;
-       padding-bottom: 1rem; border-bottom: 1px dashed #f2e9e2;
-       margin-bottom: 1rem;
+    .order-product-strip {
+      display: flex; align-items: center; gap: 1rem; border-top: 1.5px dashed #f0e8e0; border-bottom: 1.5px dashed #f0e8e0;
+      padding: 0.8rem 0; margin: 0.8rem 0;
     }
-    .order-item-img {
-      width: 50px; height: 50px; border-radius: 8px;
-       display: flex; align-items: center; justify-content: center;
-       font-size: 1.5rem; flex-shrink: 0;
+    .order-product-emoji {
+      width: 44px; height: 44px; border-radius: 8px; background: var(--off-white); display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; flex-shrink: 0;
     }
-    .order-item-body h4 {
-      font-family: var(--font-head); font-weight: 700;
-      font-size: 0.9rem; color: var(--dark); margin-bottom: 0.15rem;
+    .order-product-name {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; color: var(--dark);
     }
-    .order-item-body p { font-size: 0.8rem; color: var(--gray); }
+    .order-product-qty { font-size: 0.8rem; color: var(--gray); }
 
-    .order-summary-row {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.88rem; color: var(--gray); margin-bottom: 0.3rem;
+    .order-meta-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;
     }
-    .order-summary-row.total {
-       margin-top: 0.8rem; padding-top: 0.8rem;
-       border-top: 1px solid #f2e9e2; font-size: 1rem; color: var(--dark);
-    }
-    .order-summary-row.total strong {
-       font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; color: var(--brown-dark);
-    }
-    
-    .order-actions {
-      padding: 1rem 1.6rem;
-      background: var(--off-white);
-      border-top: 1px solid #f2e9e2;
-      display: flex; justify-content: flex-end; gap: 0.8rem;
-    }
-    .order-actions .btn {
-      font-family: var(--font-head); font-weight: 700; font-size: 0.78rem;
-       padding: 8px 18px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center;
+    .order-customer-info { font-size: 0.84rem; color: var(--gray); }
+    .order-total-price {
+      font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; color: var(--brown-dark);
     }
 
-    .no-results {
-      text-align: center; padding: 3rem 1rem; display: none;
+    .no-orders-illustration {
+      text-align: center; padding: 4rem 1rem; color: var(--gray);
     }
-    .no-results i { font-size: 2.5rem; color: #e5dacd; margin-bottom: 1rem; }
-    .no-results h4 { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; color: var(--brown-dark); margin-bottom: 0.25rem; }
-    .no-results p { color: var(--gray); font-size: 0.85rem; }
-
-    @media (max-width: 520px) {
-      .search-form { flex-direction: column; }
-      .search-form .btn { width: 100%; }
-      .order-head { padding: 1rem; }
-      .order-content { padding: 1rem; }
-      .order-actions { padding: 1rem; }
-      .track-body { padding: 2.5rem 1rem; }
-    }
+    .no-orders-illustration i { font-size: 3.5rem; color: #e0d4cc; margin-bottom: 1rem; }
+    .no-orders-illustration h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--brown-dark); }
   </style>
 </head>
 <body>
@@ -177,13 +114,13 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+      <a href="/index.html" class="logo">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
-      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+      <nav class="nav-links" id="navLinks">
         <a href="/index.html"      class="nav-link">Home</a>
         <a href="/shop.html"       class="nav-link">Products</a>
         <a href="/orders.html"     class="nav-link active">My Orders</a>
@@ -193,53 +130,43 @@
     </div>
   </header>
 
-  <!-- tracker hero -->
-  <section class="track-hero">
-    <div class="track-hero-inner">
-      <h1>Track Your Order</h1>
-      <p>Enter your details below to track real-time delivery status, cancellations, and returns.</p>
-    </div>
+  <!-- HERO -->
+  <section class="orders-hero">
+    <h1>Review Your Orders</h1>
+    <p>Track your healthy nutrition shipping status live.</p>
   </section>
 
-  <!-- track body -->
-  <div class="track-body">
-    <div class="track-container">
+  <!-- VIEW -->
+  <div class="orders-view">
+    <div class="orders-container">
 
-      <!-- Query input form -->
-      <div class="search-card">
-        <h3>Track Your Order</h3>
-        <p>Please enter your Order ID and the Mobile Number you used at checkout.</p>
-        <form class="checkout-form" id="order-tracker-form" style="max-width: 480px; margin: 0 auto; text-align: left;">
-          <div class="form-group">
-            <label for="order-id-input">Order ID <span>*</span></label>
-            <input type="text" id="order-id-input" class="form-input" placeholder="e.g. ORD17163984025" required autocomplete="on" spellcheck="false"/>
-          </div>
-          <div class="form-group">
-            <label for="phone-input">Mobile Number <span>*</span></label>
-            <input type="tel" id="phone-input" class="form-input" placeholder="e.g. 9876543210" required autocomplete="on" spellcheck="false"/>
-          </div>
-          <button type="submit" class="btn btn-primary checkout-btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700;">
-            <i class="fas fa-search"></i> Find Order Details
-          </button>
-        </form>
+      <!-- Sync Look-up Card -->
+      <div class="orders-lookup-card">
+        <div class="lookup-title"><i class="fas fa-search"></i> Synchronise My Orders</div>
+        <p style="font-size:0.82rem; color:var(--gray); line-height:1.4;">
+          Ordered from another device or need to fetch your details? Enter your 10-digit mobile number below to pull your active orders live:
+        </p>
+        <div class="lookup-grid">
+          <input type="tel" id="lookup-phone" class="lookup-input" placeholder="e.g. 9876543210" maxlength="10"/>
+          <button class="btn btn-orange" id="lookup-btn" style="min-height:44px;"><i class="fas fa-sync-alt"></i> Fetch Orders</button>
+        </div>
       </div>
 
-      <!-- Live state responses -->
-      <div class="results-heading" id="results-headline">Orders Found</div>
+      <!-- Orders List Wrapper -->
+      <div class="orders-list" id="customer-orders-list"></div>
 
-      <div class="order-list" id="tracking-results-grid"></div>
-
-      <!-- No items found matching selection -->
-      <div class="no-results" id="no-orders-found">
-        <i class="fas fa-search-minus"></i>
-        <h4>No Orders Found</h4>
-        <p>We couldn't locate any orders matching your credential. Try searching by phone/email or make sure you utilized the correct information.</p>
+      <!-- Free State empty illustration -->
+      <div class="no-orders-illustration" id="no-orders-box">
+        <i class="fas fa-receipt"></i>
+        <h3>No Orders Placed Yet</h3>
+        <p style="margin-top:6px;">Fuel your lifestyle with natural proteins! Browse items on our catalog page.</p>
+        <a href="/shop.html" class="btn btn-orange" style="margin-top:1.5rem;"><i class="fas fa-shopping-basket"></i> Go to Shop</a>
       </div>
 
     </div>
   </div>
 
-  <!-- Standard Footer -->
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-brand">
@@ -253,203 +180,140 @@
         <a href="/orders.html">My Orders</a>
         <a href="/about.html">About Us</a>
       </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
-      </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Bunofeed. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script src="/products.js"></script>
   <script src="/api.js"></script>
   <script src="/script.js"></script>
   <script>
-    /**
-     * Orders lookup query by Order ID and Mobile Number.
-     */
     document.addEventListener('DOMContentLoaded', () => {
-      const trackerForm = document.getElementById('order-tracker-form');
-      const orderIdInput = document.getElementById('order-id-input');
-      const phoneInput = document.getElementById('phone-input');
-      const headline = document.getElementById('results-headline');
-      const resultsGrid = document.getElementById('tracking-results-grid');
-      const emptyState = document.getElementById('no-orders-found');
+      const D = window.BUNOFEED_DATA;
+      const listEl = document.getElementById('customer-orders-list');
+      const boxEl = document.getElementById('no-orders-box');
+      const phoneInput = document.getElementById('lookup-phone');
+      const lookupBtn = document.getElementById('lookup-btn');
 
-      trackerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const orderIdVal = orderIdInput.value.trim();
-        const phoneVal = phoneInput.value.trim();
-        if (!orderIdVal || !phoneVal) return;
+      let savedOrders = [];
 
-        fetchAndRender(orderIdVal, phoneVal);
-      });
-
-      // Quick-detect URL parameter if redirected on checkout completion with order_id and phone
-      const params = new URLSearchParams(window.location.search);
-      const urlOrderId = params.get('order_id');
-      const urlPhone = params.get('phone');
-      const fallbackQueryPhone = params.get('query'); // support single "query" fallback as well
-
-      if (urlOrderId || urlPhone || fallbackQueryPhone) {
-        if (urlOrderId) orderIdInput.value = urlOrderId;
-        if (urlPhone) phoneInput.value = urlPhone;
-        else if (fallbackQueryPhone) phoneInput.value = fallbackQueryPhone;
-
-        // If we only have fallbackQueryPhone but no orderID in URL, we auto-populate phone input but let user fill Order ID
-        if (urlOrderId && (urlPhone || fallbackQueryPhone)) {
-          fetchAndRender(urlOrderId, urlPhone || fallbackQueryPhone);
+      // 1. Fetch locally stored order IDs from localStorage
+      try {
+        const local = localStorage.getItem('BUNO_SAVED_ORDERS');
+        if (local) {
+          savedOrders = JSON.parse(local);
         }
+      } catch(e) { console.error(e); }
+
+      async function renderCustomerOrders() {
+        listEl.innerHTML = '';
+        if (savedOrders.length === 0) {
+          listEl.style.display = 'none';
+          boxEl.style.display = 'block';
+          return;
+        }
+
+        boxEl.style.display = 'none';
+        listEl.style.display = 'flex';
+
+        // Render each saved order
+        savedOrders.forEach(o => {
+          let badgeClass = 'status-pending';
+          if (o.payment_status === 'Paid' || o.payment_status === 'Paid (Test Local)') {
+            badgeClass = 'status-paid';
+          } else if (o.payment_status === 'Dismissed') {
+            badgeClass = 'status-dismissed';
+          }
+
+          const product = D && D.products ? D.products.find(p => p.id === o.product_id) : null;
+          const emoji = product ? product.emoji : '🥜';
+
+          const card = document.createElement('div');
+          card.className = 'order-item-card';
+          card.innerHTML = `
+            <div class="order-badge-status ${badgeClass}">${o.payment_status || 'Pending'}</div>
+            <div class="order-id-label">Order #${o.order_id}</div>
+            <div class="order-date-label">Placed: ${o.date_time}</div>
+            
+            <div class="order-product-strip">
+              <div class="order-product-emoji">${emoji}</div>
+              <div style="flex:1;">
+                <div class="order-product-name">${o.product_name}</div>
+                <div class="order-product-qty">Qty: ${o.quantity} units · ₹${o.product_price} / unit</div>
+              </div>
+            </div>
+
+            <div class="order-meta-footer">
+              <div class="order-customer-info">
+                Deliver to: <strong>${o.customer_name}</strong><br/>
+                Address: ${o.address}, Pincode ${o.pincode}
+              </div>
+              <div>
+                <div style="font-size:0.75rem; color:var(--gray); text-align:right;">Subtotal + Shipping</div>
+                <div class="order-total-price">₹${o.total_amount}</div>
+              </div>
+            </div>
+          `;
+          listEl.appendChild(card);
+        });
       }
 
-      async function fetchAndRender(orderId, phone) {
-        resultsGrid.innerHTML = `
-          <div style="text-align: center; padding: 3rem 1rem; color: var(--gray);">
-            <i class="fas fa-spinner fa-spin" style="font-size: 1.8rem; color: var(--orange); margin-bottom: 0.8rem;"></i>
-            <p style="font-size: 0.95rem; font-weight: 500;">Searching for order ${orderId}...</p>
-          </div>
-        `;
-        headline.style.display = 'none';
-        emptyState.style.display = 'none';
-
-        try {
-          const response = await window.BUNOFEED_API.get('lookupOrder', { orderId, phone });
-          resultsGrid.innerHTML = '';
-
-          if (response.status !== 'success' || !response.order) {
-            headline.style.display = 'none';
-            emptyState.style.display = 'block';
-            emptyState.querySelector('p').textContent = response.message || "We couldn't locate any order matching those credentials. Please check both details.";
+      // 2. Lookup Orders by phone number from the Worker backend api
+      if (lookupBtn) {
+        lookupBtn.addEventListener('click', async () => {
+          const ph = phoneInput.value.trim();
+          if (!/^\d{10}$/.test(ph)) {
+            alert('Please enter a valid 10-digit phone number');
             return;
           }
 
-          const ord = response.order;
-          emptyState.style.display = 'none';
-          headline.style.display = 'block';
+          lookupBtn.disabled = true;
+          lookupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
 
-          const card = document.createElement('div');
-          card.className = 'order-card';
-
-          const formattedDate = new Date(ord.createdAt || ord.dateTime || Date.now()).toLocaleDateString(undefined, {
-            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-          });
-
-          let displayStatus = ord.orderStatus || 'Placed';
-          if (displayStatus === 'Pending') displayStatus = 'Placed';
-          if (ord.returnStatus === 'Requested Return') displayStatus = 'Returned';
-          if (ord.returnStatus === 'Requested Cancellation') displayStatus = 'Cancelled';
-
-          // Action button state triggers
-          let actionButtonsHTML = '';
-          if (displayStatus === 'Placed') {
-            actionButtonsHTML = `
-              <button class="btn btn-outline cancel-order-action" data-id="${ord.orderId}">Cancel Order</button>
-            `;
-          } else if (displayStatus === 'Delivered') {
-            actionButtonsHTML = `
-              <button class="btn btn-primary return-order-action" data-id="${ord.orderId}">Request Return</button>
-            `;
-          }
-
-          let subtotal = (ord.price && ord.qty) ? (ord.price * ord.qty) : (ord.total || 0);
-          let shipping = (ord.total && subtotal) ? Math.max(0, ord.total - subtotal) : 0;
-
-          // Build dynamic items overview list
-          const itemsMarkup = `
-            <div class="order-item-detail">
-              <div class="order-item-img peanut-bg" style="background:#FFF1E6;">🥜</div>
-              <div class="order-item-body">
-                <h4>${ord.productName || 'Bunofeed Product'}</h4>
-                <p>Qty: ${ord.qty || 1} · Standard (₹${ord.price || ord.total || 0})</p>
-              </div>
-            </div>
-          `;
-
-          card.innerHTML = `
-            <div class="order-head">
-              <div class="order-meta">
-                <div>ORDER ID</div>
-                <strong>${ord.orderId}</strong>
-                <div style="margin-top: 4px;">Placed on: ${formattedDate}</div>
-              </div>
-              <span class="order-badge status-${displayStatus.toLowerCase()}">${displayStatus}</span>
-            </div>
-            <div class="order-content">
-              ${itemsMarkup}
-              <div class="order-summary-row">
-                <span>Subtotal:</span>
-                <span>₹${subtotal}</span>
-              </div>
-              <div class="order-summary-row">
-                <span>Shipping:</span>
-                <span>${shipping === 0 ? 'Free' : `₹${shipping}`}</span>
-              </div>
-              <div class="order-summary-row total">
-                <span>Order Total:</span>
-                <strong>₹${ord.total || subtotal}</strong>
-              </div>
-            </div>
-            ${actionButtonsHTML ? `<div class="order-actions">${actionButtonsHTML}</div>` : ''}
-          `;
-
-          resultsGrid.appendChild(card);
-
-          // Wire cancellation actions
-          const cancelBtn = card.querySelector('.cancel-order-action');
-          if (cancelBtn) {
-            cancelBtn.addEventListener('click', async () => {
-              if (confirm('Are you sure you want to cancel this order? This action is immediate and we will issue refund immediately.')) {
-                cancelBtn.disabled = true;
-                cancelBtn.textContent = 'Cancelling...';
-                const res = await window.BUNOFEED_API.post('updateOrder', { orderId: ord.orderId, newStatus: 'Requested Cancellation' });
-                if (res.status === 'success') {
-                  alert('Order Cancelled! Refund processed successfully.');
-                  fetchAndRender(orderId, phone);
+          if (window.BUNOFEED_API) {
+            try {
+              const res = await window.BUNOFEED_API.get(`getOrders?phone=${ph}`);
+              if (res && res.orders && Array.isArray(res.orders)) {
+                if (res.orders.length === 0) {
+                  alert(`No synced orders found on file for phone number ${ph}.`);
                 } else {
-                  alert('Error: ' + res.message);
-                  cancelBtn.disabled = false;
-                  cancelBtn.textContent = 'Cancel Order';
+                  // Merge fetched orders into local storage
+                  const existingIds = savedOrders.map(o => o.order_id);
+                  let merged = [...savedOrders];
+                  
+                  res.orders.forEach(fresh => {
+                    if (!existingIds.includes(fresh.order_id)) {
+                      merged.push(fresh);
+                    } else {
+                      // update status
+                      const idx = merged.findIndex(o => o.order_id === fresh.order_id);
+                      if (idx !== -1) merged[idx] = fresh;
+                    }
+                  });
+
+                  savedOrders = merged;
+                  localStorage.setItem('BUNO_SAVED_ORDERS', JSON.stringify(savedOrders));
+                  alert(`Successfully fetched and synced ${res.orders.length} orders!`);
                 }
               }
-            });
+            } catch (e) {
+              console.error(e);
+              alert('Could not synchronize orders. Connecting to offline cache.');
+            }
+          } else {
+            alert('Backend worker offline. Loaded cached device orders.');
           }
 
-          // Wire return actions
-          const returnBtn = card.querySelector('.return-order-action');
-          if (returnBtn) {
-            returnBtn.addEventListener('click', async () => {
-              const reason = prompt('Please specify the reason for return:');
-              if (reason === null) return; // cancelled prompt
-              if (!reason.trim()) {
-                alert('Specification of return reason is mandatory.');
-                return;
-              }
-              returnBtn.disabled = true;
-              returnBtn.textContent = 'Requesting...';
-              const res = await window.BUNOFEED_API.post('updateOrder', { orderId: ord.orderId, newStatus: 'Requested Return' });
-              if (res.status === 'success') {
-                alert('Return Request Submitted successfully! Our team will verify and initialize reverse pickup in 24-48 business hours.');
-                fetchAndRender(orderId, phone);
-              } else {
-                alert('Error: ' + res.message);
-                returnBtn.disabled = false;
-                returnBtn.textContent = 'Request Return';
-              }
-            });
-          }
-
-        } catch (err) {
-          console.error(err);
-          resultsGrid.innerHTML = '';
-          alert('Failed to connect to order API.');
-        }
+          lookupBtn.disabled = false;
+          lookupBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Fetch Orders';
+          renderCustomerOrders();
+        });
       }
+
+      renderCustomerOrders();
     });
   </script>
-
 </body>
 </html>

@@ -565,27 +565,17 @@ ul { list-style: none; }
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  width: 100%;
+}
+.product-card-btns .btn-buy {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .btn-view-detail {
-  padding: 10px 16px;
-  font-size: 0.82rem;
-  border-radius: 50px;
-  background: transparent;
-  color: var(--brown);
-  font-family: var(--font-head);
-  font-weight: 700;
-  border: 2px solid var(--brown);
-  cursor: pointer;
-  transition: var(--transition);
-  -webkit-appearance: none;
-  appearance: none;
-  white-space: nowrap;
-  min-height: 40px;
-}
-.btn-view-detail:hover {
-  background: var(--brown);
-  color: var(--white);
-  transform: translateY(-2px);
+  display: none; /* Hide any legacy or fallback instances */
 }
 .btn-view-detail:active { transform: translateY(0); }
 
@@ -978,7 +968,7 @@ ul { list-style: none; }
   .hero-btns {
     justify-content: center;
   }
-  .products-grid    { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+  .products-grid    { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
   .why-us,
   .about            { grid-template-columns: 1fr; gap: 3rem; }
   .about-visual     { order: -1; }
@@ -1029,9 +1019,9 @@ ul { list-style: none; }
   .product-info h3 { font-size: 1rem; }
   .product-footer { flex-direction: column; align-items: stretch; gap: 0.5rem; padding-top: 0.5rem; }
   .product-card-btns { width: 100%; gap: 0.4rem; }
-  .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
     flex: 1;
+    width: 100%;
     padding: 6px 10px;
     font-size: 0.75rem;
     min-height: 36px;
@@ -1070,7 +1060,6 @@ ul { list-style: none; }
   .price-save-tag { font-size: 0.58rem; padding: 1px 3px; }
   .product-badge { top: 8px; left: 8px; font-size: 0.58rem; padding: 3px 8px; }
   .sale-ribbon { top: 8px; right: 8px; font-size: 0.58rem; padding: 3px 8px; }
-  .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
     font-size: 0.68rem;
     min-height: 32px;
@@ -1161,4 +1150,85 @@ ul { list-style: none; }
   .btn         { padding: 11px 18px; }
   .why-stat-card { padding: 1.2rem 1rem; }
   .hero-photo { max-height: 240px; }
+}
+
+/* Texture Type dropdown addition styles without layout disruption */
+.texture-dropdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.texture-dropdown-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.texture-select {
+  padding: 8px 12px;
+  border: 1.5px solid #e0d4cc;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  outline: none;
+  background: #fff;
+  color: var(--dark);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  width: 100%;
+  min-height: 38px;
+}
+.texture-select:focus {
+  border-color: var(--orange);
+}
+
+/* ── Card Multi-Variant Dropdowns ── */
+.card-dropdowns-container {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 8px 0;
+  width: 100%;
+}
+.card-dropdown-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.card-dropdown-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.68rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-variant-select {
+  padding: 4px 20px 4px 8px;
+  border: 1.5px solid #e0d4cc;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  outline: none;
+  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B2D0E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 6px center;
+  background-size: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--dark);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 32px;
+  width: 100%;
+}
+.card-variant-select:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
 }

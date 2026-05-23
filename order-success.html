@@ -2,123 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Order Confirmed – Bunofeed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Payment Successful & Order Placed | Bunofeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/style.css"/>
   <style>
-    .success-page {
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1.5rem;
-      background: var(--off-white);
+    .success-panel {
+      min-height: 80vh; background: var(--off-white); display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem;
     }
     .success-card {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 3rem 2.5rem;
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 16px 48px rgba(107,45,14,0.14);
+      background: #fff; border-radius: 16px; border: 1px solid #e8ddd6; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      width: 100%; max-width: 550px; padding: 2.5rem; text-align: center;
     }
-    .success-icon {
-      width: 80px;height: 80px;border-radius: 50%;
-      background: linear-gradient(135deg,#28a745,#20c753);
-      display: flex;align-items: center;justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 2.2rem;color: #fff;
-      box-shadow: 0 8px 24px rgba(40,167,69,.3);
+    .success-icon-ring {
+      width: 72px; height: 72px; border-radius: 50%; background: rgba(40,167,69,0.1); display: flex; align-items: center;
+      justify-content: center; font-size: 2.2rem; color: #28a745; margin: 0 auto 1.5rem;
     }
     .success-card h1 {
-      font-family: var(--font-head);font-size: 1.7rem;font-weight: 800;
-      color: var(--dark);margin-bottom: .5rem;
+      font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; color: var(--brown-dark); margin-bottom: 0.5rem;
     }
-    .success-card p { color: var(--gray);font-size: .97rem;line-height: 1.7;margin-bottom: .5rem; }
-    .order-details {
-      background: var(--off-white);border-radius: 12px;
-      padding: 1.2rem 1.5rem;margin: 1.5rem 0;text-align: left;
-    }
-    .order-row {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: .7rem 0;
-  border-bottom: 1px solid #f0e8e0;
-}
-.order-row:last-child { border-bottom: none; }
+    .success-card p { color: var(--gray); font-size: 0.95rem; line-height: 1.5; }
 
-.order-row span:first-child {
-  font-size: .75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--gray);
-}
-
-.order-row span:last-child {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .92rem;
-  color: var(--dark);
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  line-height: 1.45;
-}
-    .success-actions {
-      display: flex;gap: .8rem;flex-wrap: wrap;justify-content: center;margin-top: 1.5rem;
+    .success-receipt {
+      background: var(--off-white); border-radius: 10px; border: 1px dashed #e0d4cc; padding: 1.25rem; margin: 1.8rem 0;
+      text-align: left;
     }
-    .success-actions .btn { min-width: 140px; }
-    @media(max-width:480px){
-      .success-card{padding:2rem 1.2rem;}
-      .success-actions .btn{flex:1;}
+    .receipt-row {
+      display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--dark); padding: 6px 0;
+    }
+    .receipt-row.divider { border-bottom: 1.5px dashed #e0d4cc; margin-bottom: 5px; padding-bottom: 8px; }
+    .receipt-row.total {
+      font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; color: var(--brown-dark); padding-top: 10px;
     }
   </style>
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo">
+      <a href="/index.html" class="logo">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="navLinks">
+        <a href="/index.html"      class="nav-link">Home</a>
+        <a href="/shop.html"       class="nav-link">Products</a>
+        <a href="/orders.html"     class="nav-link">My Orders</a>
+        <a href="/about.html"      class="nav-link">About Us</a>
+        <a href="/index.html#contact" class="nav-link">Contact</a>
+      </nav>
     </div>
   </header>
 
-  <div class="success-page">
+  <!-- SUCCESS VIEW -->
+  <div class="success-panel">
     <div class="success-card">
-      <div class="success-icon"><i class="fas fa-check"></i></div>
-      <h1>Order Confirmed! 🎉</h1>
-      <p>Thank you for your order. Your payment was successful.</p>
-      <p>You'll receive a confirmation email shortly. We'll notify you once your order ships.</p>
-      <p>Please retain your Order ID to track your shipment.</p>
-      <div class="order-details" id="order-details">
-        <div class="order-row"><span>Order ID</span><span id="order-id">—</span></div>
-        <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
-        <div class="order-row"><span>Product</span><span id="pay-product">—</span></div>
-        <div class="order-row"><span>Quantity</span><span id="pay-qty">—</span></div>
-        <div class="order-row"><span>Amount Paid</span><span id="pay-total">—</span></div>
+      <div class="success-icon-ring"><i class="fas fa-check"></i></div>
+      <h1>Order Placed Successfully!</h1>
+      <p>Thank you for choosing Bunofeed. Your order has been placed successfully. A receipt and shipping updates will be shared shortly.</p>
+
+      <div class="success-receipt" id="receipt-container">
+        <!-- Replaced dynamically by Javascript -->
+        <div class="receipt-row"><span>Order ID</span> <strong id="rec-order-id">ORD...</strong></div>
+        <div class="receipt-row"><span>Payment ID</span> <span id="rec-payment-id">PAY...</span></div>
+        <div class="receipt-row divider"><span>Product Purchased</span> <strong id="rec-product" style="text-align:right">Loading...</strong></div>
+        <div class="receipt-row"><span>Quantity</span> <span id="rec-qty">1 unit</span></div>
+        <div class="receipt-row total"><span>Amount Received</span> <span id="rec-total">₹00.00</span></div>
       </div>
 
-      <div class="success-actions">
-        <a href="shop.html"  class="btn btn-primary">Continue Shopping</a>
-        <a href="orders.html" class="btn btn-brown">Track Order</a>
+      <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; margin-top:2rem;">
+        <a href="/orders.html" class="btn btn-outline" style="min-height:44px;"><i class="fas fa-list-alt"></i> View My Orders</a>
+        <a href="/shop.html" class="btn btn-primary" style="min-height:44px;"><i class="fas fa-store"></i> Continue Shopping</a>
       </div>
     </div>
   </div>
 
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom" style="border-top:none; padding-top:0;">
+      <p>© 2026 Bunofeed. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/products.js"></script>
+  <script src="/api.js"></script>
+  <script src="/script.js"></script>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById('order-id').textContent      = params.get('order_id') || '—';
-    document.getElementById('pay-id').textContent      = params.get('payment_id') || '—';
-    document.getElementById('pay-product').textContent = params.get('product')    || '—';
-    document.getElementById('pay-qty').textContent     = params.get('qty')        || '—';
-    const total = params.get('total');
-    document.getElementById('pay-total').textContent   = total ? `₹${total}` : '—';
+    document.addEventListener('DOMContentLoaded', () => {
+      // Parse parameters from query string
+      const q = new URLSearchParams(window.location.search);
+      const orderId   = q.get('order_id') || ('ORD' + Date.now());
+      const paymentId = q.get('payment_id') || 'LOCAL_PAY';
+      const productName = decodeURIComponent(q.get('product') || 'Peanut Butter Product');
+      const qty       = q.get('qty') || '1';
+      const total     = q.get('total') || '0';
+
+      // Fill in text labels
+      document.getElementById('rec-order-id').textContent = '#' + orderId;
+      document.getElementById('rec-payment-id').textContent = paymentId;
+      document.getElementById('rec-product').textContent = productName;
+      document.getElementById('rec-qty').textContent = qty + ' ' + (qty === '1' ? 'unit' : 'units');
+      document.getElementById('rec-total').textContent = '₹' + total;
+
+      // Save to localStorage so My Orders syncs instantly off-line
+      try {
+        let listStr = localStorage.getItem('BUNO_SAVED_ORDERS');
+        let list = listStr ? JSON.parse(listStr) : [];
+        
+        // protect from duplicates
+        if (!list.some(o => o.order_id === orderId)) {
+          list.unshift({
+            order_id: orderId,
+            date_time: new Date().toLocaleString('en-IN'),
+            product_name: productName,
+            quantity: parseInt(qty),
+            product_price: Math.round(parseFloat(total) / parseInt(qty)),
+            total_amount: parseFloat(total),
+            payment_id: paymentId,
+            payment_status: 'Paid',
+            customer_name: 'Valued Customer',
+            address: 'Saved Location',
+            pincode: 'Serviceable Pincode'
+          });
+          localStorage.setItem('BUNO_SAVED_ORDERS', JSON.stringify(list));
+        }
+      } catch(e) { console.error(e); }
+    });
   </script>
 </body>
 </html>

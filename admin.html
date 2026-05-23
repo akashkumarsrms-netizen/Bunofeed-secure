@@ -131,7 +131,7 @@
   .sidebar-link:hover::after { opacity:1; }
   /* Footer link */
   .sidebar-footer {
-    padding:.8rem 0;border-top:1px solid rgba(255,255,255,.1);
+    padding:.8rem 0;border-top:1px solid rgba(255,107,0,.1);
     display:flex;align-items:center;justify-content:center;
   }
   .sidebar-footer a {
@@ -353,13 +353,31 @@
     border:2px solid transparent;transition:.2s;
   }
   .cat-item:hover { border-color:var(--orange-lt); }
-  .cat-item-name { font-family:var(--font-h);font-weight:700;font-size:.9rem;color:var(--dark); }
+  .cat-item-name { font-family:var(--font-h);font-weight:700;font-size:0.95rem;color:var(--dark); }
   .cat-item-slug { font-size:.75rem;color:var(--gray);font-family:monospace;background:var(--lt-gray);padding:2px 7px;border-radius:4px;display:inline-block;margin-top:2px; }
   .cat-item-count { font-size:.78rem;color:var(--gray);white-space:nowrap; }
   .cat-item-actions { display:flex;gap:.4rem;flex-shrink:0; }
   .cat-add-row {
     display:grid;grid-template-columns:1fr 1fr auto;gap:.7rem;align-items:end;
     background:var(--white);padding:1.1rem;border-radius:10px;border:2px dashed var(--border);margin-top:.4rem;
+  }
+
+  /* Pincode custom styles with individual shipping charges */
+  .pincode-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  .pincode-table th, .pincode-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  .pincode-table th {
+    background: var(--off-white);
+    font-family: var(--font-h);
+    font-weight: 700;
   }
 
   /* Product list */
@@ -388,6 +406,36 @@
   .meta-chip.price    { background:rgba(255,107,0,.1);color:var(--orange); }
   .product-list-actions { display:flex;flex-direction:column;gap:.4rem;align-items:flex-end;flex-shrink:0; }
 
+  /* Combinations Pricing Grid styling */
+  .comb-pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  .comb-pricing-table th, .comb-pricing-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+    font-size: 0.85rem;
+  }
+  .comb-pricing-table th {
+    background: var(--off-white);
+    font-family: var(--font-h);
+    font-weight: 700;
+  }
+  .comb-inline-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-b);
+    font-size: 0.85rem;
+    outline: none;
+  }
+  .comb-inline-input:focus {
+    border-color: var(--orange);
+  }
+
   /* ---- Edit Modal ---- */
   .edit-overlay {
     display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
@@ -397,7 +445,7 @@
   }
   .edit-overlay.open { display:flex; }
   .edit-modal {
-    background:var(--white);border-radius:16px;width:100%;max-width:720px;
+    background:var(--white);border-radius:16px;width:100%;max-width:850px;
     box-shadow:0 24px 64px rgba(0,0,0,.25);padding:2rem;
     margin:auto;position:relative;
     animation:modalIn .25s ease;
@@ -721,19 +769,44 @@
             <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Shipping Charge (₹)</label>
+            <label class="form-label">Default Shipping Charge (₹)</label>
             <input type="number" class="form-input" id="ship-charge" placeholder="e.g. 60"/>
-            <span class="form-hint">Charged when order total is below the free shipping threshold</span>
+            <span class="form-hint">Applied when order total is below the free shipping threshold and pin code doesn't have an individual charge set.</span>
           </div>
         </div>
       </div>
 
       <div class="card" style="margin-top:1.5rem;">
-        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Serviceable Pincodes</div>
-        <div class="form-group">
-          <label class="form-label">Accepted Delivery Pincodes</label>
-          <textarea class="form-textarea" id="serviceable-pincodes" rows="6" placeholder="Enter one pincode per line, e.g.&#10;221001&#10;221003&#10;221005" style="font-family:monospace;font-size:.88rem;"></textarea>
-          <span class="form-hint">Leave empty to accept orders from all pincodes. Enter one 6-digit pincode per line. Customers with a pincode not on this list will be blocked at checkout.</span>
+        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Serviceable Pincodes & shipping charges</div>
+        <p style="color:var(--gray);font-size:.85rem;margin-bottom:1rem;">
+          Configure serviceable pin codes and set individual shipping charges for each. If the list is empty, any pin-code will be allowed with the default shipping charge above.
+        </p>
+        
+        <!-- Pincode configuration list -->
+        <table class="pincode-table" id="pincodes-table-el">
+          <thead>
+            <tr>
+              <th>Pin Code</th>
+              <th>Shipping Cost (₹)</th>
+              <th style="width: 80px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="pincodes-list-body">
+            <!-- Filled dynamically -->
+          </tbody>
+        </table>
+
+        <!-- Add pin code row -->
+        <div style="display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap;background:var(--off-white);padding:1rem;border-radius:8px;border:1px dashed var(--border);">
+          <div class="form-group" style="flex:1;min-width:140px;">
+            <label class="form-label">Pin Code (6 Digits)</label>
+            <input type="text" class="form-input" id="add-pin-code" max-length="6" placeholder="e.g. 243201"/>
+          </div>
+          <div class="form-group" style="flex:1;min-width:140px;">
+            <label class="form-label">Shipping Cost (₹)</label>
+            <input type="number" class="form-input" id="add-pin-shipping" placeholder="e.g. 50" min="0"/>
+          </div>
+          <button class="btn btn-orange" onclick="addNewPincodeRate()">Add Pin Code</button>
         </div>
       </div>
 
@@ -862,7 +935,7 @@
 
     <input type="hidden" id="edit-product-id"/>
 
-    <div class="form-grid" style="margin-bottom:1rem;">
+    <div class="form-grid" style="margin-bottom:1rem; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Product Name <span>*</span></label>
         <input type="text" class="form-input" id="edit-name" placeholder="e.g. Creamy Peanut Butter"/>
@@ -880,42 +953,64 @@
         <label class="form-label">Description <span>*</span></label>
         <textarea class="form-textarea" id="edit-description" placeholder="Full product description..."></textarea>
       </div>
-      <div class="form-group">
-        <label class="form-label">Price (₹) <span>*</span></label>
-        <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional)</span></label>
-        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399"/>
-        <span class="form-hint">If set, product cards and modal will show this as original.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Weight / Size</label>
-        <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
+
+      <!-- TEXTURE / TYPE MULTI-VARIANTS MANAGEMENT -->
+      <div class="form-group" style="grid-column: 1/-1; background: var(--off-white); padding: 1rem; border-radius: 8px; border: 1.5px solid var(--border);">
+        <label class="form-label"><i class="fas fa-mortar-pestle"></i> Texture / Type Variants (e.g. Smooth, Crunchy) <span>*</span></label>
+        <span class="form-hint">Enter your texture variants for this product. Use commas to separate multiple textures. If empty, the product won't have texture types (e.g. oats, muesli).</span>
+        <input type="text" class="form-input" id="edit-textures" placeholder="e.g. Smooth, Crunchy, Crispy, Dark Chocolate" onchange="regenerateCombinationsTable()"/>
       </div>
 
-      <!-- VARIANTS SECTION -->
-      <div class="form-group">
-        <label class="form-label">Product Variants</label>
-        <span class="form-hint">Add variants like 250g, 500g, 1kg.</span>
-        <div id="edit-variants-list" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem;"></div>
-        <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:.5rem;">
-          <i class="fas fa-plus"></i> Add Variant
-        </button>
+      <!-- WEIGHT / SIZE MULTI-VARIANTS MANAGEMENT -->
+      <div class="form-group" style="grid-column: 1/-1; background: var(--off-white); padding: 1rem; border-radius: 8px; border: 1.5px solid var(--border);">
+        <label class="form-label"><i class="fas fa-weight"></i> Weights / Sizes (e.g. 200g, 500g, 1kg) <span>*</span></label>
+        <span class="form-hint">Enter available weights/sizes for this product. Use commas to separate multiple sizes. E.g., 200g, 400g, 500g, 1kg</span>
+        <input type="text" class="form-input" id="edit-sizes" placeholder="e.g. 200g, 400g, 500g, 1kg" onchange="regenerateCombinationsTable()"/>
       </div>
 
-      <!-- MULTI-IMAGE SECTION -->
-      <div class="form-group" style="grid-column:1/-1">
-        <div class="images-section">
-          <div class="images-section-title">
-            <i class="fas fa-images"></i> Product Images
-            <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.75rem;letter-spacing:0;">(up to 10 · first image = primary)</span>
+      <!-- AUTO-CALCULATION SETTINGS -->
+      <div class="form-group" style="grid-column: 1/-1; background: #eef9ff; padding: 1rem; border-radius: 8px; border: 1.5px solid #bce1f2;">
+        <label class="form-label" style="color: #0c5460;"><i class="fas fa-calculator"></i> Bulk Combinations Builder (Rupees per KG auto-calculating)</label>
+        <span class="form-hint">Input standard parameters below then hit "Bulk Build" to instantly populate the full combinations grid.</span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top: 0.5rem; align-items:flex-end;">
+          <div class="form-group" style="flex:1; min-width: 120px;">
+            <label class="form-label" style="font-size:0.7rem;">Base Cost (₹/kg)</label>
+            <input type="number" class="form-input" id="bulk-rate-kg" placeholder="e.g. 300" style="min-height:36px; padding: 6px 10px;"/>
           </div>
-          <div id="image-entries-list"></div>
-          <button type="button" class="add-image-btn" id="add-image-btn" onclick="addImageEntry()">
-            <i class="fas fa-plus-circle"></i> Add Image URL
-          </button>
-          <p class="img-count-note" id="img-count-note">0 / 10 images added</p>
+          <div class="form-group" style="flex:1; min-width: 100px;">
+            <label class="form-label" style="font-size:0.7rem;">GST Charge (%)</label>
+            <input type="number" class="form-input" id="bulk-gst" placeholder="18" value="18" style="min-height:36px; padding: 6px 10px;"/>
+          </div>
+          <div class="form-group" style="flex:1; min-width: 100px;">
+            <label class="form-label" style="font-size:0.7rem;">Discount (%)</label>
+            <input type="number" class="form-input" id="bulk-discount" placeholder="10" value="10" style="min-height:36px; padding: 6px 10px;"/>
+          </div>
+          <button type="button" class="btn btn-orange btn-sm" onclick="applyBulkPricingToTable()" style="height:36px; min-height:unset;">Bulk Build Grid</button>
+        </div>
+      </div>
+
+      <!-- COMBINATIONS PRICING MATRIX GRID -->
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label"><i class="fas fa-hand-holding-usd"></i> Pricing Matrix (By Combination of Texture × Weight)</label>
+        <p class="form-hint">Set custom individual prices, MRPs, discounts, and margins for every single combination of texture and weight. Base Price + GST = MRP, Sale Price represents purchase cost.</p>
+        
+        <div style="overflow-x:auto;">
+          <table class="comb-pricing-table">
+            <thead>
+              <tr>
+                <th>Combination</th>
+                <th style="width: 110px;">Base Price (₹)</th>
+                <th style="width: 80px;">GST %</th>
+                <th style="width: 100px;">Calculated MRP (₹)</th>
+                <th style="width: 80px;">Discount %</th>
+                <th style="width: 90px;">Sale Price (₹)</th>
+                <th style="width: 80px;">Est. Margin</th>
+              </tr>
+            </thead>
+            <tbody id="variant-combinations-tbody">
+              <!-- Rendered automatically -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -946,6 +1041,23 @@
           <option value="limited">Limited (red)</option>
         </select>
       </div>
+      
+      <!-- HIDDEN REPLACED PRICE FOR COMPATIBILITY --><input type="hidden" id="edit-price" value="0"/><input type="hidden" id="edit-mrp" value="0"/><input type="hidden" id="edit-weight" value="0"/>
+
+      <div class="form-group" style="grid-column:1/-1">
+        <div class="images-section">
+          <div class="images-section-title">
+            <i class="fas fa-images"></i> Product Images
+            <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.75rem;letter-spacing:0;">(up to 10 · first image = primary)</span>
+          </div>
+          <div id="image-entries-list"></div>
+          <button type="button" class="add-image-btn" id="add-image-btn" onclick="addImageEntry()">
+            <i class="fas fa-plus-circle"></i> Add Image URL
+          </button>
+          <p class="img-count-note" id="img-count-note">0 / 10 images added</p>
+        </div>
+      </div>
+
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Feature Tags (comma separated)</label>
         <input type="text" class="form-input" id="edit-features" placeholder="High Protein, No Palm Oil, Vegan"/>
@@ -1022,6 +1134,7 @@ const DEFAULT_CATEGORIES = [
 let adminData = null;
 let editingProductIndex = -1;
 let currentImageUrls = [];
+let localVariantPrices = {}; // keeps combination pricing locally during modal edit
 
 document.getElementById('login-btn').addEventListener('click', attemptLogin);
 document.addEventListener('keydown', e => {
@@ -1051,12 +1164,23 @@ function initAdmin() {
   if (!adminData.categories || !Array.isArray(adminData.categories)) {
     adminData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   }
+  // backwards compatible pincode shipping check
+  if (!adminData.pincodeShipping) {
+    adminData.pincodeShipping = {};
+    if (adminData.serviceablePincodes) {
+      adminData.serviceablePincodes.forEach(p => {
+        adminData.pincodeShipping[p] = adminData.shipping ? (adminData.shipping.shippingCharge || 50) : 50;
+      });
+    }
+  }
+
   renderDashboard();
   renderProductList();
   renderCategoryList();
   loadOffersForm();
   loadPaymentForm();
   loadBrandForm();
+  renderPincodesTable();
 }
 
 document.querySelectorAll('.sidebar-link').forEach(link => {
@@ -1088,8 +1212,6 @@ function renderDashboard() {
   const products = adminData.products || [];
   const visible  = products.filter(p => p.visible !== false).length;
   const bs       = products.filter(p => p.bestSeller).length;
-  const saleOn   = adminData.sale     && adminData.sale.active;
-  const campOn   = adminData.campaign && adminData.campaign.active;
   const catCount = (adminData.categories || []).length;
 
   document.getElementById('stats-row').innerHTML = `
@@ -1122,13 +1244,31 @@ function renderProductList() {
 }
 
 function productListItemHTML(p, i, compact) {
+  let displayPrice = p.price;
+  let sizes = p.sizeVariants || [];
+  let textures = p.textureVariants || [];
+
+  if (p.variantPrices) {
+    let combKey = textures.length > 0 ? `${textures[0]}-${sizes[0] || p.weight || ''}` : `default-${sizes[0] || p.weight || ''}`;
+    let matchPrice = p.variantPrices[combKey];
+    if (matchPrice) displayPrice = matchPrice.price;
+  }
+
   const sp = adminData.sale && adminData.sale.active
-    ? Math.round(p.price * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
+    ? Math.round(displayPrice * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
   const primaryImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
   const imgCount   = (p.images && p.images.length > 1) ? `<span class="meta-chip new-chip" title="Multiple images">${p.images.length} imgs</span>` : '';
   const imgHTML = primaryImg
     ? `<img src="${primaryImg}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`
     : `${p.emoji || '🥜'}`;
+
+  // count variant combinations
+  let combCountStr = '';
+  if (p.sizeVariants && p.sizeVariants.length > 0) {
+    let tCount = (p.textureVariants && p.textureVariants.length > 0) ? p.textureVariants.length : 1;
+    let sCount = p.sizeVariants.length;
+    combCountStr = `<span class="meta-chip new-chip">${tCount} × ${sCount} Variants</span>`;
+  }
 
   return `
     <div class="product-list-item" data-idx="${i}">
@@ -1137,10 +1277,11 @@ function productListItemHTML(p, i, compact) {
         <h4>${p.name}</h4>
         <p>${(p.description||'').substring(0,70)}${p.description && p.description.length>70?'…':''}</p>
         <div class="meta">
-          <span class="meta-chip price">₹${p.price}${sp?` → ₹${sp}`:''} · ${p.weight||''}</span>
+          <span class="meta-chip price">₹${displayPrice}${sp?` → ₹${sp}`:''} · ${sizes[0] || p.weight || ''}</span>
           <span class="meta-chip ${p.visible!==false?'visible':'hidden'}">${p.visible!==false?'Visible':'Hidden'}</span>
           ${p.bestSeller?'<span class="meta-chip bs">Homepage</span>':''}
           ${p.badge?`<span class="meta-chip new-chip">${p.badge}</span>`:''}
+          ${combCountStr}
           ${imgCount}
         </div>
       </div>
@@ -1182,18 +1323,18 @@ function openEditModal(idx) {
   document.getElementById('delete-product-btn').style.display = isNew ? 'none' : 'inline-flex';
 
   const p = isNew ? {
-    id:'', name:'', tagline:'', description:'', price:'', weight:'',
+    id:'', name:'', tagline:'', description:'', price:299, weight:'500g', fallbackWeight:'500g',
     badge:'', badgeType:'', images:[], image:'', emoji:'🥜',
     bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
-    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:''
+    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:'',
+    textureVariants: ["Smooth", "Crunchy"], sizeVariants: ["500g", "1kg"],
+    variantPrices: {}
   } : adminData.products[idx];
 
   document.getElementById('edit-product-id').value     = p.id || '';
   document.getElementById('edit-name').value           = p.name || '';
   document.getElementById('edit-tagline').value        = p.tagline || '';
   document.getElementById('edit-description').value    = p.description || '';
-  document.getElementById('edit-price').value          = p.price || '';
-  document.getElementById('edit-weight').value         = p.weight || '';
   document.getElementById('edit-emoji').value          = p.emoji || '🥜';
   document.getElementById('edit-badge').value          = p.badge || '';
   document.getElementById('edit-badgeType').value      = p.badgeType || '';
@@ -1205,9 +1346,11 @@ function openEditModal(idx) {
   document.getElementById('edit-allergenInfo').value   = p.allergenInfo || '';
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
-  document.getElementById('edit-mrp').value            = p.mrp || '';
-  
-  renderVariantsEditor(p.variants || []);
+
+  // text areas of variants
+  document.getElementById('edit-textures').value       = (p.textureVariants || []).join(', ');
+  document.getElementById('edit-sizes').value          = (p.sizeVariants || []).join(', ');
+
   populateCategorySelect(p.category || '');
 
   if (p.images && p.images.length > 0) {
@@ -1219,8 +1362,162 @@ function openEditModal(idx) {
   }
   renderImageEntries();
 
+  // local deep copy variants pricing map
+  localVariantPrices = JSON.parse(JSON.stringify(p.variantPrices || {}));
+  regenerateCombinationsTable();
+
   document.getElementById('edit-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function parseInputList(vstr) {
+  return vstr.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function parseWeightInKg(wstr) {
+  const clean = wstr.toLowerCase().replace(/\s+/g, '');
+  const val = parseFloat(clean);
+  if (isNaN(val)) return 0.5; // fallback
+  if (clean.endsWith('kg') || clean.endsWith('kilogram') || clean.endsWith('kilograms')) {
+    return val;
+  }
+  if (clean.endsWith('gm') || clean.endsWith('gm') || clean.endsWith('g') || clean.endsWith('grams') || clean.endsWith('gram')) {
+    return val / 1000;
+  }
+  // fallback if just numeric
+  if (val > 10) return val / 1000; // assume grams if above 10
+  return val; // else assume kg
+}
+
+function regenerateCombinationsTable() {
+  const tbody = document.getElementById('variant-combinations-tbody');
+  
+  const textures = parseInputList(document.getElementById('edit-textures').value);
+  const sizes = parseInputList(document.getElementById('edit-sizes').value);
+
+  tbody.innerHTML = '';
+
+  if (sizes.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--gray)">Please enter at least one weight/size above to build pricing combos.</td></tr>';
+    return;
+  }
+
+  // Generate lists of combination rows
+  let combinations = [];
+  if (textures.length > 0) {
+    textures.forEach(t => {
+      sizes.forEach(s => {
+        combinations.push({ texture: t, size: s, key: `${t}-${s}` });
+      });
+    });
+  } else {
+    sizes.forEach(s => {
+      combinations.push({ texture: '', size: s, key: `default-${s}` });
+    });
+  }
+
+  combinations.forEach(comb => {
+    let stored = localVariantPrices[comb.key] || {
+      basePrice: 100, gstPercent: 18, mrp: 118, discountPercent: 10, price: 106, profit: 6
+    };
+
+    // Calculate dynamic helper text weights
+    const weightKg = parseWeightInKg(comb.size);
+    const label = comb.texture ? `${comb.texture} (${comb.size})` : comb.size;
+
+    const tr = document.createElement('tr');
+    tr.dataset.key = comb.key;
+    tr.dataset.weight = weightKg;
+
+    tr.innerHTML = `
+      <td>
+        <strong>${label}</strong><br/>
+        <span style="font-size:0.75rem; color:var(--gray);">Weight: ${weightKg} kg</span>
+      </td>
+      <td>
+        <input type="number" class="comb-inline-input comb-base" value="${stored.basePrice}" onchange="recalculateMatrixCombRow(this)"/>
+      </td>
+      <td>
+        <input type="number" class="comb-inline-input comb-gst" value="${stored.gstPercent}" min="0" max="100" onchange="recalculateMatrixCombRow(this)"/>
+      </td>
+      <td>
+        <input type="number" class="comb-inline-input comb-mrp" value="${stored.mrp}" readonly style="background:#f9f9f9; color:#666; font-weight:600;"/>
+      </td>
+      <td>
+        <input type="number" class="comb-inline-input comb-disc" value="${stored.discountPercent}" min="0" max="100" onchange="recalculateMatrixCombRow(this)"/>
+      </td>
+      <td>
+        <input type="number" class="comb-inline-input comb-sale" value="${stored.price}" onchange="recalculateMatrixCombRow(this, true)"/>
+      </td>
+      <td>
+        <span class="comb-profit-span" style="font-weight:700; color:${stored.profit >= 0 ? '#28a745' : '#dc3545'}">₹${stored.profit || 0}</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function recalculateMatrixCombRow(inputEl, forceSalePriceOverride = false) {
+  const tr = inputEl.closest('tr');
+  const baseVal = parseFloat(tr.querySelector('.comb-base').value) || 0;
+  const gstPct  = parseFloat(tr.querySelector('.comb-gst').value) || 0;
+  const discPct = parseFloat(tr.querySelector('.comb-disc').value) || 0;
+  
+  const calcMrp = Math.round(baseVal + (baseVal * (gstPct / 100)));
+  tr.querySelector('.comb-mrp').value = calcMrp;
+
+  let salePrice = Math.round(calcMrp * (1 - (discPct / 100)));
+  
+  if (forceSalePriceOverride) {
+    salePrice = parseFloat(tr.querySelector('.comb-sale').value) || 0;
+    // reconstruct discount %
+    let computedGstMrp = calcMrp;
+    let computedDisc = computedGstMrp > 0 ? Math.round(((computedGstMrp - salePrice) / computedGstMrp) * 100) : 0;
+    tr.querySelector('.comb-disc').value = Math.max(0, computedDisc);
+  } else {
+    tr.querySelector('.comb-sale').value = salePrice;
+  }
+
+  const profit = Math.round(salePrice - baseVal);
+  const profitSpan = tr.querySelector('.comb-profit-span');
+  profitSpan.textContent = `₹${profit}`;
+  profitSpan.style.color = profit >= 0 ? '#28a745' : '#dc3545';
+
+  // sync to temporary pricing object map
+  const key = tr.dataset.key;
+  localVariantPrices[key] = {
+    basePrice: baseVal,
+    gstPercent: gstPct,
+    mrp: calcMrp,
+    discountPercent: parseFloat(tr.querySelector('.comb-disc').value) || 0,
+    price: salePrice,
+    profit: profit
+  };
+}
+
+function applyBulkPricingToTable() {
+  const ratePerKg = parseFloat(document.getElementById('bulk-rate-kg').value);
+  const gstPct    = parseFloat(document.getElementById('bulk-gst').value) || 0;
+  const discPct   = parseFloat(document.getElementById('bulk-discount').value) || 0;
+
+  if (isNaN(ratePerKg) || ratePerKg <= 0) {
+    toast('Please enter a valid Base Cost per KG', 'error');
+    return;
+  }
+
+  const rows = document.querySelectorAll('#variant-combinations-tbody tr');
+  rows.forEach(tr => {
+    const weightKg = parseFloat(tr.dataset.weight) || 0.5;
+    const baseCalculated = Math.round(ratePerKg * weightKg);
+
+    tr.querySelector('.comb-base').value = baseCalculated;
+    tr.querySelector('.comb-gst').value  = gstPct;
+    tr.querySelector('.comb-disc').value = discPct;
+
+    recalculateMatrixCombRow(tr.querySelector('.comb-base'));
+  });
+
+  toast('Pre-built full matrix combinations successfully!', 'success');
 }
 
 function populateCategorySelect(selectedSlug) {
@@ -1236,13 +1533,12 @@ function closeEditModal() {
   document.body.style.overflow = '';
   editingProductIndex = -1;
   currentImageUrls = [];
+  localVariantPrices = {};
 }
 
 function saveEditedProduct() {
   const name  = document.getElementById('edit-name').value.trim();
-  const price = parseFloat(document.getElementById('edit-price').value);
-  if (!name)        { toast('Product name is required', 'error'); return; }
-  if (isNaN(price)) { toast('Valid price is required',  'error'); return; }
+  if (!name) { toast('Product name is required', 'error'); return; }
 
   const featureStr = document.getElementById('edit-features').value;
   const features   = featureStr.split(',').map(f => f.trim()).filter(Boolean);
@@ -1253,15 +1549,58 @@ function saveEditedProduct() {
   const cleanedImages = currentImageUrls.filter(u => u && u.trim());
   const primaryImage  = cleanedImages.length > 0 ? cleanedImages[0] : '';
 
+  // compile localVariantPrices pricing from DOM inputs to ensure everything is saved
+  const finalPrices = {};
+  const rows = document.querySelectorAll('#variant-combinations-tbody tr');
+  trLoop: for (let tr of rows) {
+    const key = tr.dataset.key;
+    if (!key) continue;
+
+    const baseVal = parseFloat(tr.querySelector('.comb-base').value);
+    const saleVal = parseFloat(tr.querySelector('.comb-sale').value);
+    if (isNaN(baseVal) || isNaN(saleVal)) {
+      toast('Please enter valid numeric prices for all combinations keys!', 'error');
+      return;
+    }
+
+    finalPrices[key] = {
+      basePrice: baseVal,
+      gstPercent: parseFloat(tr.querySelector('.comb-gst').value) || 0,
+      mrp: parseFloat(tr.querySelector('.comb-mrp').value) || 0,
+      discountPercent: parseFloat(tr.querySelector('.comb-disc').value) || 0,
+      price: saleVal,
+      profit: Math.round(saleVal - baseVal)
+    };
+  }
+
+  const textures = parseInputList(document.getElementById('edit-textures').value);
+  const sizes = parseInputList(document.getElementById('edit-sizes').value);
+
+  // default fallback weights and prices for compatibility with older code
+  let compatiblePrice = 299;
+  let compatibleMrp = 390;
+  let compatibleWeight = '500g';
+
+  if (sizes.length > 0) {
+    compatibleWeight = sizes[0];
+    let lookupKey = textures.length > 0 ? `${textures[0]}-${sizes[0]}` : `default-${sizes[0]}`;
+    if (finalPrices[lookupKey]) {
+      compatiblePrice = finalPrices[lookupKey].price;
+      compatibleMrp = finalPrices[lookupKey].mrp;
+    }
+  }
+
   const updated = {
     id,
     name,
     tagline:     document.getElementById('edit-tagline').value.trim(),
     description: document.getElementById('edit-description').value.trim(),
-    price,
-    mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
-    weight:      document.getElementById('edit-weight').value.trim(),
-    variants:    collectVariants(),
+    price:       compatiblePrice,
+    mrp:         compatibleMrp,
+    weight:      compatibleWeight,
+    textureVariants: textures,
+    sizeVariants:    sizes,
+    variantPrices:   finalPrices,
     image:       primaryImage,
     images:      cleanedImages,
     emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
@@ -1477,6 +1816,76 @@ function saveCatEdit() {
   toast(`Category updated to "${name}"`, 'success');
 }
 
+/* ── Custom delivery pincodes rendering table ── */
+function renderPincodesTable() {
+  const tbody = document.getElementById('pincodes-list-body');
+  const pincodeMap = adminData.pincodeShipping || {};
+  const entries = Object.entries(pincodeMap);
+
+  tbody.innerHTML = '';
+  if (entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray)">No serviceable pincodes set yet. Accepting delivery from all pincodes with default charges.</td></tr>';
+    return;
+  }
+
+  entries.forEach(([pin, charge]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${pin}</strong></td>
+      <td>₹${charge}</td>
+      <td>
+        <button class="btn btn-danger btn-xs" onclick="removePincodeRate('${pin}')">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addNewPincodeRate() {
+  const pinInput = document.getElementById('add-pin-code').value.trim();
+  const chargeInput = parseFloat(document.getElementById('add-pin-shipping').value);
+
+  if (!/^\d{6}$/.test(pinInput)) {
+    toast('Please enter a valid 6-digit pin code', 'error');
+    return;
+  }
+  if (isNaN(chargeInput) || chargeInput < 0) {
+    toast('Please enter a valid shipping charge (>=0)', 'error');
+    return;
+  }
+
+  if (!adminData.pincodeShipping) adminData.pincodeShipping = {};
+  adminData.pincodeShipping[pinInput] = chargeInput;
+
+  // Sync to array list for compatibility
+  const currentPinList = Object.keys(adminData.pincodeShipping);
+  adminData.serviceablePincodes = currentPinList;
+
+  // clear inputs
+  document.getElementById('add-pin-code').value = '';
+  document.getElementById('add-pin-shipping').value = '50';
+
+  renderPincodesTable();
+  markUnsaved();
+  toast(`Pin code ${pinInput} added with shipping charge ₹${chargeInput}`, 'success');
+}
+
+function removePincodeRate(pin) {
+  if (!confirm(`Remove shipping serviceability for pin code ${pin}?`)) return;
+
+  if (adminData.pincodeShipping) delete adminData.pincodeShipping[pin];
+  
+  // Sync to array list for compatibility
+  const currentPinList = Object.keys(adminData.pincodeShipping || {});
+  adminData.serviceablePincodes = currentPinList;
+
+  renderPincodesTable();
+  markUnsaved();
+  toast(`Pin code ${pin} removed!`, 'info');
+}
+
 function loadOffersForm() {
   const c = adminData.campaign || {};
   const s = adminData.sale     || {};
@@ -1492,10 +1901,9 @@ function loadOffersForm() {
   document.getElementById('sale-label').value           = s.label   || 'SALE';
   document.getElementById('sale-end').value             = s.endDate || '';
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
-  document.getElementById('ship-charge').value          = h.shippingCharge    || 60;
-  const pincodes = adminData.serviceablePincodes || [];
-  document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
+  document.getElementById('ship-charge').value          = h.shippingCharge     || 50;
 }
+
 function saveOffers() {
   adminData.campaign = {
     active:     document.getElementById('campaign-active').checked,
@@ -1514,16 +1922,12 @@ function saveOffers() {
   };
   adminData.shipping = {
     freeShippingAbove: parseFloat(document.getElementById('ship-free-above').value)||499,
-    shippingCharge:    parseFloat(document.getElementById('ship-charge').value)||60,
+    shippingCharge:    parseFloat(document.getElementById('ship-charge').value)||50,
   };
-  const rawPincodes = document.getElementById('serviceable-pincodes').value;
-  adminData.serviceablePincodes = rawPincodes
-    .split('\n')
-    .map(p => p.trim())
-    .filter(p => /^\d{6}$/.test(p));
+
   renderDashboard();
   markUnsaved();
-  toast('Offer settings saved!', 'success');
+  toast('Offer & Pincode settings saved successfully!', 'success');
 }
 
 function loadPaymentForm() {
@@ -1615,43 +2019,6 @@ function toast(msg, type = 'success') {
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
-
-function renderVariantsEditor(variants) {
-  const list = document.getElementById('edit-variants-list');
-  list.innerHTML = '';
-  (variants || []).forEach((v, i) => addVariantRow(v, i));
-}
-
-function addVariantRow(v, i) {
-  const list = document.getElementById('edit-variants-list');
-  const row = document.createElement('div');
-  row.className = 'variant-row';
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:var(--off-white);border-radius:8px;padding:.5rem .7rem;';
-  row.innerHTML = `
-    <input type="text"   class="form-input variant-label" placeholder="e.g. 500g"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹)" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:.8rem;flex-shrink:0;min-height:36px;" title="Remove variant">✕</button>`;
-  list.appendChild(row);
-}
-
-document.getElementById('add-variant-btn').addEventListener('click', () => {
-  addVariantRow(null, document.querySelectorAll('.variant-row').length);
-});
-
-function collectVariants() {
-  const rows = document.querySelectorAll('.variant-row');
-  if (rows.length === 0) return [];
-  const variants = [];
-  rows.forEach(row => {
-    const label = row.querySelector('.variant-label').value.trim();
-    const price = parseFloat(row.querySelector('.variant-price').value);
-    const mrp   = parseFloat(row.querySelector('.variant-mrp').value) || null;
-    if (label && price > 0) variants.push({ label, price, mrp });
-  });
-  return variants;
-}
-
 </script>
 </body>
 </html>
