@@ -666,6 +666,19 @@
       </div>
 
       <div class="card" style="margin-top:1.5rem;">
+        <div class="card-title"><i class="fas fa-truck-loading"></i> Pincode &amp; Pack Size Shipping Rates</div>
+        <p style="font-size:0.8rem;color:var(--gray);margin-bottom:1rem;line-height:1.4;">
+          Define custom shipping charges for specific pincodes (or pincode prefixes like "110", "201") in combination with pack sizes (like "200g", "250g", "350g", "500g" etc.). Use <strong>"all"</strong> as weight to match all sizes.
+        </p>
+        <div id="shipping-rules-container" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+          <!-- Custom shipping rules loaded dynamically -->
+        </div>
+        <button type="button" class="btn btn-ghost btn-xs" id="add-ship-rule-btn" style="color:var(--orange); display:inline-flex; align-items:center; gap:0.25rem;">
+          <i class="fas fa-plus"></i> Add Shipping Rate Row
+        </button>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem;">
         <div class="card-title"><i class="fas fa-map-marker-alt"></i> Region Locks</div>
         <div class="form-group">
           <label class="form-label">Accepted Delivery Pincodes</label>
@@ -754,6 +767,10 @@
         <select class="form-select" id="edit-category"></select>
       </div>
       <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">Default Base Weight <span>*</span></label>
+        <input type="text" class="form-input" id="edit-weight" placeholder="e.g. 500g"/>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Description <span>*</span></label>
         <textarea class="form-textarea" id="edit-description" placeholder="Short pitch description..."></textarea>
       </div>
@@ -767,7 +784,7 @@
           Set Base Price, Profit%, Discount%, and GST%. Sales Price and MRP calculations update in real-time. Customer changes will dynamically trigger correct charges in the storefront checkout splits.
         </p>
 
-        <div id="variants-editor-header" style="display:grid; grid-template-columns: 1.1fr 1.1fr 0.9fr 0.9fr 0.9fr 0.9fr 1.2fr auto; gap:0.4rem; padding:6px; font-weight:700; font-size:0.75rem; color:#6B2D0E; text-transform:uppercase; border-bottom:2.5px solid #ebdcd0;">
+        <div id="variants-editor-header">
           <span>Texture / Flavor</span>
           <span>Size / Pack size</span>
           <span>Base Price (₹)</span>
@@ -891,6 +908,11 @@ function initAdmin() {
   populateCouponScopeSelect();
   loadOffersForm();
   loadPaymentForm();
+
+  const addShipRuleBtn = document.getElementById('add-ship-rule-btn');
+  if (addShipRuleBtn) {
+    addShipRuleBtn.onclick = () => addShippingRuleRow(null);
+  }
 }
 
 document.querySelectorAll('.sidebar-link').forEach(link => {
@@ -1052,18 +1074,38 @@ function renderVariantsEditor(variants) {
 function addVariantRow(v = null) {
   const list = document.getElementById('edit-variants-list');
   const row = document.createElement('div');
-  row.className = 'variant-engine-row';
-  row.style.cssText = 'display:grid; grid-template-columns: 1.1fr 1.1fr 0.9fr 0.9fr 0.9fr 0.9fr 1.2fr auto; gap:0.4rem; align-items:center; background:var(--white); border-bottom:1px solid var(--border); padding:6px 0;';
+  row.className = 'variant-row-grid';
   
   row.innerHTML = `
-    <input type="text" class="form-input v-texture" placeholder="e.g. Crunchy" value="${v ? (v.texture || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <input type="text" class="form-input v-label" placeholder="e.g. 400g" value="${v ? (v.label || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <input type="number" class="form-input v-basePrice" placeholder="Base" value="${v ? (v.basePrice || '') : '100'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <input type="number" class="form-input v-profit" placeholder="%" value="${v ? (v.profit || '') : '20'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <input type="number" class="form-input v-discount" placeholder="%" value="${v ? (v.discount || '') : '0'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <input type="number" class="form-input v-gst" placeholder="%" value="${v ? (v.gst || '') : '18'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
-    <div class="v-calculated-display" style="font-size:0.85rem; font-weight:700; white-space:nowrap;">-</div>
-    <button type="button" onclick="this.closest('.variant-engine-row').remove()" style="background:#dc3545; color:#fff; border:none; border-radius:4px; height:34px; width:34px; cursor:pointer;" title="Remove">✕</button>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">Texture/Flavor</label>
+      <input type="text" class="form-input v-texture" placeholder="Texture/Flavor" value="${v ? (v.texture || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    </div>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">Pack Size</label>
+      <input type="text" class="form-input v-label" placeholder="Size (e.g. 400g)" value="${v ? (v.label || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    </div>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">Base (₹)</label>
+      <input type="number" class="form-input v-basePrice" placeholder="Base" value="${v ? (v.basePrice || '') : '100'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    </div>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">Profit (%)</label>
+      <input type="number" class="form-input v-profit" placeholder="Profit" value="${v ? (v.profit || '') : '20'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    </div>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">Discount (%)</label>
+      <input type="number" class="form-input v-discount" placeholder="Discount" value="${v ? (v.discount || '') : '0'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    </div>
+    <div class="form-group-mini">
+      <label class="form-label-mini" style="font-size:0.65rem; color:var(--gray); display:none; text-transform:uppercase;">GST (%)</label>
+      <input type="number" class="form-input v-gst" placeholder="GST" value="${v ? (v.gst || '') : '18'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    </div>
+    <div class="v-calculated-display-container">
+      <span class="m-label" style="font-size:0.75rem; color:var(--gray); font-weight:600; display:none;">Calculated split</span>
+      <div class="v-calculated-display" style="font-size:0.85rem; font-weight:700; white-space:nowrap;">-</div>
+    </div>
+    <button type="button" class="v-remove-btn" onclick="this.closest('.variant-row-grid').remove()" style="background:#dc3545; color:#fff; border:none; border-radius:4px; height:34px; width:34px; cursor:pointer;" title="Remove">✕</button>
   `;
 
   list.appendChild(row);
@@ -1080,7 +1122,7 @@ function addVariantRow(v = null) {
 document.getElementById('add-variant-btn').onclick = () => addVariantRow(null);
 
 function collectVariants() {
-  const rows = document.querySelectorAll('.variant-engine-row');
+  const rows = document.querySelectorAll('.variant-row-grid');
   const collection = [];
   rows.forEach(row => {
     const tex = row.querySelector('.v-texture').value.trim();
@@ -1275,6 +1317,26 @@ function deleteCoupon(idx) {
 }
 
 /* OFFERS AND EXPORTS */
+function addShippingRuleRow(rule = null) {
+  const container = document.getElementById('shipping-rules-container');
+  if (!container) return;
+  const d = document.createElement('div');
+  d.className = 'ship-rule-row';
+  d.style.cssText = 'display:grid; grid-template-columns: 2fr 2fr 1.5fr auto; gap:0.5rem; align-items:center; margin-bottom:0.5rem;';
+  
+  d.innerHTML = `
+    <input type="text" class="form-input r-pincode" placeholder="Pincode/Prefix (e.g. 110)" value="${rule ? rule.pincode : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    <input type="text" class="form-input r-weight" placeholder="Pack Size (e.g. 200g, all)" value="${rule ? rule.weight : 'all'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    <input type="number" class="form-input r-charge" placeholder="Rate (₹)" value="${rule ? rule.charge : '40'}" style="height:34px; padding:4px 6px; font-size:0.8rem;" required/>
+    <button type="button" onclick="this.closest('.ship-rule-row').remove(); markUnsaved();" style="background:#dc3545; color:#fff; border:none; border-radius:4px; height:34px; width:34px; cursor:pointer;" title="Remove">✕</button>
+  `;
+  container.appendChild(d);
+  
+  d.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', markUnsaved);
+  });
+}
+
 function loadOffersForm() {
   const c = adminData.campaign || {};
   const s = adminData.sale     || {};
@@ -1293,6 +1355,14 @@ function loadOffersForm() {
   document.getElementById('ship-charge').value          = h.shippingCharge    || 60;
   const pincodes = adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
+
+  // Load physical shippingRules into domestic container list
+  const rules = adminData.shippingRules || [];
+  const container = document.getElementById('shipping-rules-container');
+  if (container) {
+    container.innerHTML = '';
+    rules.forEach(r => addShippingRuleRow(r));
+  }
 }
 
 function saveOffers() {
@@ -1317,6 +1387,24 @@ function saveOffers() {
   };
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
   adminData.serviceablePincodes = rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p));
+
+  // Collect shipping rules
+  const ruleRows = document.querySelectorAll('.ship-rule-row');
+  const gatheredRules = [];
+  ruleRows.forEach(row => {
+    const pin = row.querySelector('.r-pincode').value.trim();
+    const wt = row.querySelector('.r-weight').value.trim();
+    const chg = parseFloat(row.querySelector('.r-charge').value);
+    if (pin && wt && !isNaN(chg)) {
+      gatheredRules.push({
+        pincode: pin,
+        weight: wt,
+        charge: chg
+      });
+    }
+  });
+  adminData.shippingRules = gatheredRules;
+
   renderDashboard();
   markUnsaved();
   toast('Offers Saved!', 'success');

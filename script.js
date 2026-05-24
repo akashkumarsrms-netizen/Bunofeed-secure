@@ -165,17 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalSizes = sizes.length > 0 ? sizes : [p.weight || '500g'];
     const types = ['Crunchy', 'Crispy', 'Smooth'];
 
-    let html = `<div class="card-selectors" style="display:flex; gap:6px; margin: 4px 0 8px 0; width:100%;" onclick="event.stopPropagation();">`;
+    let html = `<div class="card-selectors" onclick="event.stopPropagation();">`;
 
     // Dropdown for pack size
     html += `
-      <select class="card-select size-select" data-id="${p.id}" style="font-size:0.75rem; padding:4px 18px 4px 6px; border:1.5px solid #e0d4cc; border-radius:6px; color:#6B2D0E; font-weight:700; background:#fff; flex:1; height:32px; cursor:pointer; outline:none;">
+      <select class="card-select size-select" data-id="${p.id}">
         ${finalSizes.map(s => `<option value="${s}">${s}</option>`).join('')}
       </select>`;
 
     // Dropdown for type
     html += `
-      <select class="card-select type-select" data-id="${p.id}" style="font-size:0.75rem; padding:4px 18px 4px 6px; border:1.5px solid #e0d4cc; border-radius:6px; color:#6B2D0E; font-weight:700; background:#fff; flex:1; height:32px; cursor:pointer; outline:none;">
+      <select class="card-select type-select" data-id="${p.id}">
         ${types.map(t => `<option value="${t}">${t}</option>`).join('')}
       </select>`;
 
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${buildCardSelectorsHTML(product)}
           <div class="product-footer">
             ${buildPriceHTML(product, product.variants && product.variants[0])}
-            <button class="btn-buy buy-now-btn" data-id="${product.id}" style="padding: 10px 24px; font-size: 0.85rem; font-weight:700; border-radius:30px; min-height:40px; margin-left: auto;">Buy Now</button>
+            <button class="btn-buy buy-now-btn" data-id="${product.id}">Buy Now</button>
           </div>
         </div>`;
 
@@ -345,6 +345,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let appliedCoupon = null;
   let currentShippingCharge = 0;
   let isShippingCalculated = false;
+
+  function getLocalShippingCharge(pincode, weight) {
+    const D = window.BUNOFEED_DATA;
+    if (D && Array.isArray(D.shippingRules)) {
+      const normWeight = (weight || '').toLowerCase().replace(/\s+/g, '');
+      
+      // 1. Try exact pincode match + weight match
+      let match = D.shippingRules.find(r => 
+        r.pincode === pincode && 
+        r.weight.toLowerCase().replace(/\s+/g, '') === normWeight
+      );
+      if (match) return parseFloat(match.charge);
+
+      // 2. Try exact pincode match + wildcards/all weight Match
+      match = D.shippingRules.find(r => 
+        r.pincode === pincode && 
+        (r.weight.toLowerCase() === 'all' || r.weight === '*')
+      );
+      if (match) return parseFloat(match.charge);
+
+      // 3. Try pincode prefix match + weight match
+      match = D.shippingRules.find(r => 
+        pincode.startsWith(r.pincode) && 
+        r.weight.toLowerCase().replace(/\s+/g, '') === normWeight
+      );
+      if (match) return parseFloat(match.charge);
+
+      // 4. Try pincode prefix match + wildcards/all weight Match
+      match = D.shippingRules.find(r => 
+        pincode.startsWith(r.pincode) && 
+        (r.weight.toLowerCase() === 'all' || r.weight === '*')
+      );
+      if (match) return parseFloat(match.charge);
+    }
+    return null;
+  }
 
   function generateOrderId() {
     const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
@@ -549,20 +585,29 @@ document.addEventListener('DOMContentLoaded', () => {
       pincodeInput.addEventListener('input', async (e) => {
         const pincode = e.target.value.trim();
         if (/^\d{6}$/.test(pincode)) {
-          // Trigger automatic background shipping rate calculation
-          try {
-            const sizeLabel = selectedVariantLabel.includes(' - ') ? selectedVariantLabel.split(' - ')[0] : selectedVariantLabel;
-            const res = await window.BUNOFEED_API.get('getShippingCharge', {
-              pincode: pincode,
-              weight: sizeLabel || currentProduct.weight || '500g'
-            });
-            if (res && res.status === 'success' && typeof res.shippingCharge !== 'undefined') {
-              currentShippingCharge = parseFloat(res.shippingCharge);
-              isShippingCalculated = true;
-              renderOrderSummaryMarkup();
+          const sizeLabel = selectedVariantLabel.includes(' - ') ? selectedVariantLabel.split(' - ')[0] : selectedVariantLabel;
+          const weightVal = sizeLabel || currentProduct.weight || '500g';
+          
+          const localCharge = getLocalShippingCharge(pincode, weightVal);
+          if (localCharge !== null) {
+            currentShippingCharge = localCharge;
+            isShippingCalculated = true;
+            renderOrderSummaryMarkup();
+          } else {
+            // Trigger automatic background shipping rate calculation
+            try {
+              const res = await window.BUNOFEED_API.get('getShippingCharge', {
+                pincode: pincode,
+                weight: weightVal
+              });
+              if (res && res.status === 'success' && typeof res.shippingCharge !== 'undefined') {
+                currentShippingCharge = parseFloat(res.shippingCharge);
+                isShippingCalculated = true;
+                renderOrderSummaryMarkup();
+              }
+            } catch (err) {
+              console.error('Error fetching custom shipping charge:', err);
             }
-          } catch (err) {
-            console.error('Error fetching custom shipping charge:', err);
           }
         }
       });

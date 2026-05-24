@@ -38,6 +38,12 @@ window.BUNOFEED_DATA = {
     "243201",
     "243202"
   ],
+  "shippingRules": [
+    { "pincode": "243201", "weight": "200g", "charge": 45 },
+    { "pincode": "243201", "weight": "250g", "charge": 50 },
+    { "pincode": "243201", "weight": "350g", "charge": 55 },
+    { "pincode": "243201", "weight": "all", "charge": 60 }
+  ],
   "products": [
     {
       "id": "creamy-pb",
