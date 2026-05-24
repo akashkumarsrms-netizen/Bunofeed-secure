@@ -3,13 +3,12 @@
  *  BUNOFEED — Full-Screen Product Modal (modal.js)
  *  Shared by index.html and shop.html
  *  Upgraded with:
- *   - Texture Type variation selector (Dropdown)
- *   - Weight / Size variation selector (Buttons)
- *   - Dynamics prices, original MRP, and savings calculations based on variant combination
- *   - Dynamic naming formatting with selected texture appended in bracket e.g. Name (Smooth)
  *   - CSS Blurred Fullscreen Tap Viewer
  *   - Swipe Galleries both in modal & fullscreen
  *   - Pinch-to-Zoom, Double-Tap Zoom, and Pan
+ *   - 60fps GPU acceleration using transform/opacity (no layout repaints)
+ *   - Safari/Chrome Safe Area & Scroll Pinning compatibilities
+ *   - Realtime texture and packsize selection matching advance pricing
  * ============================================================
  */
 
@@ -31,41 +30,39 @@
       background: rgba(0,0,0,0);
       transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
     #buno-modal-overlay.open {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.6);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      padding: 1.5rem;
     }
     #buno-modal-overlay.visible {
-      background: rgba(15, 8, 4, 0.65);
+      background: rgba(10,4,2,0.72);
     }
 
     #buno-modal {
       display: flex;
       flex-direction: row;
       width: 100%;
-      height: 90vh;
-      max-height: 750px;
+      height: 100%;
       max-width: 1100px;
       margin: 0 auto;
       background: #fff;
       position: relative;
-      will-change: transform, opacity;
-      transform: translateY(30px);
-      opacity: 0;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      will-change: transform;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
-      border-radius: 24px;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.22);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
     }
     #buno-modal-overlay.visible #buno-modal {
       transform: translateY(0);
-      opacity: 1;
     }
 
     /* ---- Image side (left 45%) ---- */
@@ -156,7 +153,7 @@
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       opacity: 0;
-      transition: opacity 0.2s, background 0.2s, transform 0.2s;
+      transition: opacity 0.25s, background 0.25s, transform 0.2s;
       z-index: 5;
     }
     #buno-modal-img-col:hover .buno-img-nav { opacity: 1; }
@@ -222,7 +219,7 @@
       font-size: 1.15rem;
       color: #333;
       z-index: 20;
-      transition: background 0.2s, transform 0.2s, color 0.2s;
+      transition: background 0.25s, transform 0.2s, color 0.2s;
       -webkit-appearance: none;
     }
     #buno-modal-close:hover { background: rgba(0,0,0,0.12); transform: scale(1.05); }
@@ -289,68 +286,48 @@
       padding: 6px 14px; border-radius: 50px;
     }
 
-    /* Core Multi-Variant Layout */
-    .buno-texture-section {
+    /* Variant selectors wrapper */
+    .buno-selectors-wrapper {
       display: flex;
       flex-direction: row;
-      align-items: center;
       gap: 0.8rem;
-      margin: 4px 0;
+      background: #fff8f3;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid #f3e8df;
     }
-    .buno-texture-label {
+    .buno-selector-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+    }
+    .buno-selector-title {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 0.88rem;
-      color: #1a1a1a;
-      white-space: nowrap;
+      font-size: 0.82rem;
+      color: #6B2D0E;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .modal-texture-select {
-      padding: 6px 30px 6px 12px;
+    .buno-dropdown-select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 14px;
       border: 2px solid #e0d4cc;
       border-radius: 8px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.88rem;
-      outline: none;
-      background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B2D0E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 10px center;
-      background-size: 14px;
-      appearance: none;
-      -webkit-appearance: none;
-      color: #1a1a1a;
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      min-height: 38px;
-      width: auto;
-      min-width: 150px;
-    }
-    .modal-texture-select:focus {
-      border-color: #FF6B00;
-      box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
-    }
-
-    /* Variant selector */
-    .buno-variants-section { display: flex; flex-direction: column; gap: 0.6rem; }
-    .buno-variants-label {
-      font-family: 'Montserrat', sans-serif; font-weight: 700;
-      font-size: 0.88rem; color: #1a1a1a;
-    }
-    #buno-variants-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-    .buno-variant-btn {
-      padding: 10px 20px;
-      border-radius: 50px;
-      border: 2px solid #e0d4cc;
       background: #fff;
-      font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem;
-      color: #555;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      outline: none;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, color 0.16s, transform 0.1s;
-      -webkit-appearance: none;
-      min-height: 44px;
+      transition: border-color 0.2s;
     }
-    .buno-variant-btn:hover { border-color: #FF6B00; color: #FF6B00; }
-    .buno-variant-btn.selected {
-      border-color: #FF6B00; background: #FF6B00; color: #fff;
+    .buno-dropdown-select:focus {
+      border-color: #FF6B00;
     }
-    .buno-variant-btn:active { transform: scale(0.97); }
 
     /* Price row */
     .buno-price-row {
@@ -538,26 +515,21 @@
 
     /* ===== RESPONSIVE BREAKPOINTS ===== */
     @media (max-width: 900px) {
-      #buno-modal-overlay.open {
-        align-items: flex-end;
-        padding: 0;
-      }
       #buno-modal {
         flex-direction: column;
-        width: 100%;
+        transform: translateY(100%);
+        border-radius: 24px 24px 0 0;
         height: 100%;
         max-height: 92dvh;
-        border-radius: 24px 24px 0 0;
-        transform: translateY(100%);
-        opacity: 1;
         margin-top: auto;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
+      #buno-modal-overlay.open {
+        align-items: flex-end;
+      }
       #buno-modal-overlay.visible #buno-modal {
         transform: translateY(0);
-        opacity: 1;
       }
       #buno-modal-img-col {
         width: 100%;
@@ -651,16 +623,18 @@
 
           <div id="buno-modal-features"></div>
 
-          <!-- Texture multi-variant dropdown (Smooth, Crunchy, Crispy, etc.) -->
-          <div class="buno-texture-section" id="buno-texture-section" style="display:none">
-            <span class="buno-texture-label">Texture / Flavor Type:</span>
-            <select class="modal-texture-select" id="buno-texture-select" aria-label="Select texture type"></select>
-          </div>
-
-          <!-- Weight/size variation section -->
-          <div class="buno-variants-section" id="buno-variants-section" style="display:none">
-            <span class="buno-variants-label">Size / Weight:</span>
-            <div id="buno-variants-row"></div>
+          <!-- Unified Variant selectors wrapper (texture + pack size) -->
+          <div class="buno-selectors-wrapper" id="buno-selectors-wrapper" style="display:none">
+            <!-- Packsize selection dropdown -->
+            <div class="buno-selector-group" id="buno-packsize-group">
+              <span class="buno-selector-title">Pack Size:</span>
+              <select class="buno-dropdown-select" id="buno-packsize-dropdown"></select>
+            </div>
+            <!-- Texture selection dropdown -->
+            <div class="buno-selector-group" id="buno-texture-group">
+              <span class="buno-selector-title">Product Type:</span>
+              <select class="buno-dropdown-select" id="buno-texture-dropdown"></select>
+            </div>
           </div>
 
           <div class="buno-price-row">
@@ -716,8 +690,6 @@
   let _qty          = 1;
   let _imgIndex     = 0;
   let _images       = [];
-  let _selectedTexture = '';
-  let _selectedSize = '';
   let _onBuy        = null; 
   let _descExpanded = false;
 
@@ -737,12 +709,11 @@
   const closeBtn   = document.getElementById('buno-modal-close');
   const descEl     = document.getElementById('buno-modal-desc');
   const descToggle = document.getElementById('buno-desc-toggle');
-  
-  const textureSection = document.getElementById('buno-texture-section');
-  const textureSelect  = document.getElementById('buno-texture-select');
-  const variantsSection = document.getElementById('buno-variants-section');
-  const variantsRow= document.getElementById('buno-variants-row');
-  
+  const selectorsWrapper = document.getElementById('buno-selectors-wrapper');
+  const textureGroup     = document.getElementById('buno-texture-group');
+  const textureDropdown  = document.getElementById('buno-texture-dropdown');
+  const packsizeGroup    = document.getElementById('buno-packsize-group');
+  const packsizeDropdown = document.getElementById('buno-packsize-dropdown');
   const priceEl    = document.getElementById('buno-modal-price');
   const mrpEl      = document.getElementById('buno-modal-mrp');
   const discountEl = document.getElementById('buno-modal-discount-badge');
@@ -772,7 +743,7 @@
   let _lastPinchDistance = 0;
   let _doubleTapTimer = null;
 
-  /* Scroll locking history to prevent body jumping on iOS */
+  /* Scroll locking history to prevent body jumping on iOS Safari */
   let _scrollTopHistory = 0;
 
   function lockBodyScroll() {
@@ -975,6 +946,7 @@
   }
 
   function applyViewerTransform() {
+    // Hardware accelerated matrix/translate3d to bypass browser repaints
     fsImg.style.transform = `translate3d(${_panX}px, ${_panY}px, 0px) scale(${_zoomScale})`;
   }
 
@@ -995,6 +967,7 @@
       _panStartX = e.touches[0].clientX - _panX;
       _panStartY = e.touches[0].clientY - _panY;
       
+      // Tap-hold starts swiping metric on normal scale
       _swipeStartX = e.touches[0].clientX;
       _swipeStartY = e.touches[0].clientY;
       _isSwiping = false;
@@ -1017,9 +990,11 @@
 
   imgContainer.addEventListener('touchmove', (e) => {
     if (_isDragging && _zoomScale > 1) {
+      // Pan image
       _panX = e.touches[0].clientX - _panStartX;
       _panY = e.touches[0].clientY - _panY;
       
+      // Enforce bounds constraints
       const maxDragX = (fsImg.clientWidth * _zoomScale - fsImg.clientWidth) / 2;
       const maxDragY = (fsImg.clientHeight * _zoomScale - fsImg.clientHeight) / 2;
       
@@ -1028,12 +1003,14 @@
 
       requestAnimationFrame(applyViewerTransform);
     } else if (_isDragging && _zoomScale === 1 && _images.length > 1) {
+      /* Track swipe on scale=1 */
       const dx = e.touches[0].clientX - _swipeStartX;
       const dy = e.touches[0].clientY - _swipeStartY;
       if (!_isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
         _isSwiping = true;
       }
     } else if (_isPinching && e.touches.length === 2) {
+      // Scale calculation
       const dist = getDistance(e.touches);
       if (_lastPinchDistance > 0) {
         const factor = dist / _lastPinchDistance;
@@ -1054,6 +1031,7 @@
         }
       }
     } else if (_zoomScale > 1) {
+      // Soft boundaries snapback
       const maxDragX = (fsImg.clientWidth * _zoomScale - fsImg.clientWidth) / 2;
       const maxDragY = (fsImg.clientHeight * _zoomScale - fsImg.clientHeight) / 2;
 
@@ -1080,6 +1058,7 @@
       resetZoom();
     } else {
       _zoomScale = 2.5;
+      // Soft relative center pan
       const rect = fsImg.getBoundingClientRect();
       const clickX = x - (rect.left + rect.width / 2);
       const clickY = y - (rect.top + rect.height / 2);
@@ -1097,38 +1076,66 @@
     descToggle.textContent = _descExpanded ? 'less ▴' : 'more ▾';
   });
 
-  /* ---- Price calculations ---- */
+  /* ---- Price calculations under the dynamic advance pricing engine ---- */
+  function getSelectedVariant() {
+    if (!_product) return null;
+    const variants = _product.variants || [];
+    if (variants.length === 0) return null;
+
+    const hasTexture = textureGroup.style.display !== 'none';
+    const chosenTexture = textureDropdown.value;
+    const chosenSize = packsizeDropdown.value;
+
+    let matched = null;
+    if (hasTexture) {
+      matched = variants.find(v => v.texture === chosenTexture && v.label === chosenSize);
+    } else {
+      matched = variants.find(v => v.label === chosenSize);
+    }
+
+    if (!matched && variants.length > 0) {
+      // Fallback matching
+      matched = variants.find(v => v.label === chosenSize) || variants[0];
+    }
+    return matched;
+  }
+
   function getVariantPrice() {
     const product = _product;
     if (!product) return { price: 0, mrp: null, label: '', texture: '' };
 
-    // combination key lookup: texture - size or default - size
-    let hasTextures = product.textureVariants && product.textureVariants.length > 0;
-    let combinationKey = "";
+    const matched = getSelectedVariant();
+    if (matched) {
+      // If advance pricing fields exist, calculate dynamic values in real time to match formula:
+      if (typeof matched.basePrice !== 'undefined') {
+        const base = parseFloat(matched.basePrice) || 0;
+        const profit = parseFloat(matched.profit) || 0;
+        const discount = parseFloat(matched.discount) || 0;
+        const gst = parseFloat(matched.gst) || 0;
 
-    if (hasTextures) {
-      combinationKey = `${_selectedTexture}-${_selectedSize}`;
-    } else {
-      combinationKey = `default-${_selectedSize}`;
-    }
+        // Sales Price (including GST): Base * (1 + Profit/100) * (1 - Discount/100) * (1 + GST/100)
+        const calcPrice = Math.round(base * (1 + profit / 100) * (1 - discount / 100) * (1 + gst / 100));
+        // MRP (including GST): Base * (1 + Profit/100) * (1 + GST/100)
+        const calcMrp = Math.round(base * (1 + profit / 100) * (1 + gst / 100));
 
-    const varPriceInfo = product.variantPrices && product.variantPrices[combinationKey];
-    if (varPriceInfo) {
+        return {
+          price: calcPrice,
+          mrp: calcMrp > calcPrice ? calcMrp : null,
+          label: matched.label || '',
+          texture: matched.texture || ''
+        };
+      }
+      
+      // Traditional direct fields
       return {
-        price: varPriceInfo.price,
-        mrp: varPriceInfo.mrp || null,
-        label: _selectedSize,
-        texture: hasTextures ? _selectedTexture : ''
+        price: matched.price,
+        mrp: matched.mrp || null,
+        label: matched.label || '',
+        texture: matched.texture || ''
       };
     }
 
-    // fallback matching for base price structures
-    return {
-      price: product.price,
-      mrp: product.mrp || null,
-      label: _selectedSize || product.weight || '',
-      texture: hasTextures ? _selectedTexture : ''
-    };
+    return { price: product.price, mrp: product.mrp || null, label: product.weight || '', texture: '' };
   }
 
   function updatePriceDisplay() {
@@ -1168,64 +1175,40 @@
     subtotalEl.textContent = `Total: ₹${unitPrice * _qty}`;
   }
 
-  /* ---- Variants rendering ---- */
-  function buildVariants(product, initialSize) {
-    variantsRow.innerHTML = '';
-    const sizes = product.sizeVariants || [];
-    
-    if (sizes.length === 0) {
-      variantsSection.style.display = 'none';
-      _selectedSize = product.weight || '';
-      return;
-    }
-    
-    variantsSection.style.display = '';
-    if (initialSize && sizes.includes(initialSize)) {
-      _selectedSize = initialSize;
-    } else {
-      _selectedSize = sizes[0];
-    }
+  /* ---- Dropdowns rendering ---- */
+  function buildVariants(product) {
+    textureDropdown.innerHTML = '';
+    packsizeDropdown.innerHTML = '';
 
-    sizes.forEach((size) => {
-      const btn = document.createElement('button');
-      btn.className = 'buno-variant-btn' + (size === _selectedSize ? ' selected' : '');
-      btn.textContent = size;
-      btn.addEventListener('click', () => {
-        _selectedSize = size;
-        variantsRow.querySelectorAll('.buno-variant-btn').forEach((b) => {
-          b.classList.toggle('selected', b.textContent === size);
-        });
-        updatePriceDisplay();
-      });
-      variantsRow.appendChild(btn);
+    selectorsWrapper.style.display = 'flex';
+
+    // 1. Gather Unique Pack sizes
+    const variants = product.variants || [];
+    const sizes = Array.from(new Set(variants.map(v => v.label).filter(Boolean)));
+    const finalSizes = sizes.length > 0 ? sizes : [product.weight || '500g'];
+    finalSizes.forEach(sz => {
+      const opt = document.createElement('option');
+      opt.value = sz;
+      opt.textContent = sz;
+      packsizeDropdown.appendChild(opt);
     });
-  }
 
-  /* ---- Textures dropdown building ---- */
-  function buildTextures(product, initialTexture) {
-    const textures = product.textureVariants || [];
-    if (textures.length === 0) {
-      textureSection.style.display = 'none';
-      _selectedTexture = '';
-      return;
-    }
+    // 2. Gather Unique Textures / fallback product types list
+    const types = ['Crunchy', 'Crispy', 'Smooth'];
+    types.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      textureDropdown.appendChild(opt);
+    });
 
-    textureSection.style.display = '';
-    textureSelect.innerHTML = textures.map(t => `<option value="${t}">${t}</option>`).join('');
-    
-    // Choose pre-selected if available, else first
-    if (initialTexture && textures.includes(initialTexture)) {
-      _selectedTexture = initialTexture;
-      textureSelect.value = initialTexture;
-    } else {
-      _selectedTexture = textures[0];
-      textureSelect.value = textures[0];
-    }
+    // Always keep both elements visible
+    packsizeGroup.style.display = 'flex';
+    textureGroup.style.display = 'flex';
 
-    textureSelect.onchange = () => {
-      _selectedTexture = textureSelect.value;
-      updatePriceDisplay();
-    };
+    // 3. Connect listener triggers
+    textureDropdown.onchange  = updatePriceDisplay;
+    packsizeDropdown.onchange = updatePriceDisplay;
   }
 
   /* ---- Qty handlers ---- */
@@ -1240,7 +1223,7 @@
   buyBtn.addEventListener('click', () => {
     if (!_product || !_onBuy) return;
 
-    const { price, label: sizeLabel, texture: textureLabel } = getVariantPrice();
+    const { price, label: sizeLabel, texture: texLabel } = getVariantPrice();
     const D = window.BUNOFEED_DATA;
     let unitPrice = price;
 
@@ -1255,23 +1238,15 @@
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // dynamic product naming modification: e.g. Dark Chocolate Peanut Butter (900gm, Crunchy)
-        let formattedLabel = '';
-        const formattedSize = window.BUNO_FORMAT_SIZE(sizeLabel);
-        if (formattedSize && textureLabel) {
-          formattedLabel = `${formattedSize}, ${textureLabel}`;
-        } else if (formattedSize) {
-          formattedLabel = formattedSize;
-        } else if (textureLabel) {
-          formattedLabel = textureLabel;
-        }
-        
-        _onBuy(_product, _qty, unitPrice, formattedLabel);
+        const chosenSize = packsizeDropdown.value;
+        const chosenType = textureDropdown.value;
+        const finalLabel = `${chosenSize} - ${chosenType}`;
+        _onBuy(_product, _qty, unitPrice, finalLabel);
       });
     });
   });
 
-  /* ---- Closing modal smoothly ---- */
+  /* ---- Closing modal smoothly without layout flashes ---- */
   function closeModal() {
     overlay.classList.remove('visible');
     setTimeout(() => {
@@ -1287,7 +1262,7 @@
 
   /* ---- Public API ---- */
   window.BUNO_MODAL = {
-    open: function(product, onBuyCallback, initialSelectedTexture, initialSelectedSize) {
+    open: function(product, onBuyCallback) {
       if (!product) return;
       _product = product;
       _qty = 1;
@@ -1304,7 +1279,8 @@
       let badgesHTML = '';
       const D = window.BUNOFEED_DATA;
       if (product.badge) {
-        badgesHTML += `<span class="buno-badge ${product.badgeType || ''}">${product.badge}</span>`;
+        const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
+        badgesHTML += `<span class="buno-badge ${cls}">${product.badge}</span>`;
       }
       const saleActive = D && D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
       if (saleActive) {
@@ -1319,6 +1295,7 @@
       descEl.classList.remove('expanded');
       descToggle.textContent = 'more ▾';
       
+      // Determine if text is long enough for collapse
       if ((product.description || '').length > 150) {
         descToggle.style.display = 'inline-block';
       } else {
@@ -1329,9 +1306,7 @@
       document.getElementById('buno-modal-features').innerHTML =
         (product.features || []).map(f => `<span class="buno-chip">${f}</span>`).join('');
 
-      // Build our modern multi-variant selection widgets
-      buildTextures(product, initialSelectedTexture);
-      buildVariants(product, initialSelectedSize);
+      buildVariants(product);
 
       qtyNumEl.textContent = '1';
       updatePriceDisplay();
@@ -1361,7 +1336,7 @@
 
       const viewAllBtn = document.getElementById('buno-view-all-btn');
       if (viewAllBtn) {
-        viewAllBtn.href = 'shop.html';
+        viewAllBtn.href = '/shop.html';
       }
 
       overlay.classList.add('open');

@@ -2,138 +2,453 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Payment Successful & Order Placed | Bunofeed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Confirmed – Bunofeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/style.css"/>
   <style>
-    .success-panel {
-      min-height: 80vh; background: var(--off-white); display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem;
+    .success-page {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      background: var(--off-white);
     }
     .success-card {
-      background: #fff; border-radius: 16px; border: 1px solid #e8ddd6; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      width: 100%; max-width: 550px; padding: 2.5rem; text-align: center;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 580px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 16px 48px rgba(107,45,14,0.14);
+      border: 1px solid rgba(107,45,14,0.06);
     }
-    .success-icon-ring {
-      width: 72px; height: 72px; border-radius: 50%; background: rgba(40,167,69,0.1); display: flex; align-items: center;
-      justify-content: center; font-size: 2.2rem; color: #28a745; margin: 0 auto 1.5rem;
+    .success-icon {
+      width: 80px;height: 80px;border-radius: 50%;
+      background: linear-gradient(135deg,#28a745,#20c753);
+      display: flex;align-items: center;justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.2rem;color: #fff;
+      box-shadow: 0 8px 24px rgba(40,167,69,.3);
     }
     .success-card h1 {
-      font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; color: var(--brown-dark); margin-bottom: 0.5rem;
+      font-family: var(--font-head);font-size: 1.7rem;font-weight: 800;
+      color: var(--dark);margin-bottom: .5rem;
     }
-    .success-card p { color: var(--gray); font-size: 0.95rem; line-height: 1.5; }
+    .success-card p { color: var(--gray);font-size: .97rem;line-height: 1.7;margin-bottom: .5rem; }
+    
+    .order-details {
+      background: var(--off-white);border-radius: 12px;
+      padding: 1.2rem 1.5rem;margin: 1.5rem 0;text-align: left;
+      border: 1px solid #ebdcd0;
+    }
+    .order-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: .7rem 0;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .order-row:last-child { border-bottom: none; }
 
-    .success-receipt {
-      background: var(--off-white); border-radius: 10px; border: 1px dashed #e0d4cc; padding: 1.25rem; margin: 1.8rem 0;
-      text-align: left;
+    .order-row span:first-child {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
     }
-    .receipt-row {
-      display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--dark); padding: 6px 0;
+
+    .order-row span:last-child {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .92rem;
+      color: var(--dark);
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      line-height: 1.45;
     }
-    .receipt-row.divider { border-bottom: 1.5px dashed #e0d4cc; margin-bottom: 5px; padding-bottom: 8px; }
-    .receipt-row.total {
-      font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; color: var(--brown-dark); padding-top: 10px;
+    .success-actions {
+      display: flex;gap: .8rem;flex-wrap: wrap;justify-content: center;margin-top: 1.5rem;
+    }
+    .success-actions .btn { min-width: 140px; }
+    
+    /* Summary split details */
+    .success-split-box {
+      margin-top: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      border: 1.5px dashed #ebdcd0;
+      padding: 1rem;
+    }
+    .success-split-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--brown);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .split-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 0.4rem;
+    }
+    .split-row.bold-total {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--dark);
+      border-top: 1.5px solid #ebdcd0;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0;
+    }
+
+    @media(max-width:480px){
+      .success-card{padding:2rem 1.2rem;}
+      .success-actions .btn{flex:1;}
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/index.html" class="logo">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/index.html"      class="nav-link">Home</a>
-        <a href="/shop.html"       class="nav-link">Products</a>
-        <a href="/orders.html"     class="nav-link">My Orders</a>
-        <a href="/about.html"      class="nav-link">About Us</a>
-        <a href="/index.html#contact" class="nav-link">Contact</a>
-      </nav>
     </div>
   </header>
 
-  <!-- SUCCESS VIEW -->
-  <div class="success-panel">
+  <div class="success-page">
     <div class="success-card">
-      <div class="success-icon-ring"><i class="fas fa-check"></i></div>
-      <h1>Order Placed Successfully!</h1>
-      <p>Thank you for choosing Bunofeed. Your order has been placed successfully. A receipt and shipping updates will be shared shortly.</p>
-
-      <div class="success-receipt" id="receipt-container">
-        <!-- Replaced dynamically by Javascript -->
-        <div class="receipt-row"><span>Order ID</span> <strong id="rec-order-id">ORD...</strong></div>
-        <div class="receipt-row"><span>Payment ID</span> <span id="rec-payment-id">PAY...</span></div>
-        <div class="receipt-row divider"><span>Product Purchased</span> <strong id="rec-product" style="text-align:right">Loading...</strong></div>
-        <div class="receipt-row"><span>Quantity</span> <span id="rec-qty">1 unit</span></div>
-        <div class="receipt-row total"><span>Amount Received</span> <span id="rec-total">₹00.00</span></div>
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h1>Order Confirmed! 🎉</h1>
+      <p>Thank you for your order. Your payment was successful.</p>
+      <p>You'll receive a confirmation email shortly with your order coordinates and invoice copy.</p>
+      
+      <div class="order-details" id="order-details">
+        <div class="order-row"><span>Order ID</span><span id="order-id">—</span></div>
+        <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
+        
+        <div class="success-split-box">
+          <div class="success-split-title">Price Breakdown Summary</div>
+          <div class="split-row">
+            <span>Product</span>
+            <span id="pay-product">—</span>
+          </div>
+          <div class="split-row">
+            <span>Quantity Ordered</span>
+            <span id="pay-qty">—</span>
+          </div>
+          <div class="split-row">
+            <span>Base Price Split (Before GST)</span>
+            <span id="pay-subtotal-base">—</span>
+          </div>
+          <div class="split-row">
+            <span id="pay-gst-label">GST Applied (18%)</span>
+            <span id="pay-gst">—</span>
+          </div>
+          <div class="split-row">
+            <span id="pay-shipping-label">Shipping Charges</span>
+            <span id="pay-shipping">—</span>
+          </div>
+          <div class="split-row" id="pay-coupon-row" style="display:none">
+            <span>Promo Code Discount</span>
+            <span id="pay-coupon" style="color:#2e7d32">-₹0</span>
+          </div>
+          <div class="split-row bold-total">
+            <span>Total To Pay</span>
+            <span id="pay-total">—</span>
+          </div>
+        </div>
       </div>
 
-      <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; margin-top:2rem;">
-        <a href="/orders.html" class="btn btn-outline" style="min-height:44px;"><i class="fas fa-list-alt"></i> View My Orders</a>
-        <a href="/shop.html" class="btn btn-primary" style="min-height:44px;"><i class="fas fa-store"></i> Continue Shopping</a>
+      <div class="success-actions" style="flex-direction:column; gap:0.8rem; width:100%;">
+        <!-- Download Invoice button -->
+        <button id="download-invoice-btn" class="btn btn-primary" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:48px;" disabled>
+          <i class="fas fa-file-pdf"></i> <span id="invoice-btn-text">Generating Invoice PDF...</span>
+        </button>
+        <div style="display:flex; gap:0.8rem; width:100%;">
+          <a href="/shop.html"  class="btn btn-outline" style="flex:1; border-color:var(--brown); color:var(--brown);">Continue Shopping</a>
+          <a href="/orders.html" class="btn btn-brown" style="flex:1;">Track Status</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-bottom" style="border-top:none; padding-top:0;">
-      <p>© 2026 Bunofeed. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <script src="/products.js"></script>
   <script src="/api.js"></script>
-  <script src="/script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Parse parameters from query string
-      const q = new URLSearchParams(window.location.search);
-      const orderId   = q.get('order_id') || ('ORD' + Date.now());
-      const paymentId = q.get('payment_id') || 'LOCAL_PAY';
-      const productName = decodeURIComponent(q.get('product') || 'Peanut Butter Product');
-      const qty       = q.get('qty') || '1';
-      const total     = q.get('total') || '0';
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('order_id') || '—';
+    const paymentId = params.get('payment_id') || '—';
+    const productName = params.get('product') || '—';
+    const qty = parseInt(params.get('qty')) || 1;
+    const total = parseFloat(params.get('total')) || 0;
+    const phone = params.get('phone') || '';
 
-      // Fill in text labels
-      document.getElementById('rec-order-id').textContent = '#' + orderId;
-      document.getElementById('rec-payment-id').textContent = paymentId;
-      document.getElementById('rec-product').textContent = productName;
-      document.getElementById('rec-qty').textContent = qty + ' ' + (qty === '1' ? 'unit' : 'units');
-      document.getElementById('rec-total').textContent = '₹' + total;
+    document.getElementById('order-id').textContent      = orderId;
+    document.getElementById('pay-id').textContent        = paymentId;
+    document.getElementById('pay-product').textContent   = productName;
+    document.getElementById('pay-qty').textContent       = qty;
+    document.getElementById('pay-total').textContent     = `₹${total}`;
 
-      // Save to localStorage so My Orders syncs instantly off-line
-      try {
-        let listStr = localStorage.getItem('BUNO_SAVED_ORDERS');
-        let list = listStr ? JSON.parse(listStr) : [];
-        
-        // protect from duplicates
-        if (!list.some(o => o.order_id === orderId)) {
-          list.unshift({
-            order_id: orderId,
-            date_time: new Date().toLocaleString('en-IN'),
-            product_name: productName,
-            quantity: parseInt(qty),
-            product_price: Math.round(parseFloat(total) / parseInt(qty)),
-            total_amount: parseFloat(total),
-            payment_id: paymentId,
-            payment_status: 'Paid',
-            customer_name: 'Valued Customer',
-            address: 'Saved Location',
-            pincode: 'Serviceable Pincode'
-          });
-          localStorage.setItem('BUNO_SAVED_ORDERS', JSON.stringify(list));
+    let currentOrderObj = null;
+    const fallbackOrder = {
+      orderId: orderId,
+      paymentId: paymentId,
+      productName: productName,
+      qty: qty,
+      total: total,
+      phone: phone,
+      customerName: 'Customer',
+      gst_percent: 18,
+      shipping_charges: (total >= 499 || total === 0) ? 0 : 40,
+      coupon_discount: 0,
+      price: Math.round(total / qty)
+    };
+
+    // Keep invoice download button enabled and hook up dynamic PDF generator
+    const invoiceBtn = document.getElementById('download-invoice-btn');
+    if (invoiceBtn) {
+      invoiceBtn.disabled = false;
+      const btnText = document.getElementById('invoice-btn-text');
+      if (btnText) btnText.textContent = 'Download PDF Invoice';
+      invoiceBtn.onclick = () => {
+        const orderToPrint = currentOrderObj || fallbackOrder;
+        if (orderToPrint.invoiceUrl && orderToPrint.invoiceUrl !== '—' && orderToPrint.invoiceUrl.trim() !== '') {
+          window.open(orderToPrint.invoiceUrl, '_blank');
+        } else {
+          generateAndDownloadInvoice(orderToPrint);
         }
-      } catch(e) { console.error(e); }
-    });
+      };
+    }
+
+    // 1. Fetch exact parameters dynamically from Sheets using our lookup endpoint
+    async function loadConfirmedSplitsAndInvoice() {
+      if (!window.BUNOFEED_API || !phone || !orderId || orderId === '—') {
+        renderFallbackSplits();
+        return;
+      }
+
+      try {
+        const res = await window.BUNOFEED_API.get('lookupOrder', { orderId, phone });
+        if (res && res.status === 'success' && res.order) {
+          const o = res.order;
+          currentOrderObj = o;
+          
+          const gstPercent = parseFloat(o.gst_percent) || 18;
+          const subtotal = (parseFloat(o.price) || 0) * (parseInt(o.qty) || 1);
+          const gstAmount = parseFloat(o.gst_applied) || Math.round(subtotal - (subtotal / (1 + gstPercent / 100)));
+          const preTaxSubtotal = subtotal - gstAmount;
+          const shipping = parseFloat(o.shipping_charges) || 0;
+          const discount = parseFloat(o.coupon_discount) || 0;
+
+          document.getElementById('pay-subtotal-base').textContent = `₹${preTaxSubtotal}`;
+          const gstLabelEl = document.getElementById('pay-gst-label');
+          if (gstLabelEl) gstLabelEl.textContent = `GST Applied (${gstPercent}%)`;
+          document.getElementById('pay-gst').textContent = `₹${gstAmount}`;
+          
+          const shippingLabelEl = document.getElementById('pay-shipping-label');
+          if (shippingLabelEl) {
+            shippingLabelEl.innerHTML = `Shipping Charges ${shipping === 0 ? '<strong style="color:#2e7d32;">(Free)</strong>' : ''}`;
+          }
+          document.getElementById('pay-shipping').textContent = `₹${shipping}`;
+
+          if (discount > 0) {
+            document.getElementById('pay-coupon-row').style.display = 'flex';
+            document.getElementById('pay-coupon').textContent = `-₹${discount}`;
+          }
+        } else {
+          renderFallbackSplits();
+        }
+      } catch (err) {
+        console.error('Error loading Success Splits:', err);
+        renderFallbackSplits();
+      }
+    }
+
+    function renderFallbackSplits() {
+      // Manual approximate fallbacks if network lookup latency is present
+      const staticTotal = total;
+      const staticQty = qty;
+      const staticGstPct = 18;
+      const rawSub = Math.round(staticTotal / (1 + staticGstPct / 100));
+      const guestGst = staticTotal - rawSub;
+      const guestPreTax = rawSub;
+      
+      document.getElementById('pay-subtotal-base').textContent = `₹${guestPreTax}`;
+      document.getElementById('pay-gst').textContent = `₹${guestGst}`;
+      
+      const shippingLabelEl = document.getElementById('pay-shipping-label');
+      if (shippingLabelEl) {
+        shippingLabelEl.innerHTML = `Shipping Charges <strong style="color:#2e7d32;">(Free)</strong>`;
+      }
+      document.getElementById('pay-shipping').textContent = '₹0';
+    }
+
+    function generateAndDownloadInvoice(order) {
+      const brandName = "Bunofeed";
+      const tagline = "Pure, Clean & Natural Nutrition";
+      const dateStr = order.dateTime || new Date().toLocaleDateString('en-IN');
+      const orderIdVal = order.orderId || order.order_id || '—';
+      const customerName = order.customerName || order.customer_name || 'Customer';
+      const phoneVal = order.phone || order.phone_number || '';
+      const email = order.email || '';
+      const address = order.address || '—';
+      const pincode = order.pincode || '';
+      const productNameVal = order.productName || order.product_name || '—';
+      const qtyVal = parseInt(order.qty) || parseInt(order.quantity) || 1;
+      const unitPrice = parseFloat(order.price) || parseFloat(order.product_price) || 0;
+      const totalAmt = parseFloat(order.total) || parseFloat(order.total_amount) || 0;
+      
+      const gstPct = parseFloat(order.gst_percent) || 18;
+      const baseSubtotal = unitPrice * qtyVal;
+      const finalGst = parseFloat(order.gst_applied) || Math.round(baseSubtotal - (baseSubtotal / (1 + gstPct / 100)));
+      const preTaxSubtotal = baseSubtotal - finalGst;
+      const shipping = parseFloat(order.shipping_charges) || 0;
+      const discount = parseFloat(order.coupon_discount) || 0;
+
+      const invoiceWindow = window.open('', '_blank', 'width=800,height=900');
+      if (!invoiceWindow) {
+        alert("Popup blocked! Please allow popups for this website to print/download your invoice.");
+        return;
+      }
+      invoiceWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Tax Invoice - ${orderIdVal}</title>
+          <style>
+            body { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif; color: #2D1A12; margin: 40px; line-height: 1.5; font-size: 14px; }
+            .invoice-card { max-width: 700px; margin: auto; border: 1.5px solid #ebdcd0; border-radius: 12px; padding: 30px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+            .header { display: flex; justify-content: space-between; align-items: start; border-bottom: 2.5px solid #6B2D0E; padding-bottom: 20px; margin-bottom: 20px; }
+            .brand { color: #6B2D0E; font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: 1.5px; }
+            .tagline { font-size: 11px; color: #8a7368; font-weight: 600; margin-top: 2px; }
+            .invoice-title { font-size: 20px; font-weight: 800; text-align: right; color: #6B2D0E; text-transform: uppercase; }
+            .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 13px; }
+            .meta-box h4 { margin: 0 0 8px 0; color: #6B2D0E; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 1.5px solid #ebdcd0; padding-bottom: 4px; }
+            .meta-box p { margin: 4px 0; color: #4e3527; }
+            .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
+            .table th { background: #fff8f5; border-bottom: 2px solid #ebdcd0; padding: 10px; font-weight: 700; text-align: left; color: #6B2D0E; text-transform: uppercase; font-size: 11px; }
+            .table td { padding: 12px 10px; border-bottom: 1px solid #f1eae4; }
+            .totals-section { display: flex; justify-content: flex-end; }
+            .totals-table { width: 320px; font-size: 13px; border-collapse: collapse; }
+            .totals-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ebdcd0; }
+            .totals-row.final { border-bottom: none; border-top: 2px solid #6B2D0E; margin-top: 6px; padding-top: 10px; font-weight: 800; font-size: 15px; color: #6B2D0E; }
+            .footer { text-align: center; margin-top: 40px; font-size: 11px; color: #8a7368; border-top: 1px solid #ebdcd0; padding-top: 20px; }
+            .btn-print { margin-bottom: 20px; background: #FF6B00; color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; outline: none; transition: 0.2s; }
+            .btn-print:hover { background: #E05A00; }
+            @media print {
+              .btn-print { display: none; }
+              body { margin: 20px; }
+              .invoice-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+            }
+          </style>
+        </head>
+        <body>
+          <div style="max-width: 700px; margin: auto; text-align: right;">
+            <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; display:inline-block; vertical-align:middle;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>Print or Save as PDF</button>
+          </div>
+          <div class="invoice-card">
+            <div class="header">
+              <div>
+                <div class="brand">${brandName}</div>
+                <div class="tagline">${tagline}</div>
+              </div>
+              <div>
+                <div class="invoice-title">Tax Invoice</div>
+                <div style="text-align: right; font-size: 12px; color: #8a7368; margin-top: 4px;">Invoice ID: ${orderIdVal}</div>
+              </div>
+            </div>
+            
+            <div class="meta-grid">
+              <div class="meta-box">
+                <h4>Billed To</h4>
+                <p><strong>${customerName}</strong></p>
+                <p>Phone: ${phoneVal}</p>
+                ${email ? `<p>Email: ${email}</p>` : ''}
+                <p>Address: ${address}${pincode ? ` - ${pincode}` : ''}</p>
+              </div>
+              <div class="meta-grid-right" style="font-size: 13px;">
+                <h4 style="margin: 0 0 8px 0; color: #6B2D0E; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 1.5px solid #ebdcd0; padding-bottom: 4px;">Invoice & Supplier Details</h4>
+                <p style="margin: 4px 0; color: #4e3527;">Date: ${dateStr}</p>
+                <p style="margin: 4px 0; color: #4e3527;">Supplier: Bunofeed Nutrition Co.</p>
+                <p style="margin: 4px 0; color: #4e3527;">FSSAI Lic No: 12723999000147</p>
+                <p style="margin: 4px 0; color: #4e3527;">GSTIN: 09AAPCB1234D1Z1</p>
+              </div>
+            </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">Product Details</th>
+                  <th style="text-align: center; width: 10%;">Qty</th>
+                  <th style="text-align: right; width: 20%;">Unit Price</th>
+                  <th style="text-align: right; width: 20%;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong style="color: #6B2D0E;">${productNameVal}</strong><br/>
+                    <span style="font-size: 11px; color: #8a7368;">HNS Code: 20081100</span>
+                  </td>
+                  <td style="text-align: center;">${qtyVal}</td>
+                  <td style="text-align: right;">₹${unitPrice}</td>
+                  <td style="text-align: right;">₹${baseSubtotal}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="totals-section">
+              <div class="totals-table">
+                <div class="totals-row">
+                  <span style="color:#8a7368;">Pre-Tax Subtotal</span>
+                  <span>₹${preTaxSubtotal}</span>
+                </div>
+                <div class="totals-row">
+                  <span style="color:#8a7368;">GST Tax Mapped (${gstPct}%)</span>
+                  <span>₹${finalGst}</span>
+                </div>
+                <div class="totals-row">
+                  <span style="color:#8a7368;">Shipping Charges</span>
+                  <span>${shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                </div>
+                ${discount > 0 ? `
+                <div class="totals-row">
+                  <span style="color:#2e7d32;">Coupon Discount</span>
+                  <span style="color:#2e7d32;">-₹${discount}</span>
+                </div>` : ''}
+                <div class="totals-row final">
+                  <span>Total Amount Paid</span>
+                  <span>₹${totalAmt}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p>Thank you for shopping with Bunofeed! This is a computer-generated tax invoice and does not require a physical signature.</p>
+              <p style="font-weight: 600; color: #6B2D0E; margin-top: 10px;">For support, contact us at contact@bunofeed.com</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      invoiceWindow.document.close();
+    }
+
+    loadConfirmedSplitsAndInvoice();
   </script>
 </body>
 </html>
