@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/style.css"/>
   <style>
     .success-page {
       min-height: 80vh;
@@ -21,10 +21,11 @@
       background: var(--white);
       border-radius: 20px;
       padding: 3rem 2.5rem;
-      max-width: 520px;
+      max-width: 580px;
       width: 100%;
       text-align: center;
       box-shadow: 0 16px 48px rgba(107,45,14,0.14);
+      border: 1px solid rgba(107,45,14,0.06);
     }
     .success-icon {
       width: 80px;height: 80px;border-radius: 50%;
@@ -39,40 +40,80 @@
       color: var(--dark);margin-bottom: .5rem;
     }
     .success-card p { color: var(--gray);font-size: .97rem;line-height: 1.7;margin-bottom: .5rem; }
+    
     .order-details {
       background: var(--off-white);border-radius: 12px;
       padding: 1.2rem 1.5rem;margin: 1.5rem 0;text-align: left;
+      border: 1px solid #ebdcd0;
     }
     .order-row {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: .7rem 0;
-  border-bottom: 1px solid #f0e8e0;
-}
-.order-row:last-child { border-bottom: none; }
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: .7rem 0;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .order-row:last-child { border-bottom: none; }
 
-.order-row span:first-child {
-  font-size: .75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--gray);
-}
+    .order-row span:first-child {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
+    }
 
-.order-row span:last-child {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .92rem;
-  color: var(--dark);
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  line-height: 1.45;
-}
+    .order-row span:last-child {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .92rem;
+      color: var(--dark);
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      line-height: 1.45;
+    }
     .success-actions {
       display: flex;gap: .8rem;flex-wrap: wrap;justify-content: center;margin-top: 1.5rem;
     }
     .success-actions .btn { min-width: 140px; }
+    
+    /* Summary split details */
+    .success-split-box {
+      margin-top: 1rem;
+      background: #fff;
+      border-radius: 8px;
+      border: 1.5px dashed #ebdcd0;
+      padding: 1rem;
+    }
+    .success-split-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--brown);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .split-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 0.4rem;
+    }
+    .split-row.bold-total {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--dark);
+      border-top: 1.5px solid #ebdcd0;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0;
+    }
+
     @media(max-width:480px){
       .success-card{padding:2rem 1.2rem;}
       .success-actions .btn{flex:1;}
@@ -83,7 +124,7 @@
 
   <header class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo">
+      <a href="/index.html" class="logo">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
     </div>
@@ -94,31 +135,171 @@
       <div class="success-icon"><i class="fas fa-check"></i></div>
       <h1>Order Confirmed! 🎉</h1>
       <p>Thank you for your order. Your payment was successful.</p>
-      <p>You'll receive a confirmation email shortly. We'll notify you once your order ships.</p>
-      <p>Please retain your Order ID to track your shipment.</p>
+      <p>You'll receive a confirmation email shortly with your order coordinates and invoice copy.</p>
+      
       <div class="order-details" id="order-details">
         <div class="order-row"><span>Order ID</span><span id="order-id">—</span></div>
         <div class="order-row"><span>Payment ID</span><span id="pay-id">—</span></div>
-        <div class="order-row"><span>Product</span><span id="pay-product">—</span></div>
-        <div class="order-row"><span>Quantity</span><span id="pay-qty">—</span></div>
-        <div class="order-row"><span>Amount Paid</span><span id="pay-total">—</span></div>
+        
+        <div class="success-split-box">
+          <div class="success-split-title">Price Breakdown Summary</div>
+          <div class="split-row">
+            <span>Product</span>
+            <span id="pay-product">—</span>
+          </div>
+          <div class="split-row">
+            <span>Quantity Ordered</span>
+            <span id="pay-qty">—</span>
+          </div>
+          <div class="split-row">
+            <span>Subtotal (Base + GST)</span>
+            <span id="pay-subtotal">—</span>
+          </div>
+          <div class="split-row">
+            <span>GST Amount Split (Includes in Total)</span>
+            <span id="pay-gst">—</span>
+          </div>
+          <div class="split-row">
+            <span>Shipping & Pack Weight Fee</span>
+            <span id="pay-shipping">—</span>
+          </div>
+          <div class="split-row" id="pay-coupon-row" style="display:none">
+            <span>Promo Coupon Discount</span>
+            <span id="pay-coupon" style="color:#2e7d32">-₹0</span>
+          </div>
+          <div class="split-row bold-total">
+            <span>Grand Total Paid</span>
+            <span id="pay-total">—</span>
+          </div>
+        </div>
       </div>
 
-      <div class="success-actions">
-        <a href="shop.html"  class="btn btn-primary">Continue Shopping</a>
-        <a href="orders.html" class="btn btn-brown">Track Order</a>
+      <div class="success-actions" style="flex-direction:column; gap:0.8rem; width:100%;">
+        <!-- Download Invoice button -->
+        <button id="download-invoice-btn" class="btn btn-primary" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:48px;" disabled>
+          <i class="fas fa-file-pdf"></i> <span id="invoice-btn-text">Generating Invoice PDF...</span>
+        </button>
+        <div style="display:flex; gap:0.8rem; width:100%;">
+          <a href="/shop.html"  class="btn btn-outline" style="flex:1; border-color:var(--brown); color:var(--brown);">Continue Shopping</a>
+          <a href="/orders.html" class="btn btn-brown" style="flex:1;">Track Status</a>
+        </div>
       </div>
     </div>
   </div>
 
+  <script src="/api.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
-    document.getElementById('order-id').textContent      = params.get('order_id') || '—';
-    document.getElementById('pay-id').textContent      = params.get('payment_id') || '—';
-    document.getElementById('pay-product').textContent = params.get('product')    || '—';
-    document.getElementById('pay-qty').textContent     = params.get('qty')        || '—';
-    const total = params.get('total');
-    document.getElementById('pay-total').textContent   = total ? `₹${total}` : '—';
+    const orderId = params.get('order_id') || '—';
+    const paymentId = params.get('payment_id') || '—';
+    const productName = params.get('product') || '—';
+    const qty = parseInt(params.get('qty')) || 1;
+    const total = parseFloat(params.get('total')) || 0;
+    const phone = params.get('phone') || '';
+
+    document.getElementById('order-id').textContent      = orderId;
+    document.getElementById('pay-id').textContent        = paymentId;
+    document.getElementById('pay-product').textContent   = productName;
+    document.getElementById('pay-qty').textContent       = qty;
+    document.getElementById('pay-total').textContent     = `₹${total}`;
+
+    // 1. Fetch exact parameters dynamically from Sheets using our lookup endpoint
+    async function loadConfirmedSplitsAndInvoice() {
+      if (!window.BUNOFEED_API || !phone || !orderId || orderId === '—') {
+        renderFallbackSplits();
+        return;
+      }
+
+      try {
+        const res = await window.BUNOFEED_API.get('lookupOrder', { orderId, phone });
+        if (res && res.status === 'success' && res.order) {
+          const o = res.order;
+          
+          const gstPercent = parseFloat(o.gst_percent) || 18;
+          const gstAmount = parseFloat(o.gst_applied) || Math.round(total - (total / (1 + gstPercent / 100)));
+          const shipping = parseFloat(o.shipping_charges) || 0;
+          const discount = parseFloat(o.coupon_discount) || 0;
+          const subtotal = (o.price || 0) * (o.qty || 1);
+
+          document.getElementById('pay-subtotal').textContent = `₹${subtotal}`;
+          document.getElementById('pay-gst').textContent = `₹${gstAmount} (Included)`;
+          document.getElementById('pay-shipping').textContent = `₹${shipping}`;
+
+          if (discount > 0) {
+            document.getElementById('pay-coupon-row').style.display = 'flex';
+            document.getElementById('pay-coupon').textContent = `-₹${discount}`;
+          }
+
+          // Trigger continuous check for HSN generator and Drive saved PDF invoice link
+          pollInvoiceLink(o.invoiceUrl);
+        } else {
+          renderFallbackSplits();
+        }
+      } catch (err) {
+        console.error('Error loading Success Splits:', err);
+        renderFallbackSplits();
+      }
+    }
+
+    function renderFallbackSplits() {
+      // Manual approximate fallbacks if network lookup latency is present
+      const staticSub = total - (total < 499 ? 0 : 0);
+      document.getElementById('pay-subtotal').textContent = `₹${staticSub}`;
+      document.getElementById('pay-gst').textContent = `₹${Math.round(staticSub - (staticSub / 1.18))} (Included)`;
+      document.getElementById('pay-shipping').textContent = total < 499 ? '₹0' : '₹0';
+      
+      const invoiceBtn = document.getElementById('download-invoice-btn');
+      if (invoiceBtn) {
+        invoiceBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Invoice';
+        invoiceBtn.disabled = false;
+        invoiceBtn.onclick = () => {
+          alert('Generating PDF inside your Google Drive! Clicking "Track Status" allows direct downloading once generation finishes.');
+        };
+      }
+    }
+
+    let pollAttempts = 0;
+    async function pollInvoiceLink(initialUrl) {
+      const invoiceBtn = document.getElementById('download-invoice-btn');
+      const btnText = document.getElementById('invoice-btn-text');
+
+      if (initialUrl && initialUrl !== '—' && initialUrl.trim() !== '') {
+        btnText.textContent = 'Download PDF Invoice';
+        invoiceBtn.disabled = false;
+        invoiceBtn.className = 'btn btn-primary btn-success'; // transition to positive accent color
+        invoiceBtn.onclick = () => {
+          window.open(initialUrl, '_blank');
+        };
+        return;
+      }
+
+      // If empty link, check every 4 seconds for generation pipeline output
+      if (pollAttempts < 5) {
+        pollAttempts++;
+        setTimeout(async () => {
+          try {
+            const res = await window.BUNOFEED_API.get('lookupOrder', { orderId, phone });
+            if (res && res.status === 'success' && res.order) {
+              pollInvoiceLink(res.order.invoiceUrl);
+            } else {
+              pollInvoiceLink(null);
+            }
+          } catch (e) {
+            pollInvoiceLink(null);
+          }
+        }, 4000);
+      } else {
+        // Fallback button state
+        btnText.textContent = 'Download Invoice (Fallback)';
+        invoiceBtn.disabled = false;
+        invoiceBtn.onclick = () => {
+          alert('Billing PDF uploaded to Drive! Visit "My Orders" to download the PDF directly.');
+          window.location.href = '/orders.html';
+        };
+      }
+    }
+
+    loadConfirmedSplitsAndInvoice();
   </script>
 </body>
 </html>

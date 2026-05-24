@@ -8,6 +8,7 @@
  *   - Pinch-to-Zoom, Double-Tap Zoom, and Pan
  *   - 60fps GPU acceleration using transform/opacity (no layout repaints)
  *   - Safari/Chrome Safe Area & Scroll Pinning compatibilities
+ *   - Realtime texture and packsize selection matching advance pricing
  * ============================================================
  */
 
@@ -285,30 +286,48 @@
       padding: 6px 14px; border-radius: 50px;
     }
 
-    /* Variant selector */
-    .buno-variants-section { display: flex; flex-direction: column; gap: 0.6rem; }
-    .buno-variants-label {
-      font-family: 'Montserrat', sans-serif; font-weight: 700;
-      font-size: 0.88rem; color: #1a1a1a;
+    /* Variant selectors wrapper */
+    .buno-selectors-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 0.8rem;
+      background: #fff8f3;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid #f3e8df;
     }
-    #buno-variants-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-    .buno-variant-btn {
-      padding: 10px 20px;
-      border-radius: 50px;
-      border: 2px solid #e0d4cc;
-      background: #fff;
-      font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem;
-      color: #555;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, color 0.16s, transform 0.1s;
-      -webkit-appearance: none;
+    .buno-selector-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+    }
+    .buno-selector-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: #6B2D0E;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .buno-dropdown-select {
+      width: 100%;
       min-height: 44px;
+      padding: 10px 14px;
+      border: 2px solid #e0d4cc;
+      border-radius: 8px;
+      background: #fff;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
     }
-    .buno-variant-btn:hover { border-color: #FF6B00; color: #FF6B00; }
-    .buno-variant-btn.selected {
-      border-color: #FF6B00; background: #FF6B00; color: #fff;
+    .buno-dropdown-select:focus {
+      border-color: #FF6B00;
     }
-    .buno-variant-btn:active { transform: scale(0.97); }
 
     /* Price row */
     .buno-price-row {
@@ -448,17 +467,6 @@
       position: relative;
     }
     #buno-fullscreen-img {
-      max-width: 95%;
-      max-height: 85%;
-      object-fit: contain;
-      will-change: transform;
-      transform: translate3d(0, 0, 0) scale(1);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      contain: layout paint;
-    }
-
-    #buno-fullscreen-img-container img {
       max-width: 95%;
       max-height: 85%;
       object-fit: contain;
@@ -615,9 +623,18 @@
 
           <div id="buno-modal-features"></div>
 
-          <div class="buno-variants-section" id="buno-variants-section" style="display:none">
-            <span class="buno-variants-label">Size / Variant:</span>
-            <div id="buno-variants-row"></div>
+          <!-- Unified Variant selectors wrapper (texture + pack size) -->
+          <div class="buno-selectors-wrapper" id="buno-selectors-wrapper" style="display:none">
+            <!-- Packsize selection dropdown -->
+            <div class="buno-selector-group" id="buno-packsize-group">
+              <span class="buno-selector-title">Pack Size:</span>
+              <select class="buno-dropdown-select" id="buno-packsize-dropdown"></select>
+            </div>
+            <!-- Texture selection dropdown -->
+            <div class="buno-selector-group" id="buno-texture-group">
+              <span class="buno-selector-title">Product Type:</span>
+              <select class="buno-dropdown-select" id="buno-texture-dropdown"></select>
+            </div>
           </div>
 
           <div class="buno-price-row">
@@ -673,7 +690,6 @@
   let _qty          = 1;
   let _imgIndex     = 0;
   let _images       = [];
-  let _variantIdx   = 0;   
   let _onBuy        = null; 
   let _descExpanded = false;
 
@@ -693,8 +709,11 @@
   const closeBtn   = document.getElementById('buno-modal-close');
   const descEl     = document.getElementById('buno-modal-desc');
   const descToggle = document.getElementById('buno-desc-toggle');
-  const variantsSection = document.getElementById('buno-variants-section');
-  const variantsRow= document.getElementById('buno-variants-row');
+  const selectorsWrapper = document.getElementById('buno-selectors-wrapper');
+  const textureGroup     = document.getElementById('buno-texture-group');
+  const textureDropdown  = document.getElementById('buno-texture-dropdown');
+  const packsizeGroup    = document.getElementById('buno-packsize-group');
+  const packsizeDropdown = document.getElementById('buno-packsize-dropdown');
   const priceEl    = document.getElementById('buno-modal-price');
   const mrpEl      = document.getElementById('buno-modal-mrp');
   const discountEl = document.getElementById('buno-modal-discount-badge');
@@ -973,7 +992,7 @@
     if (_isDragging && _zoomScale > 1) {
       // Pan image
       _panX = e.touches[0].clientX - _panStartX;
-      _panY = e.touches[0].clientY - _panStartY;
+      _panY = e.touches[0].clientY - _panY;
       
       // Enforce bounds constraints
       const maxDragX = (fsImg.clientWidth * _zoomScale - fsImg.clientWidth) / 2;
@@ -1057,15 +1076,66 @@
     descToggle.textContent = _descExpanded ? 'less ▴' : 'more ▾';
   });
 
-  /* ---- Price calculations ---- */
+  /* ---- Price calculations under the dynamic advance pricing engine ---- */
+  function getSelectedVariant() {
+    if (!_product) return null;
+    const variants = _product.variants || [];
+    if (variants.length === 0) return null;
+
+    const hasTexture = textureGroup.style.display !== 'none';
+    const chosenTexture = textureDropdown.value;
+    const chosenSize = packsizeDropdown.value;
+
+    let matched = null;
+    if (hasTexture) {
+      matched = variants.find(v => v.texture === chosenTexture && v.label === chosenSize);
+    } else {
+      matched = variants.find(v => v.label === chosenSize);
+    }
+
+    if (!matched && variants.length > 0) {
+      // Fallback matching
+      matched = variants.find(v => v.label === chosenSize) || variants[0];
+    }
+    return matched;
+  }
+
   function getVariantPrice() {
     const product = _product;
-    if (!product) return { price: 0, mrp: null, label: '' };
-    if (product.variants && product.variants.length > 0 && _variantIdx < product.variants.length) {
-      const v = product.variants[_variantIdx];
-      return { price: v.price, mrp: v.mrp || null, label: v.label };
+    if (!product) return { price: 0, mrp: null, label: '', texture: '' };
+
+    const matched = getSelectedVariant();
+    if (matched) {
+      // If advance pricing fields exist, calculate dynamic values in real time to match formula:
+      if (typeof matched.basePrice !== 'undefined') {
+        const base = parseFloat(matched.basePrice) || 0;
+        const profit = parseFloat(matched.profit) || 0;
+        const discount = parseFloat(matched.discount) || 0;
+        const gst = parseFloat(matched.gst) || 0;
+
+        // Sales Price (including GST): Base * (1 + Profit/100) * (1 - Discount/100) * (1 + GST/100)
+        const calcPrice = Math.round(base * (1 + profit / 100) * (1 - discount / 100) * (1 + gst / 100));
+        // MRP (including GST): Base * (1 + Profit/100) * (1 + GST/100)
+        const calcMrp = Math.round(base * (1 + profit / 100) * (1 + gst / 100));
+
+        return {
+          price: calcPrice,
+          mrp: calcMrp > calcPrice ? calcMrp : null,
+          label: matched.label || '',
+          texture: matched.texture || ''
+        };
+      }
+      
+      // Traditional direct fields
+      return {
+        price: matched.price,
+        mrp: matched.mrp || null,
+        label: matched.label || '',
+        texture: matched.texture || ''
+      };
     }
-    return { price: product.price, mrp: product.mrp || null, label: '' };
+
+    return { price: product.price, mrp: product.mrp || null, label: product.weight || '', texture: '' };
   }
 
   function updatePriceDisplay() {
@@ -1105,27 +1175,40 @@
     subtotalEl.textContent = `Total: ₹${unitPrice * _qty}`;
   }
 
-  /* ---- Variants rendering ---- */
+  /* ---- Dropdowns rendering ---- */
   function buildVariants(product) {
-    variantsRow.innerHTML = '';
-    if (!product.variants || product.variants.length <= 1) {
-      variantsSection.style.display = 'none';
-      return;
-    }
-    variantsSection.style.display = '';
-    product.variants.forEach((v, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'buno-variant-btn' + (i === 0 ? ' selected' : '');
-      btn.textContent = v.label;
-      btn.addEventListener('click', () => {
-        _variantIdx = i;
-        variantsRow.querySelectorAll('.buno-variant-btn').forEach((b, j) => {
-          b.classList.toggle('selected', j === i);
-        });
-        updatePriceDisplay();
-      });
-      variantsRow.appendChild(btn);
+    textureDropdown.innerHTML = '';
+    packsizeDropdown.innerHTML = '';
+
+    selectorsWrapper.style.display = 'flex';
+
+    // 1. Gather Unique Pack sizes
+    const variants = product.variants || [];
+    const sizes = Array.from(new Set(variants.map(v => v.label).filter(Boolean)));
+    const finalSizes = sizes.length > 0 ? sizes : [product.weight || '500g'];
+    finalSizes.forEach(sz => {
+      const opt = document.createElement('option');
+      opt.value = sz;
+      opt.textContent = sz;
+      packsizeDropdown.appendChild(opt);
     });
+
+    // 2. Gather Unique Textures / fallback product types list
+    const types = ['Crunchy', 'Crispy', 'Smooth'];
+    types.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      textureDropdown.appendChild(opt);
+    });
+
+    // Always keep both elements visible
+    packsizeGroup.style.display = 'flex';
+    textureGroup.style.display = 'flex';
+
+    // 3. Connect listener triggers
+    textureDropdown.onchange  = updatePriceDisplay;
+    packsizeDropdown.onchange = updatePriceDisplay;
   }
 
   /* ---- Qty handlers ---- */
@@ -1140,7 +1223,7 @@
   buyBtn.addEventListener('click', () => {
     if (!_product || !_onBuy) return;
 
-    const { price, label: variantLabel } = getVariantPrice();
+    const { price, label: sizeLabel, texture: texLabel } = getVariantPrice();
     const D = window.BUNOFEED_DATA;
     let unitPrice = price;
 
@@ -1155,7 +1238,10 @@
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        _onBuy(_product, _qty, unitPrice, variantLabel);
+        const chosenSize = packsizeDropdown.value;
+        const chosenType = textureDropdown.value;
+        const finalLabel = `${chosenSize} - ${chosenType}`;
+        _onBuy(_product, _qty, unitPrice, finalLabel);
       });
     });
   });
@@ -1181,7 +1267,6 @@
       _product = product;
       _qty = 1;
       _imgIndex = 0;
-      _variantIdx = 0;
       _descExpanded = false;
       _onBuy = onBuyCallback;
 
@@ -1194,7 +1279,8 @@
       let badgesHTML = '';
       const D = window.BUNOFEED_DATA;
       if (product.badge) {
-        badgesHTML += `<span class="buno-badge ${product.badgeType || ''}">${product.badge}</span>`;
+        const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
+        badgesHTML += `<span class="buno-badge ${cls}">${product.badge}</span>`;
       }
       const saleActive = D && D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
       if (saleActive) {
@@ -1250,7 +1336,7 @@
 
       const viewAllBtn = document.getElementById('buno-view-all-btn');
       if (viewAllBtn) {
-        viewAllBtn.href = 'shop.html';
+        viewAllBtn.href = '/shop.html';
       }
 
       overlay.classList.add('open');

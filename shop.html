@@ -97,7 +97,6 @@
         <a href="/index.html"      class="nav-link">Home</a>
         <a href="/shop.html"       class="nav-link active">Products</a>
         <a href="/orders.html"     class="nav-link">My Orders</a>
-        <a href="/about.html"      class="nav-link">About Us</a>
         <a href="/index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
@@ -134,12 +133,13 @@
     </div>
   </div>
 
-  <!-- ═══════════ CHECKOUT OVERLAY MODAL ═══════════ -->
+  <!-- ═══════════ CHECKOUT OVERLAY MODAL UNIFIED ═══════════ -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
       <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
       <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
+        <!-- Live summary injected here by script.js -->
         <div class="form-group">
           <label>Full Name <span>*</span></label>
           <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
@@ -193,12 +193,10 @@
         <a href="/index.html">Home</a>
         <a href="/shop.html">Products</a>
         <a href="/orders.html">My Orders</a>
-        <a href="/about.html">About Us</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
+        <p>100% Genuine Quality</p>
       </div>
       <div class="footer-col">
         <h4>Support</h4>
@@ -257,26 +255,46 @@
         return saleActive && discountPct > 0 ? Math.round(p * (1 - discountPct / 100)) : null;
       }
 
-      function buildPriceMarkup(p) {
-        const sp = salePrice(p.price);
-        const mrp = p.mrp || null;
+      function calculateVariantPrice(variant, productDefaultPrice) {
+        if (!variant) return { price: productDefaultPrice, mrp: null };
+        if (typeof variant.basePrice !== 'undefined') {
+          const base = parseFloat(variant.basePrice) || 0;
+          const profit = parseFloat(variant.profit) || 0;
+          const discount = parseFloat(variant.discount) || 0;
+          const gst = parseFloat(variant.gst) || 0;
+
+          const salesPrice = Math.round(base * (1 + profit / 100) * (1 - discount / 100) * (1 + gst / 100));
+          const mrp = Math.round(base * (1 + profit / 100) * (1 + gst / 100));
+
+          return { price: salesPrice, mrp: mrp > salesPrice ? mrp : null };
+        }
+        return { price: variant.price, mrp: variant.mrp || null };
+      }
+
+      function buildPriceMarkup(p, customVariant = null) {
+        const defaultPrice = { price: p.price, mrp: p.mrp || null };
+        const vPrice = customVariant ? calculateVariantPrice(customVariant, p.price) : defaultPrice;
+
+        const sp = salePrice(vPrice.price);
+        const mrp = vPrice.mrp;
+        const finalWeight = customVariant ? customVariant.label : (p.weight || '');
 
         if (sp) {
           return `
             <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
+              <div class="product-weight">${finalWeight}</div>
               <div class="price-sale">
                 <span class="price-current">₹${sp}</span>
-                <span class="price-old">₹${p.price}</span>
+                <span class="price-old">₹${vPrice.price}</span>
               </div>
             </div>`;
-        } else if (mrp && mrp > p.price) {
-          const pct = Math.round((1 - p.price / mrp) * 100);
+        } else if (mrp && mrp > vPrice.price) {
+          const pct = Math.round((1 - vPrice.price / mrp) * 100);
           return `
             <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
+              <div class="product-weight">${finalWeight}</div>
               <div class="price-sale">
-                <span class="price-current">₹${p.price}</span>
+                <span class="price-current">₹${vPrice.price}</span>
                 <span class="price-old">₹${mrp}</span>
                 <span class="price-save-tag">${pct}% off</span>
               </div>
@@ -284,9 +302,52 @@
         } else {
           return `
             <div class="product-price">
-              <div class="product-weight">${p.weight || ''}</div>
-              <div class="price-original">₹${p.price}</div>
+              <div class="product-weight">${finalWeight}</div>
+              <div class="price-original">₹${vPrice.price}</div>
             </div>`;
+        }
+      }
+
+      function buildCardSelectorsHTML(p) {
+        const variants = p.variants || [];
+        const sizes = Array.from(new Set(variants.map(v => v.label).filter(Boolean)));
+        const finalSizes = sizes.length > 0 ? sizes : [p.weight || '500g'];
+        const types = ['Crunchy', 'Crispy', 'Smooth'];
+
+        let html = `<div class="card-selectors" style="display:flex; gap:6px; margin: 4px 0 8px 0; width:100%;" onclick="event.stopPropagation();">`;
+
+        // Dropdown for pack size
+        html += `
+          <select class="card-select size-select" data-id="${p.id}" style="font-size:0.75rem; padding:4px 18px 4px 6px; border:1.5px solid #e0d4cc; border-radius:6px; color:#6B2D0E; font-weight:700; background:#fff; flex:1; height:32px; cursor:pointer; outline:none;">
+            ${finalSizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>`;
+
+        // Dropdown for type
+        html += `
+          <select class="card-select type-select" data-id="${p.id}" style="font-size:0.75rem; padding:4px 18px 4px 6px; border:1.5px solid #e0d4cc; border-radius:6px; color:#6B2D0E; font-weight:700; background:#fff; flex:1; height:32px; cursor:pointer; outline:none;">
+            ${types.map(t => `<option value="${t}">${t}</option>`).join('')}
+          </select>`;
+
+        html += `</div>`;
+        return html;
+      }
+
+      function getSelectedVariantFromCard(card, product) {
+        const variants = product.variants || [];
+        if (variants.length === 0) return null;
+
+        const sizeSelect = card.querySelector('.size-select');
+        const chosenSize = sizeSelect ? sizeSelect.value : (variants[0] ? variants[0].label : '');
+
+        let matched = variants.find(v => v.label === chosenSize);
+        return matched || variants[0];
+      }
+
+      function updateCardPriceRealtime(card, product) {
+        const matched = getSelectedVariantFromCard(card, product);
+        const priceContainer = card.querySelector('.product-price');
+        if (priceContainer && matched) {
+          priceContainer.outerHTML = buildPriceMarkup(product, matched);
         }
       }
 
@@ -325,6 +386,7 @@
 
           const card = document.createElement('div');
           card.className = 'product-card reveal visible'; // immediate presentation
+          card.style.cursor = 'pointer';
           card.innerHTML = `
             ${badgeHTML}
             <div class="product-img ${p.bgClass || ''}">
@@ -332,42 +394,98 @@
             </div>
             <div class="product-info">
               <h3>${p.name}</h3>
+              ${buildCardSelectorsHTML(p)}
               <div class="product-footer">
-                ${buildPriceMarkup(p)}
-                <div class="product-card-btns">
-                  <button class="btn-view-detail c-view-btn" data-id="${p.id}">View Details</button>
-                  <button class="btn-buy c-buy-btn" data-id="${p.id}">Buy Now</button>
-                </div>
+                ${buildPriceMarkup(p, p.variants && p.variants[0])}
+                <button class="btn-buy c-buy-btn" data-id="${p.id}" style="padding: 10px 24px; font-size: 0.85rem; font-weight:700; border-radius:30px; min-height:40px; margin-left: auto;">Buy Now</button>
               </div>
             </div>`;
 
           catalogGrid.appendChild(card);
         });
 
-        // Connect click listeners
-        catalogGrid.querySelectorAll('.product-card').forEach(card => {
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', (e) => {
-            if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn')) {
-              if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(card.querySelector('[data-id]').dataset.id);
-            }
-          });
-        });
+        // Connect click and dropdown listeners
+        catalogGrid.querySelectorAll('.product-card').forEach((card, index) => {
+          const product = filtered[index];
 
-        catalogGrid.querySelectorAll('.c-view-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(btn.dataset.id);
+          const selectors = card.querySelectorAll('.card-select');
+          selectors.forEach(select => {
+            select.addEventListener('change', () => {
+              updateCardPriceRealtime(card, product);
+            });
+          });
+
+          card.addEventListener('click', (e) => {
+            if (!e.target.closest('.c-buy-btn') && !e.target.closest('.card-select')) {
+              if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(product.id);
+            }
           });
         });
 
         catalogGrid.querySelectorAll('.c-buy-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (window.BUNO_OPEN_MODAL) window.BUNO_OPEN_MODAL(btn.dataset.id);
+            const card = btn.closest('.product-card');
+            const product = (D.products || []).find(p => p.id === btn.dataset.id);
+            if (product) {
+              const matchedVal = getSelectedVariantFromCard(card, product);
+              let calcP = calculateVariantPrice(matchedVal, product.price);
+              
+              // Load checkout summary on standard triggering splits
+              window.BUNO_MODAL.open(product, (p, q, price, label) => {
+                // Instantly routes buy state
+              });
+              // Force direct modal close and open precheckout form immediately with card settings!
+              window.BUNO_MODAL.close();
+              
+              // Manually override modular states globally to populate split order summaries perfectly
+              currentProduct = product;
+              qty = 1;
+              selectedUnitPrice = salePrice(calcP.price) || calcP.price;
+
+              const sizeSelect = card.querySelector('.size-select');
+              const typeSelect = card.querySelector('.type-select');
+              const chosenSize = sizeSelect ? sizeSelect.value : (product.weight || '500g');
+              const chosenType = typeSelect ? typeSelect.value : 'Crunchy';
+              selectedVariantLabel = `${chosenSize} - ${chosenType}`;
+              
+              // Define globals in outer frames if needed, or invoke parent actions directly
+              const openOverlay = document.getElementById('checkout-modal-overlay');
+              if (openOverlay && window.BUNO_OPEN_MODAL) {
+                // Leverage outer closure elements beautifully
+                const triggerEvt = new CustomEvent('buyNowCardTrigger', { 
+                  detail: { product, qty: 1, price: selectedUnitPrice, label: selectedVariantLabel } 
+                });
+                document.dispatchEvent(triggerEvt);
+              }
+            }
           });
         });
       }
+
+      // Safe channel communication to synchronize custom buy clicks from card selectors
+      document.addEventListener('buyNowCardTrigger', (e) => {
+        const checkoutOverlay = document.getElementById('checkout-modal-overlay');
+        if (checkoutOverlay) {
+          const promoInput = document.getElementById('promo-code-input');
+          if (promoInput) promoInput.value = '';
+          // Open precheckout
+          const nameFieldGroup = document.getElementById('checkout-form').querySelector('.form-group');
+          let sumContainer = document.getElementById('checkout-summary-container');
+          if (!sumContainer && nameFieldGroup) {
+            sumContainer = document.createElement('div');
+            sumContainer.id = 'checkout-summary-container';
+            nameFieldGroup.parentNode.insertBefore(sumContainer, nameFieldGroup);
+          }
+          
+          checkoutOverlay.classList.add('open');
+          // Dispatch click or custom updates
+          const pincodeInput = document.getElementById('cust-pincode');
+          if (pincodeInput) {
+            pincodeInput.dispatchEvent(new Event('input'));
+          }
+        }
+      });
 
       renderCollection();
     });

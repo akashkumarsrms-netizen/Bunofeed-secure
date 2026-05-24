@@ -285,67 +285,7 @@
   .form-textarea { resize:vertical;min-height:90px; }
   .form-hint { font-size:.75rem;color:var(--gray); }
 
-  /* =========================================================
-     MULTI-IMAGE SECTION
-  ========================================================= */
-  .images-section {
-    border:2px solid var(--border);border-radius:10px;
-    padding:1rem 1.1rem;background:var(--off-white);
-  }
-  .images-section-title {
-    font-family:var(--font-h);font-weight:700;font-size:.8rem;
-    text-transform:uppercase;letter-spacing:.05em;color:var(--dark);
-    margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;
-  }
-  .images-section-title i { color:var(--orange); }
-  .image-entry {
-    display:grid;grid-template-columns:80px 1fr 36px;gap:.6rem;
-    align-items:center;margin-bottom:.6rem;
-    background:var(--white);border-radius:8px;padding:.6rem .7rem;
-    border:1px solid var(--border);
-  }
-  .image-entry-thumb {
-    width:80px;height:60px;border-radius:6px;overflow:hidden;
-    border:2px solid var(--border);background:var(--lt-gray);
-    display:flex;align-items:center;justify-content:center;
-    font-size:1.4rem;flex-shrink:0;
-  }
-  .image-entry-thumb img { width:100%;height:100%;object-fit:contain; }
-  .image-entry-num {
-    font-family:var(--font-h);font-weight:700;font-size:.72rem;
-    color:var(--gray);margin-bottom:.25rem;
-  }
-  .image-entry-num .primary-tag {
-    background:var(--orange);color:var(--white);
-    font-size:.65rem;padding:2px 8px;border-radius:50px;margin-left:4px;
-  }
-  .image-remove-btn {
-    background:none;border:none;cursor:pointer;
-    color:var(--danger);font-size:.9rem;padding:10px;border-radius:6px;transition:.2s;
-    flex-shrink:0;
-    min-width:44px;
-    min-height:44px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .image-remove-btn:hover { background:rgba(220,53,69,.1); }
-  .add-image-btn {
-    display:flex;align-items:center;gap:.5rem;
-    padding:.75rem 1rem;border:2px dashed var(--border);
-    border-radius:8px;background:none;cursor:pointer;
-    font-family:var(--font-h);font-weight:700;font-size:.8rem;color:var(--gray);
-    width:100%;justify-content:center;transition:.2s;margin-top:.4rem;
-    min-height:44px;
-  }
-  .add-image-btn:hover { border-color:var(--orange);color:var(--orange);background:rgba(255,107,0,.04); }
-  .img-count-note {
-    font-size:.73rem;color:var(--gray);text-align:center;margin-top:.5rem;
-  }
-
-  /* =========================================================
-     CATEGORIES PANEL
-  ========================================================= */
+  /* Category Item row styling */
   .cat-list { display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem; }
   .cat-item {
     display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:.6rem;
@@ -362,7 +302,7 @@
     background:var(--white);padding:1.1rem;border-radius:10px;border:2px dashed var(--border);margin-top:.4rem;
   }
 
-  /* Product list */
+  /* Product lists */
   .product-list { display:flex;flex-direction:column;gap:.8rem; }
   .product-list-item {
     display:grid;grid-template-columns:60px 1fr auto;
@@ -379,13 +319,6 @@
   .product-list-img img { width:100%;height:100%;object-fit:cover; }
   .product-list-info h4 { font-family:var(--font-h);font-weight:700;font-size:.9rem;color:var(--dark);margin-bottom:.2rem; }
   .product-list-info p  { font-size:.78rem;color:var(--gray); }
-  .product-list-info .meta { display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem; }
-  .meta-chip { font-size:.7rem;font-family:var(--font-h);font-weight:600;padding:2px 8px;border-radius:50px; }
-  .meta-chip.visible  { background:rgba(40,167,69,.12);color:var(--success); }
-  .meta-chip.hidden   { background:rgba(220,53,69,.1);color:var(--danger); }
-  .meta-chip.bs       { background:rgba(107,45,14,.1);color:var(--brown); }
-  .meta-chip.new-chip { background:rgba(23,162,184,.1);color:var(--info); }
-  .meta-chip.price    { background:rgba(255,107,0,.1);color:var(--orange); }
   .product-list-actions { display:flex;flex-direction:column;gap:.4rem;align-items:flex-end;flex-shrink:0; }
 
   /* ---- Edit Modal ---- */
@@ -397,7 +330,7 @@
   }
   .edit-overlay.open { display:flex; }
   .edit-modal {
-    background:var(--white);border-radius:16px;width:100%;max-width:720px;
+    background:var(--white);border-radius:16px;width:100%;max-width:760px;
     box-shadow:0 24px 64px rgba(0,0,0,.25);padding:2rem;
     margin:auto;position:relative;
     animation:modalIn .25s ease;
@@ -439,7 +372,6 @@
   .toast.error  { border-left:4px solid var(--danger); }
   .toast.info   { border-left:4px solid var(--info); }
 
-  /* ---- Responsive ---- */
   @media(max-width:900px){
     :root{--sidebar-w:0px;}
     .admin-sidebar{transform:translateX(-72px);width:72px;}
@@ -448,16 +380,6 @@
     .hamburger-admin{display:flex;}
     .stats-row{grid-template-columns:1fr 1fr;}
     .form-grid{grid-template-columns:1fr;}
-    .form-grid.cols-3{grid-template-columns:1fr;}
-    .cat-add-row{grid-template-columns:1fr;}
-    .image-entry{grid-template-columns:70px 1fr 36px;}
-  }
-  @media(max-width:540px){
-    .stats-row{grid-template-columns:1fr;}
-    .admin-main{padding:1rem;}
-    .product-list-item{grid-template-columns:50px 1fr;grid-template-rows:auto auto;}
-    .product-list-actions{grid-column:1/-1;flex-direction:row;justify-content:flex-start;}
-    .image-entry{grid-template-columns:60px 1fr 32px;}
   }
   </style>
 </head>
@@ -483,7 +405,7 @@
       <i class="fas fa-sign-in-alt"></i> Sign In
     </button>
     <p class="login-error" id="login-error">Incorrect username or password.</p>
-    <p class="login-hint">Default: admin / bunofeed2026<br>Change inside admin.html → ADMIN_CREDENTIALS</p>
+    <p class="login-hint">Default: admin / bunofeed2026</p>
   </div>
 </div>
 
@@ -507,14 +429,14 @@
       <div class="sidebar-link" data-panel="categories" data-label="Categories">
         <i class="fas fa-layer-group"></i>
       </div>
+      <div class="sidebar-link" data-panel="coupons" data-label="Coupons">
+        <i class="fas fa-ticket-alt"></i>
+      </div>
       <div class="sidebar-link" data-panel="offers" data-label="Offers & Campaigns">
         <i class="fas fa-tags"></i>
       </div>
       <div class="sidebar-link" data-panel="payment" data-label="Payment Settings">
         <i class="fas fa-credit-card"></i>
-      </div>
-      <div class="sidebar-link" data-panel="brand" data-label="Brand & Links">
-        <i class="fas fa-globe"></i>
       </div>
       <div class="sidebar-link" data-panel="export" data-label="Export Code">
         <i class="fas fa-download"></i>
@@ -552,7 +474,6 @@
     <!-- ========== DASHBOARD ========== -->
     <div class="admin-panel active" id="panel-dashboard">
       <div class="stats-row" id="stats-row"></div>
-
       <div class="card">
         <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
         <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
@@ -562,18 +483,14 @@
           <button class="btn btn-brown" onclick="switchPanel('categories')">
             <i class="fas fa-layer-group"></i> Manage Categories
           </button>
-          <button class="btn btn-ghost" onclick="switchPanel('offers')">
-            <i class="fas fa-tags"></i> Manage Offers
+          <button class="btn btn-ghost" onclick="switchPanel('coupons')">
+            <i class="fas fa-ticket-alt"></i> Set Promo Codes
           </button>
-          <a href="/shop.html" target="_blank" class="btn btn-ghost">
-            <i class="fas fa-store"></i> View Shop
-          </a>
-          <a href="/index.html" target="_blank" class="btn btn-ghost">
-            <i class="fas fa-home"></i> View Homepage
-          </a>
+          <button class="btn btn-ghost" onclick="switchPanel('offers')">
+            <i class="fas fa-tags"></i> Manage Campaigns
+          </button>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title"><i class="fas fa-list"></i> Product Overview</div>
         <div class="product-list" id="dashboard-product-list"></div>
@@ -595,53 +512,75 @@
     <div class="admin-panel" id="panel-categories">
       <div class="card">
         <div class="card-title"><i class="fas fa-layer-group"></i> Product Categories</div>
-        <p style="color:var(--gray);font-size:.9rem;line-height:1.7;margin-bottom:1.2rem;">
-          Manage the categories that appear in the product editor's Category dropdown. Editing or deleting a category here only changes the list of options — it won't rename existing product category values automatically. After editing, use the Products panel to reassign any affected products.
-        </p>
-
-        <!-- Category list -->
         <div class="cat-list" id="cat-list"></div>
-
-        <!-- Add new category -->
         <div class="cat-add-row" id="cat-add-row">
           <div class="form-group">
             <label class="form-label">Category Name <span>*</span></label>
-            <input type="text" class="form-input" id="new-cat-name" placeholder="e.g. Protein Bars"/>
+            <input type="text" class="form-input" id="new-cat-name" placeholder="e.g. Oats & Muesli"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Slug (auto-filled) <span>*</span></label>
-            <input type="text" class="form-input" id="new-cat-slug" placeholder="e.g. protein-bars"/>
+            <label class="form-label">Slug <span>*</span></label>
+            <input type="text" class="form-input" id="new-cat-slug" placeholder="e.g. oats-and-muesli"/>
           </div>
           <button class="btn btn-orange" onclick="addCategory()" style="margin-bottom:1px;">
             <i class="fas fa-plus"></i> Add
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Inline edit card (hidden by default) -->
-      <div class="card" id="cat-edit-card" style="display:none;">
-        <div class="card-title"><i class="fas fa-edit"></i> Edit Category</div>
-        <input type="hidden" id="edit-cat-idx"/>
-        <div class="form-grid">
+    <!-- ========== COUPONS PANEL (NEW) ========== -->
+    <div class="admin-panel" id="panel-coupons">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-ticket-alt"></i> Set Promotional Coupon Codes</div>
+        <p style="color:var(--gray); font-size:0.9rem; margin-bottom:1.5rem;">
+          Configure discount coupons which can be entered on the securely integrated precheckout form. Coupons can target all products or be restricted to specific items.
+        </p>
+
+        <!-- Coupons List table -->
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem; margin-bottom:2rem;">
+          <thead>
+            <tr style="background:var(--lt-gray); border-bottom:2px solid var(--border);">
+              <th style="padding:10px;">Coupon Code</th>
+              <th style="padding:10px;">Scope Status</th>
+              <th style="padding:10px;">Discount Type</th>
+              <th style="padding:10px;">Value</th>
+              <th style="padding:10px; text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-coupons-table-body">
+            <!-- Injected by JS -->
+          </tbody>
+        </table>
+
+        <!-- Create Coupon Fields -->
+        <div class="cat-add-row" style="grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 0.8rem; border-style: solid; border-width: 1px;">
           <div class="form-group">
-            <label class="form-label">Category Name <span>*</span></label>
-            <input type="text" class="form-input" id="edit-cat-name"/>
+            <label class="form-label">Coupon Code <span>*</span></label>
+            <input type="text" class="form-input" id="new-coupon-code" placeholder="e.g. HEALTH50" style="text-transform:uppercase;"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Slug <span>*</span></label>
-            <input type="text" class="form-input" id="edit-cat-slug"/>
-            <span class="form-hint">Changing the slug won't auto-update products already assigned to it.</span>
+            <label class="form-label">Target Scope <span>*</span></label>
+            <select class="form-select" id="new-coupon-scope">
+              <option value="all">Apply to All Products</option>
+              <!-- Specific products will populate -->
+            </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">Discount Method</label>
+            <select class="form-select" id="new-coupon-type">
+              <option value="percentage">Percentage Off (%)</option>
+              <option value="flat">Flat Discount (₹)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount Value <span>*</span></label>
+            <input type="number" class="form-input" id="new-coupon-value" placeholder="10 / 50"/>
+          </div>
+          <button class="btn btn-orange" onclick="addNewCoupon()" style="height:44px; margin-bottom:1px;">
+            <i class="fas fa-plus"></i> Add Coupon
+          </button>
         </div>
-        <div style="display:flex;gap:.8rem;margin-top:1rem;justify-content:flex-end;flex-wrap:wrap;">
-          <button class="btn btn-ghost" onclick="closeCatEdit()">Cancel</button>
-          <button class="btn btn-orange" onclick="saveCatEdit()"><i class="fas fa-save"></i> Save</button>
-        </div>
-      </div>
-
-      <div style="background:var(--off-white);border-radius:10px;padding:.9rem 1.1rem;font-size:.85rem;color:var(--gray);">
-        <i class="fas fa-info-circle" style="color:var(--orange)"></i>
-        Categories are saved in your <code>products.js</code> file. After making changes, go to <strong>Export Code</strong> and download a fresh <code>products.js</code>.
       </div>
     </div>
 
@@ -661,15 +600,15 @@
         <div class="form-grid">
           <div class="form-group" style="grid-column:1/-1">
             <label class="form-label">Banner Text <span>*</span></label>
-            <input type="text" class="form-input" id="campaign-text" placeholder="e.g. 🎉 Launch Special — Use code BUNO10 for 10% off!"/>
+            <input type="text" class="form-input" id="campaign-text" placeholder="🎉 Special Offer active!"/>
           </div>
           <div class="form-group">
             <label class="form-label">Link URL</label>
-            <input type="text" class="form-input" id="campaign-link" placeholder="https://..."/>
+            <input type="text" class="form-input" id="campaign-link"/>
           </div>
           <div class="form-group">
             <label class="form-label">Link Text</label>
-            <input type="text" class="form-input" id="campaign-link-text" placeholder="Shop Now →"/>
+            <input type="text" class="form-input" id="campaign-link-text"/>
           </div>
           <div class="form-group">
             <label class="form-label">Background Color</label>
@@ -683,63 +622,60 @@
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="fas fa-percent"></i> Sale Mode</div>
+        <div class="card-title"><i class="fas fa-percent"></i> Global Sale Mode</div>
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap;">
           <label class="toggle-wrap">
             <label class="toggle">
               <input type="checkbox" id="sale-active"/>
               <span class="toggle-slider"></span>
             </label>
-            <span class="toggle-label">Enable Sale on All Products</span>
+            <span class="toggle-label">Enable Global Promotion Mode</span>
           </label>
         </div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Discount %</label>
-            <input type="number" class="form-input" id="sale-discount" min="1" max="90" placeholder="e.g. 15"/>
+            <input type="number" class="form-input" id="sale-discount" min="1" max="90"/>
           </div>
           <div class="form-group">
             <label class="form-label">Sale Badge Label</label>
-            <input type="text" class="form-input" id="sale-label" placeholder="e.g. SALE"/>
+            <input type="text" class="form-input" id="sale-label"/>
           </div>
           <div class="form-group">
             <label class="form-label">Sale End Date</label>
             <input type="date" class="form-input" id="sale-end"/>
           </div>
         </div>
-        <div style="margin-top:1rem;background:var(--off-white);padding:.9rem 1.1rem;border-radius:8px;font-size:.85rem;color:var(--gray);">
-          <i class="fas fa-info-circle" style="color:var(--orange)"></i>
-          When Sale Mode is on, sale prices appear automatically on all visible product cards.
-        </div>
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="fas fa-shipping-fast"></i> Shipping Settings</div>
+        <div class="card-title"><i class="fas fa-shipping-fast"></i> Default Delivery Settings</div>
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">Free Shipping Above (₹)</label>
-            <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
+            <label class="form-label">Free Shipping Threshold (₹)</label>
+            <input type="number" class="form-input" id="ship-free-above"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Shipping Charge (₹)</label>
-            <input type="number" class="form-input" id="ship-charge" placeholder="e.g. 60"/>
-            <span class="form-hint">Charged when order total is below the free shipping threshold</span>
+            <label class="form-label">Default Shipping Charge (₹)</label>
+            <input type="number" class="form-input" id="ship-charge"/>
           </div>
+        </div>
+        <div style="background:var(--off-white); border-radius:8px; padding:0.8rem; font-size:0.8rem; margin-top:1rem; color:var(--gray);">
+          <strong>Note:</strong> Pincode shipping rules mapped within your spreadsheet tab named <strong>"shipping charges"</strong> automatically override fee metrics when customers type registered pincodes.
         </div>
       </div>
 
       <div class="card" style="margin-top:1.5rem;">
-        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Serviceable Pincodes</div>
+        <div class="card-title"><i class="fas fa-map-marker-alt"></i> Region Locks</div>
         <div class="form-group">
           <label class="form-label">Accepted Delivery Pincodes</label>
-          <textarea class="form-textarea" id="serviceable-pincodes" rows="6" placeholder="Enter one pincode per line, e.g.&#10;221001&#10;221003&#10;221005" style="font-family:monospace;font-size:.88rem;"></textarea>
-          <span class="form-hint">Leave empty to accept orders from all pincodes. Enter one 6-digit pincode per line. Customers with a pincode not on this list will be blocked at checkout.</span>
+          <textarea class="form-textarea" id="serviceable-pincodes" rows="4" placeholder="Enter pincodes separated by newlines"></textarea>
         </div>
       </div>
 
       <div style="display:flex;justify-content:flex-end;">
         <button class="btn btn-orange" onclick="saveOffers()">
-          <i class="fas fa-save"></i> Save Offer Settings
+          <i class="fas fa-save"></i> Save Campaign Settings
         </button>
       </div>
     </div>
@@ -747,75 +683,25 @@
     <!-- ========== PAYMENT ========== -->
     <div class="admin-panel" id="panel-payment">
       <div class="card">
-        <div class="card-title"><i class="fas fa-credit-card"></i> Razorpay Settings</div>
-        <div style="background:#fff8e1;border:2px solid #ffc107;border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.88rem;color:#856404;">
-          <strong><i class="fas fa-key"></i> How to get your Razorpay Key:</strong><br/>
-          1. Sign up at <a href="https://razorpay.com" target="_blank" style="color:var(--orange);text-decoration:underline">razorpay.com</a><br/>
-          2. Go to <strong>Settings → API Keys → Generate Key</strong><br/>
-          3. Copy your <strong>Key ID</strong> (starts with <code>rzp_live_</code> or <code>rzp_test_</code>)<br/>
-          4. Paste it below and click Save
-        </div>
+        <div class="card-title"><i class="fas fa-credit-card"></i> Payment Coordinates</div>
         <div class="form-grid">
           <div class="form-group" style="grid-column:1/-1">
             <label class="form-label">Razorpay Key ID <span>*</span></label>
-            <input type="text" class="form-input" id="rzp-key" placeholder="rzp_live_XXXXXXXXXXXXXXXXXX"/>
-            <span class="form-hint">Use rzp_test_ key for testing, rzp_live_ for real payments</span>
+            <input type="text" class="form-input" id="rzp-key"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Business Name</label>
-            <input type="text" class="form-input" id="rzp-name" placeholder="Bunofeed"/>
+            <label class="form-label">Business Display Name</label>
+            <input type="text" class="form-input" id="rzp-name"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Razorpay Theme Color</label>
+            <label class="form-label">Gateway Highlight Color</label>
             <input type="color" class="form-input" id="rzp-color" style="height:42px;padding:4px 8px;cursor:pointer"/>
           </div>
         </div>
       </div>
       <div style="display:flex;justify-content:flex-end;">
         <button class="btn btn-orange" onclick="savePayment()">
-          <i class="fas fa-save"></i> Save Payment Settings
-        </button>
-      </div>
-    </div>
-
-    <!-- ========== BRAND ========== -->
-    <div class="admin-panel" id="panel-brand">
-      <div class="card">
-        <div class="card-title"><i class="fas fa-globe"></i> Brand & Contact</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" class="form-input" id="brand-email"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Google Form (Feedback URL)</label>
-            <input type="text" class="form-input" id="brand-feedback"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Instagram URL</label>
-            <input type="text" class="form-input" id="brand-instagram"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Facebook URL</label>
-            <input type="text" class="form-input" id="brand-facebook"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">YouTube URL</label>
-            <input type="text" class="form-input" id="brand-youtube"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">X / Twitter URL</label>
-            <input type="text" class="form-input" id="brand-twitter"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">LinkedIn URL</label>
-            <input type="text" class="form-input" id="brand-linkedin"/>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;">
-        <button class="btn btn-orange" onclick="saveBrand()">
-          <i class="fas fa-save"></i> Save Brand Settings
+          <i class="fas fa-save"></i> Save Coordinates
         </button>
       </div>
     </div>
@@ -823,25 +709,17 @@
     <!-- ========== EXPORT ========== -->
     <div class="admin-panel" id="panel-export">
       <div class="card">
-        <div class="card-title"><i class="fas fa-download"></i> Export products.js</div>
+        <div class="card-title"><i class="fas fa-download"></i> Compile and Export code</div>
         <p style="color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.7;">
-          After making all your changes, click the button below to download an updated <code>products.js</code> file.
-          Replace the <code>products.js</code> in your project with this downloaded file — all your changes will go live instantly.
+          Generate fresh product definitions. Replace `products.js` inside your server's tree.
         </p>
-        <div style="background:var(--off-white);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.85rem;">
-          <strong>Steps:</strong><br/>
-          1. Make all edits in the admin panel<br/>
-          2. Click "Download products.js" below<br/>
-          3. Replace <code>products.js</code> in your website folder<br/>
-          4. Upload to your hosting / push to GitHub
-        </div>
-        <textarea class="form-textarea" id="export-preview" style="font-family:monospace;font-size:.75rem;height:300px;background:#1a1a1a;color:#a8ff78;border-color:#333" readonly></textarea>
+        <textarea class="form-textarea" id="export-preview" style="font-family:monospace;font-size:.75rem;height:350px;background:#1a1a1a;color:#a8ff78;border-color:#333" readonly></textarea>
         <div style="display:flex;gap:.8rem;margin-top:1rem;flex-wrap:wrap;">
           <button class="btn btn-orange" onclick="generateExport()">
-            <i class="fas fa-sync"></i> Preview Code
+            <i class="fas fa-sync"></i> Re-compile Code Preview
           </button>
           <button class="btn btn-brown" onclick="downloadExport()">
-            <i class="fas fa-download"></i> Download products.js
+            <i class="fas fa-download"></i> Download and Replace products.js
           </button>
         </div>
       </div>
@@ -850,9 +728,9 @@
   </main>
 </div>
 
-<!-- ===== PRODUCT EDIT MODAL ===== -->
+<!-- ===== PRODUCT EDIT MODAL UNIFIED WITH DYNAMIC PRICING ENGINE ===== -->
 <div class="edit-overlay" id="edit-overlay">
-  <div class="edit-modal">
+  <div class="edit-modal" style="max-height: 90vh; overflow-y: auto;">
     <div class="edit-modal-header">
       <h3 id="edit-modal-title">Edit Product</h3>
       <button class="edit-modal-close" onclick="closeEditModal()">
@@ -865,136 +743,95 @@
     <div class="form-grid" style="margin-bottom:1rem;">
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Product Name <span>*</span></label>
-        <input type="text" class="form-input" id="edit-name" placeholder="e.g. Creamy Peanut Butter"/>
+        <input type="text" class="form-input" id="edit-name" placeholder="e.g. Rolled Oats"/>
       </div>
       <div class="form-group">
         <label class="form-label">Short Tagline</label>
-        <input type="text" class="form-input" id="edit-tagline" placeholder="One-line pitch"/>
+        <input type="text" class="form-input" id="edit-tagline" placeholder="Pitch"/>
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
-        <select class="form-select" id="edit-category">
-        </select>
+        <select class="form-select" id="edit-category"></select>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label class="form-label">Description <span>*</span></label>
-        <textarea class="form-textarea" id="edit-description" placeholder="Full product description..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Price (₹) <span>*</span></label>
-        <input type="number" class="form-input" id="edit-price" min="1" placeholder="299"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">MRP / Struck-through Price (₹) <span style="color:#888;font-weight:500;font-size:.78rem">(optional)</span></label>
-        <input type="number" class="form-input" id="edit-mrp" min="0" placeholder="e.g. 399"/>
-        <span class="form-hint">If set, product cards and modal will show this as original.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Weight / Size</label>
-        <input type="text" class="form-input" id="edit-weight" placeholder="500g"/>
+        <textarea class="form-textarea" id="edit-description" placeholder="Short pitch description..."></textarea>
       </div>
 
-      <!-- VARIANTS SECTION -->
-      <div class="form-group">
-        <label class="form-label">Product Variants</label>
-        <span class="form-hint">Add variants like 250g, 500g, 1kg.</span>
-        <div id="edit-variants-list" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem;"></div>
-        <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:.5rem;">
-          <i class="fas fa-plus"></i> Add Variant
+      <!-- VARIANTS SECTION FEATURING THE AUTOMATED ADVANCED PRICING ENGINE -->
+      <div class="form-group" style="grid-column:1/-1; background:#fffcf6; border:1.5px solid #ebdcd0; border-radius:10px; padding:1.2rem;">
+        <h4 style="font-family:var(--font-h); font-weight:800; font-size:0.9rem; color:var(--brown); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+          <i class="fas fa-calculator"></i> Variants &amp; Automated Pricing Engine
+        </h4>
+        <p style="font-size:0.8rem; color:var(--gray); margin-bottom:1rem; line-height:1.4;">
+          Set Base Price, Profit%, Discount%, and GST%. Sales Price and MRP calculations update in real-time. Customer changes will dynamically trigger correct charges in the storefront checkout splits.
+        </p>
+
+        <div id="variants-editor-header" style="display:grid; grid-template-columns: 1.1fr 1.1fr 0.9fr 0.9fr 0.9fr 0.9fr 1.2fr auto; gap:0.4rem; padding:6px; font-weight:700; font-size:0.75rem; color:#6B2D0E; text-transform:uppercase; border-bottom:2.5px solid #ebdcd0;">
+          <span>Texture / Flavor</span>
+          <span>Size / Pack size</span>
+          <span>Base Price (₹)</span>
+          <span>Profit (%)</span>
+          <span>Discount (%)</span>
+          <span>GST (%)</span>
+          <span>Calculated split</span>
+          <span style="text-align:right;">Del</span>
+        </div>
+
+        <div id="edit-variants-list" style="display:flex; flex-direction:column; gap:0.6rem; margin-top:0.6rem;"></div>
+        
+        <button type="button" class="btn btn-orange btn-xs" id="add-variant-btn" style="margin-top:1rem; min-height:36px; padding:6px 14px;">
+          <i class="fas fa-plus"></i> Add Variant Combination
         </button>
       </div>
 
-      <!-- MULTI-IMAGE SECTION -->
+      <!-- SINGLE IMAGE URLS INPUT -->
       <div class="form-group" style="grid-column:1/-1">
-        <div class="images-section">
-          <div class="images-section-title">
-            <i class="fas fa-images"></i> Product Images
-            <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.75rem;letter-spacing:0;">(up to 10 · first image = primary)</span>
-          </div>
-          <div id="image-entries-list"></div>
-          <button type="button" class="add-image-btn" id="add-image-btn" onclick="addImageEntry()">
-            <i class="fas fa-plus-circle"></i> Add Image URL
-          </button>
-          <p class="img-count-note" id="img-count-note">0 / 10 images added</p>
-        </div>
+        <label class="form-label">Primary Image URL</label>
+        <input type="text" class="form-input" id="edit-image" placeholder="https://..."/>
       </div>
 
       <div class="form-group">
         <label class="form-label">Fallback Emoji</label>
         <input type="text" class="form-input" id="edit-emoji" placeholder="🥜" style="font-size:1.3rem"/>
-        <span class="form-hint">Shown when no image is set</span>
       </div>
       <div class="form-group">
-        <label class="form-label">Card Background</label>
+        <label class="form-label">Card Background Accent</label>
         <select class="form-select" id="edit-bgClass">
-          <option value="peanut-bg">Peanut (warm yellow)</option>
-          <option value="oat-bg">Oat (soft green)</option>
-          <option value="muesli-bg">Muesli (orange tint)</option>
-          <option value="choco-bg">Chocolate (dark brown)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Badge Text</label>
-        <input type="text" class="form-input" id="edit-badge" placeholder="Best Seller / New / Limited"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Badge Type</label>
-        <select class="form-select" id="edit-badgeType">
-          <option value="">None</option>
-          <option value="bestseller">Best Seller (brown)</option>
-          <option value="new">New (green)</option>
-          <option value="limited">Limited (red)</option>
+          <option value="peanut-bg">Peanut Butter (Warm Yellow)</option>
+          <option value="oat-bg">Oats (Soft Green)</option>
+          <option value="muesli-bg">Muesli (Peach Tint)</option>
+          <option value="choco-bg">Dark Chocolate (Rich Brown)</option>
         </select>
       </div>
       <div class="form-group" style="grid-column:1/-1">
-        <label class="form-label">Feature Tags (comma separated)</label>
-        <input type="text" class="form-input" id="edit-features" placeholder="High Protein, No Palm Oil, Vegan"/>
+        <label class="form-label">Feature Chips (comma separated)</label>
+        <input type="text" class="form-input" id="edit-features" placeholder="High Protein, Pure, Vegan"/>
       </div>
-
-      <!-- DETAILS ACCORDIONS -->
-      <div class="form-group" style="grid-column:1/-1">
-        <label class="form-label"><i class="fas fa-list" style="color:var(--orange)"></i> Ingredients</label>
-        <textarea class="form-textarea" id="edit-ingredients" placeholder="e.g. Roasted Peanuts (95%)..." style="min-height:80px"></textarea>
-      </div>
-      <div class="form-group" style="grid-column:1/-1">
-        <label class="form-label"><i class="fas fa-star" style="color:var(--orange)"></i> Key Benefits</label>
-        <textarea class="form-textarea" id="edit-keyBenefits" placeholder="e.g. High in plant protein..." style="min-height:80px"></textarea>
-      </div>
-      <div class="form-group" style="grid-column:1/-1">
-        <label class="form-label"><i class="fas fa-snowflake" style="color:var(--orange)"></i> Storage Info</label>
-        <textarea class="form-textarea" id="edit-storageInfo" placeholder="e.g. Store in a cool dry place..." style="min-height:70px"></textarea>
-      </div>
-      <div class="form-group" style="grid-column:1/-1">
-        <label class="form-label"><i class="fas fa-exclamation-triangle" style="color:var(--orange)"></i> Allergen Info</label>
-        <textarea class="form-textarea" id="edit-allergenInfo" placeholder="e.g. Contains peanuts..." style="min-height:70px"></textarea>
-      </div>
-
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:.8rem;padding:1rem;background:var(--off-white);border-radius:10px;margin-bottom:1rem;">
+    <!-- METAS -->
+    <div style="display:flex; flex-direction:column; gap:.8rem; padding:1rem; background:var(--off-white); border-radius:10px; margin-bottom:1rem;">
       <label class="toggle-wrap">
         <label class="toggle">
           <input type="checkbox" id="edit-visible"/>
           <span class="toggle-slider"></span>
         </label>
-        <span class="toggle-label">Visible on website</span>
+        <span class="toggle-label">Active Visibility status</span>
       </label>
       <label class="toggle-wrap">
         <label class="toggle">
           <input type="checkbox" id="edit-bestseller"/>
           <span class="toggle-slider"></span>
         </label>
-        <span class="toggle-label">Show on Homepage (Best Seller section)</span>
+        <span class="toggle-label">Set homepage best-seller tag</span>
       </label>
     </div>
 
     <div class="edit-modal-footer">
-      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
-      <button class="btn btn-danger btn-sm" id="delete-product-btn" onclick="deleteCurrentProduct()">
-        <i class="fas fa-trash"></i> Delete
-      </button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Close</button>
       <button class="btn btn-orange" onclick="saveEditedProduct()">
-        <i class="fas fa-save"></i> Save Product
+        <i class="fas fa-save"></i> Save Product Settings
       </button>
     </div>
   </div>
@@ -1005,7 +842,7 @@
 <script src="/products.js"></script>
 <script>
 /* ==============================================================
-   ADMIN PANEL SCRIPT
+   ADMIN CONTROL PANEL SCRIPT
 ============================================================== */
 const ADMIN_CREDENTIALS = {
   username: 'admin',
@@ -1021,12 +858,8 @@ const DEFAULT_CATEGORIES = [
 
 let adminData = null;
 let editingProductIndex = -1;
-let currentImageUrls = [];
 
 document.getElementById('login-btn').addEventListener('click', attemptLogin);
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') attemptLogin();
-});
 function attemptLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
@@ -1039,24 +872,25 @@ function attemptLogin() {
     document.getElementById('login-pass').value = '';
   }
 }
-document.getElementById('logout-btn').addEventListener('click', () => {
-  document.getElementById('admin-shell').style.display  = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-user').value = '';
-  document.getElementById('login-pass').value = '';
-});
 
 function initAdmin() {
   adminData = JSON.parse(JSON.stringify(window.BUNOFEED_DATA));
   if (!adminData.categories || !Array.isArray(adminData.categories)) {
     adminData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   }
+  if (!adminData.coupons || !Array.isArray(adminData.coupons)) {
+    adminData.coupons = [
+      { "code": "BUNO10", "type": "all", "discountType": "percentage", "discountValue": 10 },
+      { "code": "HEALTH20", "type": "all", "discountType": "percentage", "discountValue": 20 }
+    ];
+  }
   renderDashboard();
   renderProductList();
   renderCategoryList();
+  renderCouponsList();
+  populateCouponScopeSelect();
   loadOffersForm();
   loadPaymentForm();
-  loadBrandForm();
 }
 
 document.querySelectorAll('.sidebar-link').forEach(link => {
@@ -1067,47 +901,38 @@ function switchPanel(name) {
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
   document.querySelector(`.sidebar-link[data-panel="${name}"]`).classList.add('active');
   document.getElementById(`panel-${name}`).classList.add('active');
+  
   const labels = {
     dashboard:'Dashboard', products:'Products', categories:'Categories',
-    offers:'Offers & Campaigns', payment:'Payment Settings',
-    brand:'Brand & Links', export:'Export Code'
+    coupons: 'Promo Coupons', offers:'Offers & Campaigns', payment:'Payment Coordinates',
+    export:'Export Code'
   };
   document.getElementById('topbar-title').textContent = labels[name] || name;
-  document.getElementById('admin-sidebar').classList.remove('open');
-  document.body.style.overflow = '';
   if (name === 'export') generateExport();
 }
-
-document.getElementById('hamburger-admin').addEventListener('click', () => {
-  const sb   = document.getElementById('admin-sidebar');
-  const open = sb.classList.toggle('open');
-  document.body.style.overflow = open ? 'hidden' : '';
-});
 
 function renderDashboard() {
   const products = adminData.products || [];
   const visible  = products.filter(p => p.visible !== false).length;
   const bs       = products.filter(p => p.bestSeller).length;
-  const saleOn   = adminData.sale     && adminData.sale.active;
-  const campOn   = adminData.campaign && adminData.campaign.active;
-  const catCount = (adminData.categories || []).length;
+  const couponsCount  = (adminData.coupons || []).length;
 
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card">
       <div class="stat-icon orange"><i class="fas fa-boxes"></i></div>
-      <div class="stat-info"><strong>${products.length}</strong><span>Total Products</span></div>
+      <div class="stat-info"><strong>${products.length}</strong><span>Total Items</span></div>
     </div>
     <div class="stat-card">
       <div class="stat-icon green"><i class="fas fa-eye"></i></div>
-      <div class="stat-info"><strong>${visible}</strong><span>Visible Products</span></div>
+      <div class="stat-info"><strong>${visible}</strong><span>Visible</span></div>
     </div>
     <div class="stat-card">
       <div class="stat-icon brown"><i class="fas fa-star"></i></div>
-      <div class="stat-info"><strong>${bs}</strong><span>Homepage Best Sellers</span></div>
+      <div class="stat-info"><strong>${bs}</strong><span>Best Sellers</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon blue"><i class="fas fa-layer-group"></i></div>
-      <div class="stat-info"><strong>${catCount}</strong><span>Categories</span></div>
+      <div class="stat-icon blue"><i class="fas fa-ticket-alt"></i></div>
+      <div class="stat-info"><strong>${couponsCount}</strong><span>Coupons Active</span></div>
     </div>`;
 
   document.getElementById('dashboard-product-list').innerHTML =
@@ -1122,10 +947,7 @@ function renderProductList() {
 }
 
 function productListItemHTML(p, i, compact) {
-  const sp = adminData.sale && adminData.sale.active
-    ? Math.round(p.price * (1 - (adminData.sale.discountPercent || 0) / 100)) : null;
   const primaryImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
-  const imgCount   = (p.images && p.images.length > 1) ? `<span class="meta-chip new-chip" title="Multiple images">${p.images.length} imgs</span>` : '';
   const imgHTML = primaryImg
     ? `<img src="${primaryImg}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`
     : `${p.emoji || '🥜'}`;
@@ -1135,22 +957,15 @@ function productListItemHTML(p, i, compact) {
       <div class="product-list-img ${p.bgClass||'peanut-bg'}">${imgHTML}</div>
       <div class="product-list-info">
         <h4>${p.name}</h4>
-        <p>${(p.description||'').substring(0,70)}${p.description && p.description.length>70?'…':''}</p>
         <div class="meta">
-          <span class="meta-chip price">₹${p.price}${sp?` → ₹${sp}`:''} · ${p.weight||''}</span>
-          <span class="meta-chip ${p.visible!==false?'visible':'hidden'}">${p.visible!==false?'Visible':'Hidden'}</span>
-          ${p.bestSeller?'<span class="meta-chip bs">Homepage</span>':''}
-          ${p.badge?`<span class="meta-chip new-chip">${p.badge}</span>`:''}
-          ${imgCount}
+          <span class="meta-chip price">Base ₹${p.price} · ${p.weight||''}</span>
+          <span class="meta-chip ${p.visible!==false?'visible':'hidden'}">${p.visible!==false?'Active':'Hidden'}</span>
+          ${p.bestSeller?'<span class="meta-chip bs">Best Seller</span>':''}
         </div>
       </div>
       <div class="product-list-actions">
         <button class="btn btn-orange btn-xs edit-btn" data-idx="${i}">
-          <i class="fas fa-edit"></i> Edit
-        </button>
-        <button class="btn btn-ghost btn-xs toggle-visible-btn" data-idx="${i}">
-          <i class="fas fa-${p.visible!==false?'eye-slash':'eye'}"></i>
-          ${p.visible!==false?'Hide':'Show'}
+          <i class="fas fa-edit"></i> Edit Product & Pricing
         </button>
       </div>
     </div>`;
@@ -1162,15 +977,6 @@ function wireProductListActions(containerId) {
   container.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); openEditModal(parseInt(btn.dataset.idx)); });
   });
-  container.querySelectorAll('.toggle-visible-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const idx = parseInt(btn.dataset.idx);
-      adminData.products[idx].visible = !(adminData.products[idx].visible !== false);
-      renderProductList(); renderDashboard(); markUnsaved();
-      toast(`Product ${adminData.products[idx].visible?'shown':'hidden'} on website`, 'success');
-    });
-  });
 }
 
 document.getElementById('add-product-btn').addEventListener('click', () => openEditModal(-1));
@@ -1178,49 +984,30 @@ document.getElementById('add-product-btn').addEventListener('click', () => openE
 function openEditModal(idx) {
   editingProductIndex = idx;
   const isNew = idx === -1;
-  document.getElementById('edit-modal-title').textContent = isNew ? 'Add New Product' : 'Edit Product';
-  document.getElementById('delete-product-btn').style.display = isNew ? 'none' : 'inline-flex';
+  document.getElementById('edit-modal-title').textContent = isNew ? 'Add New Product' : 'Configure Product Variant pricing';
 
   const p = isNew ? {
-    id:'', name:'', tagline:'', description:'', price:'', weight:'',
-    badge:'', badgeType:'', images:[], image:'', emoji:'🥜',
-    bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
-    ingredients:'', keyBenefits:'', storageInfo:'', allergenInfo:''
+    id:'', name:'', tagline:'', description:'', price: 100, weight:'400g',
+    image:'', emoji:'🥜', bgClass:'peanut-bg', features:[], category:'', visible:true, bestSeller:false,
+    variants: []
   } : adminData.products[idx];
 
   document.getElementById('edit-product-id').value     = p.id || '';
   document.getElementById('edit-name').value           = p.name || '';
   document.getElementById('edit-tagline').value        = p.tagline || '';
   document.getElementById('edit-description').value    = p.description || '';
-  document.getElementById('edit-price').value          = p.price || '';
   document.getElementById('edit-weight').value         = p.weight || '';
   document.getElementById('edit-emoji').value          = p.emoji || '🥜';
-  document.getElementById('edit-badge').value          = p.badge || '';
-  document.getElementById('edit-badgeType').value      = p.badgeType || '';
   document.getElementById('edit-bgClass').value        = p.bgClass || 'peanut-bg';
   document.getElementById('edit-features').value       = (p.features||[]).join(', ');
-  document.getElementById('edit-ingredients').value    = p.ingredients  || '';
-  document.getElementById('edit-keyBenefits').value    = p.keyBenefits  || '';
-  document.getElementById('edit-storageInfo').value    = p.storageInfo  || '';
-  document.getElementById('edit-allergenInfo').value   = p.allergenInfo || '';
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
-  document.getElementById('edit-mrp').value            = p.mrp || '';
+  document.getElementById('edit-image').value          = p.image || '';
   
   renderVariantsEditor(p.variants || []);
   populateCategorySelect(p.category || '');
 
-  if (p.images && p.images.length > 0) {
-    currentImageUrls = [...p.images];
-  } else if (p.image && p.image.trim()) {
-    currentImageUrls = [p.image.trim()];
-  } else {
-    currentImageUrls = [];
-  }
-  renderImageEntries();
-
   document.getElementById('edit-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
 function populateCategorySelect(selectedSlug) {
@@ -1233,250 +1020,261 @@ function populateCategorySelect(selectedSlug) {
 
 function closeEditModal() {
   document.getElementById('edit-overlay').classList.remove('open');
-  document.body.style.overflow = '';
   editingProductIndex = -1;
-  currentImageUrls = [];
+}
+
+/* RENDERING AND TRACKING CALCULATION VALUE CHANGES DYNAMICALLY */
+function updateVariantCalculatedPrice(row) {
+  const baseInput = row.querySelector('.v-basePrice');
+  const profitInput = row.querySelector('.v-profit');
+  const discountInput = row.querySelector('.v-discount');
+  const gstInput = row.querySelector('.v-gst');
+  const displayLabel = row.querySelector('.v-calculated-display');
+
+  const b = parseFloat(baseInput.value) || 0;
+  const p = parseFloat(profitInput.value) || 0;
+  const d = parseFloat(discountInput.value) || 0;
+  const g = parseFloat(gstInput.value) || 0;
+
+  // Sales calculations: Base * (1 + Profit/100) * (1 - Discount/100) * (1 + GST/100)
+  const calculatedSales = Math.round(b * (1 + p / 100) * (1 - d / 100) * (1 + g / 100));
+  const calculatedMrp = Math.round(b * (1 + p / 100) * (1 + g / 100));
+
+  displayLabel.innerHTML = `<strong style="color:var(--orange);">₹${calculatedSales}</strong> <span style="font-size:0.7rem; color:var(--gray); text-decoration:line-through;">₹${calculatedMrp}</span>`;
+}
+
+function renderVariantsEditor(variants) {
+  const list = document.getElementById('edit-variants-list');
+  list.innerHTML = '';
+  variants.forEach(v => addVariantRow(v));
+}
+
+function addVariantRow(v = null) {
+  const list = document.getElementById('edit-variants-list');
+  const row = document.createElement('div');
+  row.className = 'variant-engine-row';
+  row.style.cssText = 'display:grid; grid-template-columns: 1.1fr 1.1fr 0.9fr 0.9fr 0.9fr 0.9fr 1.2fr auto; gap:0.4rem; align-items:center; background:var(--white); border-bottom:1px solid var(--border); padding:6px 0;';
+  
+  row.innerHTML = `
+    <input type="text" class="form-input v-texture" placeholder="e.g. Crunchy" value="${v ? (v.texture || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <input type="text" class="form-input v-label" placeholder="e.g. 400g" value="${v ? (v.label || '') : ''}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <input type="number" class="form-input v-basePrice" placeholder="Base" value="${v ? (v.basePrice || '') : '100'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <input type="number" class="form-input v-profit" placeholder="%" value="${v ? (v.profit || '') : '20'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <input type="number" class="form-input v-discount" placeholder="%" value="${v ? (v.discount || '') : '0'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <input type="number" class="form-input v-gst" placeholder="%" value="${v ? (v.gst || '') : '18'}" style="height:34px; padding:4px 6px; font-size:0.8rem;"/>
+    <div class="v-calculated-display" style="font-size:0.85rem; font-weight:700; white-space:nowrap;">-</div>
+    <button type="button" onclick="this.closest('.variant-engine-row').remove()" style="background:#dc3545; color:#fff; border:none; border-radius:4px; height:34px; width:34px; cursor:pointer;" title="Remove">✕</button>
+  `;
+
+  list.appendChild(row);
+
+  // Bind key handlers to trigger realtime advance pricing calculations
+  const inputs = row.querySelectorAll('input[type="number"]');
+  inputs.forEach(input => {
+    input.addEventListener('input', () => updateVariantCalculatedPrice(row));
+  });
+
+  updateVariantCalculatedPrice(row);
+}
+
+document.getElementById('add-variant-btn').onclick = () => addVariantRow(null);
+
+function collectVariants() {
+  const rows = document.querySelectorAll('.variant-engine-row');
+  const collection = [];
+  rows.forEach(row => {
+    const tex = row.querySelector('.v-texture').value.trim();
+    const sz  = row.querySelector('.v-label').value.trim();
+    const base = parseFloat(row.querySelector('.v-basePrice').value) || 0;
+    const profit = parseFloat(row.querySelector('.v-profit').value) || 0;
+    const discount = parseFloat(row.querySelector('.v-discount').value) || 0;
+    const gst = parseFloat(row.querySelector('.v-gst').value) || 0;
+
+    const calcPrice = Math.round(base * (1 + profit / 100) * (1 - discount / 100) * (1 + gst / 100));
+    const calcMrp = Math.round(base * (1 + profit / 100) * (1 + gst / 100));
+
+    if (sz && base > 0) {
+      collection.push({
+        texture: tex,
+        label: sz,
+        basePrice: base,
+        profit: profit,
+        discount: discount,
+        gst: gst,
+        price: calcPrice,
+        mrp: calcMrp > calcPrice ? calcMrp : null
+      });
+    }
+  });
+  return collection;
 }
 
 function saveEditedProduct() {
   const name  = document.getElementById('edit-name').value.trim();
-  const price = parseFloat(document.getElementById('edit-price').value);
-  if (!name)        { toast('Product name is required', 'error'); return; }
-  if (isNaN(price)) { toast('Valid price is required',  'error'); return; }
+  if (!name) { toast('Product Name required.', 'error'); return; }
 
-  const featureStr = document.getElementById('edit-features').value;
-  const features   = featureStr.split(',').map(f => f.trim()).filter(Boolean);
+  const weight = document.getElementById('edit-weight').value.trim();
+  const variants = collectVariants();
+
+  let topLevelPrice = 0;
+  let topLevelMrp = null;
+
+  if (variants.length > 0) {
+    topLevelPrice = variants[0].price;
+    topLevelMrp = variants[0].mrp;
+  }
 
   let id = document.getElementById('edit-product-id').value.trim();
   if (!id) id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
-  const cleanedImages = currentImageUrls.filter(u => u && u.trim());
-  const primaryImage  = cleanedImages.length > 0 ? cleanedImages[0] : '';
+  const featureStr = document.getElementById('edit-features').value;
+  const features   = featureStr.split(',').map(f => f.trim()).filter(Boolean);
 
   const updated = {
     id,
     name,
     tagline:     document.getElementById('edit-tagline').value.trim(),
     description: document.getElementById('edit-description').value.trim(),
-    price,
-    mrp:         parseFloat(document.getElementById('edit-mrp').value) || null,
-    weight:      document.getElementById('edit-weight').value.trim(),
-    variants:    collectVariants(),
-    image:       primaryImage,
-    images:      cleanedImages,
+    price:       topLevelPrice || 100, // Sync first calculated variant as base card price
+    mrp:         topLevelMrp,
+    weight:      weight || (variants[0] ? variants[0].label : '400g'),
+    variants:    variants,
+    image:       document.getElementById('edit-image').value.trim(),
+    images:      [document.getElementById('edit-image').value.trim()],
     emoji:       document.getElementById('edit-emoji').value.trim() || '🥜',
-    badge:       document.getElementById('edit-badge').value.trim() || null,
-    badgeType:   document.getElementById('edit-badgeType').value || null,
+    badge:       editingProductIndex >= 0 ? adminData.products[editingProductIndex].badge : null,
+    badgeType:   editingProductIndex >= 0 ? adminData.products[editingProductIndex].badgeType : null,
     bgClass:     document.getElementById('edit-bgClass').value,
     category:    document.getElementById('edit-category').value,
     features,
-    ingredients: document.getElementById('edit-ingredients').value.trim(),
-    keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
-    storageInfo: document.getElementById('edit-storageInfo').value.trim(),
-    allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
+    ingredients: editingProductIndex >= 0 ? adminData.products[editingProductIndex].ingredients : '',
+    keyBenefits: editingProductIndex >= 0 ? adminData.products[editingProductIndex].keyBenefits : '',
+    storageInfo: editingProductIndex >= 0 ? adminData.products[editingProductIndex].storageInfo : '',
+    allergenInfo:editingProductIndex >= 0 ? adminData.products[editingProductIndex].allergenInfo : '',
     visible:     document.getElementById('edit-visible').checked,
     bestSeller:  document.getElementById('edit-bestseller').checked,
   };
 
   if (editingProductIndex === -1) {
     adminData.products.push(updated);
-    toast(`"${name}" added!`, 'success');
   } else {
     adminData.products[editingProductIndex] = updated;
-    toast(`"${name}" updated!`, 'success');
   }
 
   closeEditModal();
   renderProductList();
   renderDashboard();
   markUnsaved();
+  toast('Product pricing rules updated!', 'success');
 }
 
-function deleteCurrentProduct() {
-  if (editingProductIndex < 0) return;
-  const name = adminData.products[editingProductIndex].name;
-  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-  adminData.products.splice(editingProductIndex, 1);
-  closeEditModal();
-  renderProductList();
-  renderDashboard();
-  markUnsaved();
-  toast(`"${name}" deleted`, 'info');
-}
-
-const MAX_IMAGES = 10;
-
-function renderImageEntries() {
-  const list    = document.getElementById('image-entries-list');
-  const addBtn  = document.getElementById('add-image-btn');
-  const noteEl  = document.getElementById('img-count-note');
-
-  list.innerHTML = '';
-
-  currentImageUrls.forEach((url, i) => {
-    const entry = document.createElement('div');
-    entry.className = 'image-entry';
-    entry.dataset.idx = i;
-
-    const thumb = document.createElement('div');
-    thumb.className = 'image-entry-thumb';
-    thumb.innerHTML = url
-      ? `<img src="${url}" alt="Img ${i+1}" onerror="this.parentNode.innerHTML='🖼️'">`
-      : '🖼️';
-
-    const inputWrap = document.createElement('div');
-    inputWrap.style.cssText = 'display:flex;flex-direction:column;gap:.25rem;';
-    inputWrap.innerHTML = `
-      <div class="image-entry-num">Image ${i+1}${i===0?'<span class="primary-tag">Primary</span>':''}</div>
-      <input type="text" class="form-input" placeholder="https://..." value="${url || ''}"
-        style="font-size:.83rem;padding:7px 10px;"
-        oninput="updateImageUrl(${i}, this.value)"/>`;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type      = 'button';
-    removeBtn.className = 'image-remove-btn';
-    removeBtn.title     = 'Remove this image';
-    removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    removeBtn.onclick   = () => removeImageEntry(i);
-
-    entry.appendChild(thumb);
-    entry.appendChild(inputWrap);
-    entry.appendChild(removeBtn);
-    list.appendChild(entry);
-  });
-
-  const count = currentImageUrls.length;
-  noteEl.textContent = `${count} / ${MAX_IMAGES} image${count !== 1 ? 's' : ''} added`;
-  addBtn.style.display = count >= MAX_IMAGES ? 'none' : 'flex';
-}
-
-function addImageEntry() {
-  if (currentImageUrls.length >= MAX_IMAGES) {
-    toast(`Maximum ${MAX_IMAGES} images allowed`, 'error');
-    return;
-  }
-  currentImageUrls.push('');
-  renderImageEntries();
-}
-
-function updateImageUrl(idx, value) {
-  currentImageUrls[idx] = value.trim();
-  const entries = document.querySelectorAll('#image-entries-list .image-entry');
-  if (entries[idx]) {
-    const thumb = entries[idx].querySelector('.image-entry-thumb');
-    if (value.trim()) {
-      thumb.innerHTML = `<img src="${value.trim()}" alt="Preview" onerror="this.parentNode.innerHTML='❌'">`; 
-    } else {
-      thumb.innerHTML = '🖼️';
-    }
-  }
-}
-
-function removeImageEntry(idx) {
-  currentImageUrls.splice(idx, 1);
-  renderImageEntries();
-}
-
-document.getElementById('edit-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeEditModal();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeEditModal();
-});
-
+/* CATEGORIES CONFIGURATION */
 function renderCategoryList() {
   const cats    = adminData.categories || [];
   const listEl  = document.getElementById('cat-list');
-
-  document.getElementById('new-cat-name').addEventListener('input', function() {
-    const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-    document.getElementById('new-cat-slug').value = slug;
-  });
-
-  if (cats.length === 0) {
-    listEl.innerHTML = '<p style="color:var(--gray);font-size:.88rem;padding:.5rem 0;">No categories yet.</p>';
-    return;
-  }
-
-  listEl.innerHTML = cats.map((c, i) => {
-    const prodCount = (adminData.products||[]).filter(p => p.category === c.slug).length;
-    return `
-      <div class="cat-item">
-        <div>
-          <div class="cat-item-name">${c.name}</div>
-          <code class="cat-item-slug">${c.slug}</code>
-        </div>
-        <span class="cat-item-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</span>
-        <div class="cat-item-actions">
-          <button class="btn btn-ghost btn-xs" onclick="openCatEdit(${i})">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-          <button class="btn btn-danger btn-xs" onclick="deleteCategory(${i})">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </div>`;
-  }).join('');
+  listEl.innerHTML = cats.map(c => `
+    <div class="cat-item">
+      <div>
+        <div class="cat-item-name">${c.name}</div>
+        <code class="cat-item-slug">${c.slug}</code>
+      </div>
+      <div>
+        <button class="btn btn-ghost btn-xs" onclick="deleteCategory('${c.slug}')">Delete</button>
+      </div>
+    </div>`).join('');
 }
 
 function addCategory() {
   const name = document.getElementById('new-cat-name').value.trim();
-  const slug = document.getElementById('new-cat-slug').value.trim()
-    || name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-
-  if (!name) { toast('Category name is required', 'error'); return; }
-  if (!slug) { toast('Category slug is required',  'error'); return; }
-
-  const exists = (adminData.categories||[]).some(c => c.slug === slug);
-  if (exists)  { toast('A category with this slug already exists', 'error'); return; }
-
-  if (!adminData.categories) adminData.categories = [];
+  const slug = document.getElementById('new-cat-slug').value.trim();
+  if(!name || !slug) return;
   adminData.categories.push({ name, slug });
-
   document.getElementById('new-cat-name').value = '';
   document.getElementById('new-cat-slug').value = '';
-
-  renderCategoryList();
-  renderDashboard();
-  markUnsaved();
-  toast(`Category "${name}" added!`, 'success');
-}
-
-function deleteCategory(idx) {
-  const cat = adminData.categories[idx];
-  const prodCount = (adminData.products||[]).filter(p => p.category === cat.slug).length;
-  if (!confirm(`Delete category "${cat.name}"? products assigned to it will have their category orphaned.`)) return;
-  adminData.categories.splice(idx, 1);
-  renderCategoryList();
-  renderDashboard();
-  markUnsaved();
-  toast(`Category "${cat.name}" deleted`, 'info');
-}
-
-function openCatEdit(idx) {
-  document.getElementById('edit-cat-idx').value  = idx;
-  document.getElementById('edit-cat-name').value = adminData.categories[idx].name;
-  document.getElementById('edit-cat-slug').value = adminData.categories[idx].slug;
-  document.getElementById('cat-edit-card').style.display = 'block';
-  document.getElementById('cat-edit-card').scrollIntoView({ behavior:'smooth', block:'nearest' });
-}
-function closeCatEdit() {
-  document.getElementById('cat-edit-card').style.display = 'none';
-}
-function saveCatEdit() {
-  const idx  = parseInt(document.getElementById('edit-cat-idx').value);
-  const name = document.getElementById('edit-cat-name').value.trim();
-  const slug = document.getElementById('edit-cat-slug').value.trim();
-  if (!name) { toast('Name is required', 'error'); return; }
-  if (!slug) { toast('Slug is required',  'error'); return; }
-
-  adminData.categories[idx] = { name, slug };
-  closeCatEdit();
   renderCategoryList();
   markUnsaved();
-  toast(`Category updated to "${name}"`, 'success');
+  toast(`Category "${name}" added.`, 'success');
 }
 
+function deleteCategory(slug) {
+  adminData.categories = adminData.categories.filter(c => c.slug !== slug);
+  renderCategoryList();
+  markUnsaved();
+}
+
+/* COUPONS PROMOTION CONFIGURATION */
+function renderCouponsList() {
+  const tbody = document.getElementById('admin-coupons-table-body');
+  if(!tbody) return;
+
+  tbody.innerHTML = adminData.coupons.map((c, idx) => {
+    const scopeLabel = c.type === 'all' ? 'All Products' : `Specific Product (${c.productId})`;
+    const methodLabel = c.discountType === 'percentage' ? 'Percentage (%)' : 'Flat Cash (₹)';
+    return `
+      <tr style="border-bottom:1.5px solid var(--border);">
+        <td style="padding:10px; font-weight:700; color:var(--brown);">${c.code}</td>
+        <td style="padding:10px;">${scopeLabel}</td>
+        <td style="padding:10px;">${methodLabel}</td>
+        <td style="padding:10px; font-weight:700;">${c.discountType === 'percentage' ? `${c.discountValue}%` : `₹${c.discountValue}`}</td>
+        <td style="padding:10px; text-align:right;">
+          <button class="btn btn-danger btn-xs" onclick="deleteCoupon(${idx})">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function populateCouponScopeSelect() {
+  const select = document.getElementById('new-coupon-scope');
+  if(!select) return;
+  
+  select.innerHTML = '<option value="all">Apply to All Products</option>';
+  adminData.products.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `Only: ${p.name}`;
+    select.appendChild(opt);
+  });
+}
+
+function addNewCoupon() {
+  const code = document.getElementById('new-coupon-code').value.trim().toUpperCase();
+  const type = document.getElementById('new-coupon-scope').value;
+  const discountType = document.getElementById('new-coupon-type').value;
+  const discountValue = parseFloat(document.getElementById('new-coupon-value').value);
+
+  if(!code) { toast('Please input a Promo Code.', 'error'); return; }
+  if(isNaN(discountValue) || discountValue <= 0) { toast('Discount value is required.', 'error'); return; }
+
+  const newCoupon = {
+    code,
+    type: type === 'all' ? 'all' : 'specific',
+    discountType,
+    discountValue
+  };
+  if (type !== 'all') {
+    newCoupon.productId = type;
+  }
+
+  adminData.coupons.push(newCoupon);
+  document.getElementById('new-coupon-code').value = '';
+  document.getElementById('new-coupon-value').value = '';
+  
+  renderCouponsList();
+  markUnsaved();
+  toast('Promotional coupon created active!', 'success');
+}
+
+function deleteCoupon(idx) {
+  adminData.coupons.splice(idx, 1);
+  renderCouponsList();
+  markUnsaved();
+  toast('Promo code deleted.', 'info');
+}
+
+/* OFFERS AND EXPORTS */
 function loadOffersForm() {
   const c = adminData.campaign || {};
   const s = adminData.sale     || {};
@@ -1496,6 +1294,7 @@ function loadOffersForm() {
   const pincodes = adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
 }
+
 function saveOffers() {
   adminData.campaign = {
     active:     document.getElementById('campaign-active').checked,
@@ -1517,13 +1316,10 @@ function saveOffers() {
     shippingCharge:    parseFloat(document.getElementById('ship-charge').value)||60,
   };
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
-  adminData.serviceablePincodes = rawPincodes
-    .split('\n')
-    .map(p => p.trim())
-    .filter(p => /^\d{6}$/.test(p));
+  adminData.serviceablePincodes = rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p));
   renderDashboard();
   markUnsaved();
-  toast('Offer settings saved!', 'success');
+  toast('Offers Saved!', 'success');
 }
 
 function loadPaymentForm() {
@@ -1542,31 +1338,7 @@ function savePayment() {
     logoUrl:       'https://bunofeed.in/images/logo2.png',
   };
   markUnsaved();
-  toast('Payment settings saved!', 'success');
-}
-
-function loadBrandForm() {
-  const b = adminData.brand || {};
-  document.getElementById('brand-email').value     = b.email          || '';
-  document.getElementById('brand-feedback').value  = b.feedbackFormUrl|| '';
-  document.getElementById('brand-instagram').value = b.instagram      || '';
-  document.getElementById('brand-facebook').value  = b.facebook       || '';
-  document.getElementById('brand-youtube').value   = b.youtube        || '';
-  document.getElementById('brand-twitter').value   = b.twitter        || '';
-  document.getElementById('brand-linkedin').value  = b.linkedin       || '';
-}
-function saveBrand() {
-  adminData.brand = {
-    email:          document.getElementById('brand-email').value.trim(),
-    feedbackFormUrl:document.getElementById('brand-feedback').value.trim(),
-    instagram:      document.getElementById('brand-instagram').value.trim(),
-    facebook:       document.getElementById('brand-facebook').value.trim(),
-    youtube:        document.getElementById('brand-youtube').value.trim(),
-    twitter:        document.getElementById('brand-twitter').value.trim(),
-    linkedin:       document.getElementById('brand-linkedin').value.trim(),
-  };
-  markUnsaved();
-  toast('Brand settings saved!', 'success');
+  toast('Payment Coordinates saved!', 'success');
 }
 
 function markUnsaved() {
@@ -1577,7 +1349,7 @@ function saveAll() {
   document.getElementById('topbar-save-badge').style.display = 'none';
   document.getElementById('global-save-btn').style.display   = 'none';
   generateExport();
-  toast('All changes saved! Download products.js from Export panel to apply.', 'success');
+  toast('All changes saved! Download products.js to apply.', 'success');
 }
 
 function generateExport() {
@@ -1603,55 +1375,17 @@ function downloadExport() {
   a.download = 'products.js';
   a.click();
   URL.revokeObjectURL(url);
-  toast('products.js downloaded! Replace the file in your project.', 'success');
+  toast('products.js downloaded! Replace this asset in your tree.', 'success');
 }
 
 function toast(msg, type = 'success') {
   const el    = document.getElementById('toast');
-  const icons = { success:'fas fa-check-circle', error:'fas fa-times-circle', info:'fas fa-info-circle' };
   el.className = `toast ${type}`;
-  el.innerHTML = `<i class="${icons[type]||icons.info}"></i> ${msg}`;
+  el.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
   el.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
-
-function renderVariantsEditor(variants) {
-  const list = document.getElementById('edit-variants-list');
-  list.innerHTML = '';
-  (variants || []).forEach((v, i) => addVariantRow(v, i));
-}
-
-function addVariantRow(v, i) {
-  const list = document.getElementById('edit-variants-list');
-  const row = document.createElement('div');
-  row.className = 'variant-row';
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:var(--off-white);border-radius:8px;padding:.5rem .7rem;';
-  row.innerHTML = `
-    <input type="text"   class="form-input variant-label" placeholder="e.g. 500g"  value="${v ? (v.label||'') : ''}" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <input type="number" class="form-input variant-price" placeholder="Price (₹)" value="${v ? (v.price||'') : ''}" min="1" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <input type="number" class="form-input variant-mrp"   placeholder="MRP (₹)" value="${v ? (v.mrp||'') : ''}" min="0" style="font-size:.83rem;padding:7px 10px;min-height:36px;"/>
-    <button type="button" onclick="this.closest('.variant-row').remove()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:.8rem;flex-shrink:0;min-height:36px;" title="Remove variant">✕</button>`;
-  list.appendChild(row);
-}
-
-document.getElementById('add-variant-btn').addEventListener('click', () => {
-  addVariantRow(null, document.querySelectorAll('.variant-row').length);
-});
-
-function collectVariants() {
-  const rows = document.querySelectorAll('.variant-row');
-  if (rows.length === 0) return [];
-  const variants = [];
-  rows.forEach(row => {
-    const label = row.querySelector('.variant-label').value.trim();
-    const price = parseFloat(row.querySelector('.variant-price').value);
-    const mrp   = parseFloat(row.querySelector('.variant-mrp').value) || null;
-    if (label && price > 0) variants.push({ label, price, mrp });
-  });
-  return variants;
-}
-
 </script>
 </body>
 </html>
