@@ -11,7 +11,68 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const D = window.BUNOFEED_DATA;
+  // Inject order summary styles once
+  if (!document.getElementById('buno-summary-styles')) {
+    const styleEl = document.createElement('style');
+    styleEl.id = 'buno-summary-styles';
+    styleEl.textContent = `
+      .order-summary-box {
+        background: #fffaf7;
+        border: 1px solid #e0d4cc;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .os-header {
+        font-family: var(--font-head, 'Montserrat', sans-serif);
+        font-size: .78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #6B2D0E;
+        margin-bottom: .7rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+      }
+      .os-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .38rem 0;
+        border-bottom: 1px dashed #f0e8e0;
+        font-size: .83rem;
+        gap: .5rem;
+      }
+      .os-row:last-child { border-bottom: none; }
+      .os-row span:first-child { color: #666; flex: 1; }
+      .os-row span:last-child { font-family: var(--font-head, 'Montserrat', sans-serif); font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+      .os-subtotal span:last-child { color: #6B2D0E; }
+      .os-discount span { color: #28a745 !important; }
+      .os-tag {
+        background: #e8f5e9;
+        color: #28a745;
+        font-size: .7rem;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        margin-left: .3rem;
+      }
+      .os-free { color: #28a745; font-weight: 700; }
+      .os-saving { font-size: .75rem; color: #28a745; }
+      .os-saving span:first-child { color: #28a745; }
+      .os-total {
+        border-top: 2px solid #e0d4cc !important;
+        border-bottom: none !important;
+        margin-top: .3rem;
+        padding-top: .6rem !important;
+      }
+      .os-total span { font-size: .95rem !important; color: #4a1e08 !important; }
+    `;
+    document.head.appendChild(styleEl);
+  }
+
+    const D = window.BUNOFEED_DATA;
   if (!D) { console.error('BUNOFEED_DATA not found. Is products.js loaded?'); return; }
 
   /* ----------------------------------------------------------
@@ -85,12 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
       const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
+      // GST amount included in salesPrice = salesPrice - discountedSubtotal
+      const gstAmount = parseFloat((salesPrice - discountedSubtotal).toFixed(2));
 
-      return { price: salesPrice, mrp: mrp };
+      return { price: salesPrice, mrp: mrp, gstRate: gst, gstAmount: gstAmount };
     }
 
     // Default configuration fallback
-    return { price: product.price || 0, mrp: product.mrp || null };
+    return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0 };
   }
 
   /* ----------------------------------------------------------
@@ -353,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasFreeShipping = discountedTotal >= freeShippingThreshold;
     const grandTotalValue = discountedTotal + (hasFreeShipping ? 0 : shippingCharge);
 
+    injectOrUpdateOrderSummary();
     const proceedBtn = document.getElementById('proceed-pay-btn');
     if (proceedBtn) {
       const discountLabel = promotionalDiscountValue > 0 ? ` (₹${promotionalDiscountValue.toFixed(2)} discount applied)` : '';
@@ -370,12 +434,78 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkoutForm    = document.getElementById('checkout-form');
   const checkoutClose   = document.getElementById('checkout-close-btn');
 
+  function buildOrderSummaryHTML() {
+    if (!currentProduct) return '';
+    const baseVal = selectedUnitPrice !== null ? selectedUnitPrice : currentProduct.price;
+    const subtotalVal = parseFloat((baseVal * qty).toFixed(2));
+    let promoDiscount = 0;
+    if (activeCoupon) {
+      if (activeCoupon.discountType === 'percent') {
+        promoDiscount = parseFloat((subtotalVal * (activeCoupon.discountValue / 100)).toFixed(2));
+      } else {
+        promoDiscount = parseFloat(Math.min(subtotalVal, activeCoupon.discountValue).toFixed(2));
+      }
+    }
+    const freeThreshold = D.shipping ? D.shipping.freeShippingAbove : 499;
+    const shipCharge = D.shipping ? D.shipping.shippingCharge : 60;
+    const discountedTotal = parseFloat((subtotalVal - promoDiscount).toFixed(2));
+    const freeShip = discountedTotal >= freeThreshold;
+    const shipAmt = freeShip ? 0 : shipCharge;
+    const grand = parseFloat((discountedTotal + shipAmt).toFixed(2));
+    const varLabel = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
+
+    // Compute GST info from pricing engine
+    let gstRate = 0, gstAmountTotal = 0;
+    if (currentProduct && selectedVariantLabel) {
+      const parts = selectedVariantLabel.split(' ');
+      const sizePart = parts[parts.length - 1];
+      const texPart  = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
+      const priceInfo = parseComboPrice(currentProduct, sizePart, texPart);
+      gstRate = priceInfo.gstRate || 0;
+      // GST amount per unit × qty
+      gstAmountTotal = parseFloat((priceInfo.gstAmount * qty).toFixed(2));
+    }
+
+    let rows = '';
+    rows += '<div class="os-row"><span>Product' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row"><span>Quantity</span><span>× ' + qty + '</span></div>';
+    rows += '<div class="os-row os-subtotal"><span>Subtotal (incl. GST)</span><span>₹' + subtotalVal.toFixed(2) + '</span></div>';
+    if (gstRate > 0 && gstAmountTotal > 0) {
+      rows += '<div class="os-row" style="color:#888;font-size:.78rem;"><span>GST (' + gstRate + '%) included in above</span><span style="color:#888;">₹' + gstAmountTotal.toFixed(2) + '</span></div>';
+    }
+    if (promoDiscount > 0 && activeCoupon) {
+      const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
+      rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') <span class="os-tag">' + dLabel + '</span></span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
+    }
+    rows += '<div class="os-row"><span>Shipping</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
+    if (freeShip) {
+      rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeThreshold + '</span><span></span></div>';
+    }
+    rows += '<div class="os-row os-total"><span>Total Payable</span><span>₹' + grand.toFixed(2) + '</span></div>';
+
+    return '<div class="order-summary-box" id="order-summary-box"><div class="os-header"><i class="fas fa-receipt" aria-hidden="true"></i> Order Summary</div>' + rows + '</div>';
+  }
+
+  function injectOrUpdateOrderSummary() {
+    if (!checkoutOverlay) return;
+    const form = document.getElementById('checkout-form');
+    if (!form) return;
+    const html = buildOrderSummaryHTML();
+    const existing = document.getElementById('order-summary-box');
+    if (existing) {
+      existing.outerHTML = html;
+    } else {
+      form.insertAdjacentHTML('afterbegin', html);
+    }
+  }
+
   function openCheckoutModal() {
     if (!currentProduct) return;
     checkoutOverlay.classList.add('open');
     if (couponInput) couponInput.value = '';
     if (couponMsg) couponMsg.textContent = '';
     activeCoupon = null;
+    injectOrUpdateOrderSummary();
     refreshCheckoutCalculation();
   }
 
@@ -512,8 +642,17 @@ document.addEventListener('DOMContentLoaded', () => {
       window.BUNOFEED_API.post('createOrder', orderPayload).then(() => {
         closeCheckoutModal();
         launchSuccessFullscreenOverlay();
+        // compute GST for success page
+        const _gstInfo = (() => {
+          if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
+          const parts = selectedVariantLabel.split(' ');
+          const sz = parts[parts.length - 1];
+          const tx = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
+          const pi = parseComboPrice(currentProduct, sz, tx);
+          return { rate: pi.gstRate || 0, amt: parseFloat(((pi.gstAmount || 0) * quantity).toFixed(2)) };
+        })();
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${_gstInfo.rate}&gst_amount=${_gstInfo.amt}`;
         }, 1200);
       });
       return;
@@ -551,8 +690,18 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Finalizing order record update failed:', err);
         }
 
+        // compute GST for success page
+        const _gstInfo = (() => {
+          if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
+          const parts = selectedVariantLabel.split(' ');
+          const sz = parts[parts.length - 1];
+          const tx = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
+          const pi = parseComboPrice(currentProduct, sz, tx);
+          return { rate: pi.gstRate || 0, amt: parseFloat(((pi.gstAmount || 0) * quantity).toFixed(2)) };
+        })();
+
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${_gstInfo.rate}&gst_amount=${_gstInfo.amt}`;
         }, 1200);
       },
       modal: {

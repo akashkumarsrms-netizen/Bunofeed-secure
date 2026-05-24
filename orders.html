@@ -177,6 +177,8 @@
     .btn-danger:hover:not(:disabled) { background: #b02a37; border-color: #b02a37; transform: translateY(-2px); }
     .btn-warning-custom { background: #fd7e14; color: #fff; border-color: #fd7e14; }
     .btn-warning-custom:hover:not(:disabled) { background: #e8620a; border-color: #e8620a; transform: translateY(-2px); }
+    .btn-invoice-dl { background: #6B2D0E; color: #fff; border-color: #6B2D0E; }
+    .btn-invoice-dl:hover:not(:disabled) { background: #4a1e08; border-color: #4a1e08; transform: translateY(-2px); }
     .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
     /* ── Modals ── */
@@ -408,6 +410,9 @@
             </button>
             <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
               <i class="fas fa-times-circle"></i> Cancel Order
+            </button>
+            <button class="btn btn-invoice-dl" id="btn-download-invoice" onclick="downloadInvoice()">
+              <i class="fas fa-file-pdf"></i> Download Invoice
             </button>
           </div>
 
@@ -753,6 +758,25 @@
         btn.innerHTML = '<i class="fas fa-times-circle"></i> Submit Cancellation Request';
         errEl.textContent='Network error. Please try again.'; errEl.style.display='block';
       }
+    }
+
+    async function downloadInvoice() {
+      if (!currentOrder) return;
+      const btn = document.getElementById('btn-download-invoice');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating…';
+      try {
+        const res = await window.BUNOFEED_API.get('getInvoice', { orderId: currentOrder.order_id });
+        if (res.status === 'success' && res.invoiceUrl) {
+          window.open(res.invoiceUrl, '_blank');
+        } else {
+          alert(res.message || 'Invoice is being generated. Please try again in a moment.');
+        }
+      } catch (e) {
+        alert('Could not fetch invoice. Please check your connection and try again.');
+      }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Invoice';
     }
 
     function show(id)  { document.getElementById(id).style.display='block'; }
