@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <!-- SEO -->
   <meta name="description" content="Bunofeed – Natural peanut butter, rolled oats & muesli. Clean ingredients, no preservatives, high protein. Shop on Amazon & Flipkart."/>
   <meta name="theme-color" content="#6B2D0E"/>
-  <!-- iOS Web App -->
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
   <title>Bunofeed – Companion in your Healthy Lifestyle</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <!-- Styles -->
   <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
@@ -43,7 +38,11 @@
         <a href="#home"    class="nav-link active">Home</a>
         <a href="/shop.html" class="nav-link">Products</a>
         <a href="/orders.html" class="nav-link">My Orders</a>
+        <a href="/about.html"   class="nav-link">About Us</a>
         <a href="#contact" class="nav-link">Contact</a>
+        <button class="search-btn" aria-label="Search">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </button>
       </nav>
     </div>
   </header>
@@ -59,14 +58,15 @@
         <span class="hero-highlight">Healthy Lifestyle</span>
       </h1>
       <p class="hero-desc" id="hero-desc">
-        Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.   </p>
+        Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.
+      </p>
       <div class="hero-btns">
         <a href="#shop" class="btn btn-primary" id="hero-cta">
           <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Now
         </a>
+        <a href="/about.html" class="btn btn-outline">Our Story</a>
       </div>
-    </div>
-    <div style="margin-top:1.2rem;">
+      <div style="margin-top:1.2rem;">
         <a href="/protein-calculator.html"
            class="btn"
            style="display:inline-flex;
@@ -82,7 +82,7 @@
           Know Your Daily Protein Requirement
         </a>
       </div>
-    <!-- Hero visual -->
+    </div>
     <div class="hero-image">
       <div class="hero-img-wrap">
         <img 
@@ -113,7 +113,7 @@
   </section>
 
   <!-- =========================================================
-       BEST SELLERS
+       BEST SELLERS (homepage only)
        ========================================================= -->
   <section class="products" id="shop">
     <div class="section-header">
@@ -121,7 +121,6 @@
       <h2>Customer <span>Favourites</span></h2>
       <p class="section-desc">Our most loved products — handcrafted with clean ingredients.</p>
     </div>
-    <!-- Best-seller cards injected here by script.js -->
     <div class="products-grid" id="products-grid"></div>
     <div style="text-align:center;margin-top:2.5rem;">
       <a href="/shop.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
@@ -129,7 +128,6 @@
       </a>
     </div>
   </section>
-
 
   <!-- =========================================================
        CUSTOMER FEEDBACK SECTION
@@ -167,13 +165,12 @@
     </div>
   </section>
 
-  <!-- CHECKOUT MODAL UNIFIED WITH LIVE ORDER SUMMARY AND PROMO/COUPONS -->
+  <!-- CHECKOUT MODAL -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
       <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
       <h2>Secure Checkout</h2>
       <form class="checkout-form" id="checkout-form">
-        <!-- Live precheckout summary split injected above fields by script.js -->
         <div class="form-group">
           <label>Full Name <span>*</span></label>
           <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
@@ -199,7 +196,7 @@
           <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
-        <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details, billing breakdown, and status updates will be shared via your email/phone number.</p>
+        <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
         <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
           Proceed to Pay
         </button>
@@ -238,10 +235,12 @@
         <a href="#home">Home</a>
         <a href="/shop.html">Products</a>
         <a href="/orders.html">My Orders</a>
+        <a href="/about.html">About Us</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <p><i class="fas fa-shield"></i> Secure SSL Checkout</p>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>Contact Us</h4>
@@ -254,14 +253,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved. | Secured Payment Gateway</p>
+      <p>© 2026 Bunofeed. All rights reserved. |
+        <a href="/terms.html">Terms of Service</a> |
+        <a href="/privacy.html">Privacy Policy</a>
+      </p>
       <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
   </footer>
 
-  <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <!-- Assets -->
   <script src="/products.js"></script>
   <script src="/api.js"></script>
   <script src="/modal.js"></script>
