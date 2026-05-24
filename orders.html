@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/style.css"/>
   <style>
-
     /* ── Page wrapper ── */
     .orders-page {
       min-height: 80vh;
@@ -64,7 +63,7 @@
       gap: .8rem;
     }
     .search-row .form-input {
-      flex: 1;
+      width: 100%;
       padding: 13px 16px;
       border: 2px solid #e0d4cc;
       border-radius: 12px;
@@ -74,7 +73,7 @@
       transition: border-color .2s;
     }
     .search-row .form-input:focus { border-color: var(--orange); }
-    .search-row .btn { white-space: nowrap; padding: 13px 24px; margin-top: 0.4rem; }
+    .search-row .btn { white-space: nowrap; padding: 13px 24px; width: 100%; }
     .search-hint {
       font-size: .78rem;
       color: var(--gray);
@@ -101,7 +100,6 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       display: none;
-      margin-bottom: 1.5rem;
     }
     .order-result-card .status-bar { height: 6px; background: var(--orange); }
     .order-result-card .card-body  { padding: 1.8rem 2rem 2rem; }
@@ -174,41 +172,12 @@
       display: flex; gap: .8rem; flex-wrap: wrap;
       padding-top: 1.2rem; border-top: 1px solid #f0e8e0;
     }
-    .action-row .btn { flex: 1; min-width: 130px; font-size: .9rem; padding: 12px 18px; }
+    .action-row .btn { flex: 1; min-width: 160px; font-size: .9rem; padding: 12px 18px; }
     .btn-danger { background: #dc3545; color: #fff; border-color: #dc3545; }
     .btn-danger:hover:not(:disabled) { background: #b02a37; border-color: #b02a37; transform: translateY(-2px); }
     .btn-warning-custom { background: #fd7e14; color: #fff; border-color: #fd7e14; }
     .btn-warning-custom:hover:not(:disabled) { background: #e8620a; border-color: #e8620a; transform: translateY(-2px); }
     .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-    /* Itemized order summary block */
-    .orders-itemized-summary {
-      grid-column: 1 / -1;
-      background: var(--off-white);
-      border: 1.5px dashed #ebdcd0;
-      border-radius: 10px;
-      padding: 1.1rem;
-      margin-top: 0.5rem;
-    }
-    .orders-summary-line {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--gray);
-      margin-bottom: 0.4rem;
-    }
-    .orders-summary-line.line-bold {
-      font-family: var(--font-head);
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--dark);
-      border-top: 1.5px solid #ebdcd0;
-      padding-top: 0.5rem;
-      margin-top: 0.5rem;
-      margin-bottom: 0;
-    }
 
     /* ── Modals ── */
     .modal-overlay {
@@ -292,7 +261,6 @@
       .info-row:nth-last-child(-n+2) { border-bottom: 1px solid #f0e8e0; }
       .info-row:last-child { border-bottom: none; }
       .action-row .btn { flex: 1 1 100%; }
-      .search-row { flex-direction: column; }
       .modal-box { padding: 1.5rem 1.2rem; }
     }
   </style>
@@ -324,36 +292,25 @@
       <div class="page-heading">
         <div class="section-tag">Order Tracking</div>
         <h1>Track Your <span>Order</span></h1>
-        <p>Enter your unique Order ID and Phone numbers to view live processing states, HSN code details, and fetch billing copy.</p>
+        <p>Enter your Order ID and mobile number to track packages and raise return requests.</p>
       </div>
 
       <!-- Search -->
       <div class="order-search-card">
         <div class="search-row">
-          
-          <div class="form-group" style="flex:1;">
-            <label for="order-id-input">Order ID</label>
-            <input type="text" id="order-id-input" class="form-input"
-              placeholder="e.g. ORD1716301..."
-              autocomplete="off"
-              spellcheck="false"/>
+          <div class="form-group">
+            <label for="order-id-input">Order ID <span>*</span></label>
+            <input type="text" id="order-id-input" class="form-input" placeholder="e.g. ORD1720892098" autocomplete="off" spellcheck="false"/>
           </div>
-
-          <div class="form-group" style="flex:1;">
-            <label for="phone-input">Reg. Mobile Number</label>
-            <input type="tel" id="phone-input" class="form-input"
-              placeholder="e.g. 9876543210"
-              autocomplete="off"
-              spellcheck="false"
-              maxlength="10"/>
+          <div class="form-group">
+            <label for="phone-input">Mobile Number <span>*</span></label>
+            <input type="tel" id="phone-input" class="form-input" placeholder="10-digit registered number" maxlength="10" autocomplete="off" spellcheck="false"/>
           </div>
-
-          <button class="btn btn-primary" id="track-btn" onclick="trackOrder()">
-            <i class="fas fa-search"></i> Seek Order Status
+          <button class="btn btn-primary" id="track-btn" onclick="trackOrder()" style="margin-top: 0.5rem;">
+            <i class="fas fa-search"></i> Track Order
           </button>
-
         </div>
-        <p class="search-hint" style="margin-top:0.8rem;">Your details were shared dynamically during checkout validation.</p>
+        <p class="search-hint">Your Order ID was sent to your email and phone after placing the order.</p>
       </div>
 
       <!-- Loading -->
@@ -365,7 +322,7 @@
       <!-- Error -->
       <div class="state-box error" id="state-error">
         <i class="fas fa-exclamation-circle"></i>
-        <span id="error-text">Order not found. Please check your Order ID and try again.</span>
+        <span id="error-text">Order not found. Please verify details and retry.</span>
       </div>
 
       <!-- Result Card -->
@@ -391,8 +348,28 @@
               <span class="info-value" id="r-phone">—</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Product Name</span>
+              <span class="info-label">Product Option</span>
               <span class="info-value" id="r-product">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Quantity</span>
+              <span class="info-value" id="r-qty">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Unit Price</span>
+              <span class="info-value" id="r-price">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Promo Code</span>
+              <span class="info-value" id="r-coupon">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Promo Discount</span>
+              <span class="info-value" id="r-coupon-discount">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Total Paid (with shipping)</span>
+              <span class="info-value" id="r-total">—</span>
             </div>
             <div class="info-row">
               <span class="info-label">Payment ID</span>
@@ -402,52 +379,20 @@
               <span class="info-label">Payment Status</span>
               <span class="info-value" id="r-payment-status">—</span>
             </div>
-            <div class="info-row full" style="border-bottom:none; padding-bottom:0;">
+            <div class="info-row full">
               <span class="info-label">Delivery Address</span>
               <span class="info-value" id="r-address">—</span>
-            </div>
-
-            <!-- Itemized order summary block showing pricing details and splits -->
-            <div class="orders-itemized-summary">
-              <div class="orders-summary-line" style="font-weight:700; color:var(--dark); margin-bottom:0.5rem; text-transform:uppercase; font-size:0.75rem;">
-                <span>Detailed Split Charges</span>
-                <span>Values</span>
-              </div>
-              <div class="orders-summary-line">
-                <span>Quantity</span>
-                <span id="sum-qty">1</span>
-              </div>
-              <div class="orders-summary-line">
-                <span>Base Price Split (Before GST)</span>
-                <span id="sum-subtotal-base">₹0</span>
-              </div>
-              <div class="orders-summary-line">
-                <span id="sum-gst-label">GST Applied (18%)</span>
-                <span id="sum-gst">₹0</span>
-              </div>
-              <div class="orders-summary-line">
-                <span id="sum-shipping-label">Shipping Charges</span>
-                <span id="sum-shipping">₹0</span>
-              </div>
-              <div class="orders-summary-line" id="sum-coupon-row" style="display:none">
-                <span>Promo Code Discount</span>
-                <span id="sum-coupon" style="color:#2e7d32">-₹0</span>
-              </div>
-              <div class="orders-summary-line line-bold">
-                <span>Total To Pay</span>
-                <span id="sum-total">₹0</span>
-              </div>
             </div>
           </div>
 
           <!-- Status summary -->
           <div class="status-section">
             <div class="status-item">
-              <span class="s-label">Order Status</span>
+              <span class="s-label">Order Progress</span>
               <span class="status-badge" id="r-order-status-mini">—</span>
             </div>
             <div class="status-item">
-              <span class="s-label">Return / Cancel</span>
+              <span class="s-label">Operation Requests</span>
               <span class="status-badge" id="r-return-status">—</span>
             </div>
             <div class="status-item">
@@ -457,19 +402,13 @@
           </div>
 
           <!-- Actions -->
-          <div class="action-row" style="flex-direction:column; gap:0.8rem;">
-            <!-- Download Invoice Trigger from Google Drive link -->
-            <button class="btn btn-primary" id="btn-download" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:48px;" disabled>
-              <i class="fas fa-file-invoice-dollar"></i> Download Invoice PDF
+          <div class="action-row">
+            <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()">
+              <i class="fas fa-undo-alt"></i> Request Return / Refund
             </button>
-            <div style="display:flex; gap:0.8; width:100%;">
-              <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()" style="flex:1;">
-                <i class="fas fa-undo-alt"></i> Request Return
-              </button>
-              <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()" style="flex:1;">
-                <i class="fas fa-times-circle"></i> Cancel Order
-              </button>
-            </div>
+            <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
+              <i class="fas fa-times-circle"></i> Cancel Order
+            </button>
           </div>
 
         </div>
@@ -486,7 +425,7 @@
       <div id="return-form-view">
         <div class="modal-icon return-icon"><i class="fas fa-undo-alt"></i></div>
         <h2>Request Return</h2>
-        <p class="modal-sub">Please tell us why you'd like to return this order. We'll review your request within 24–48 hours.</p>
+        <p class="modal-sub">Tell us why you'd like a return. We will process payouts within 48 hours elements.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Return <span>*</span></label>
@@ -502,7 +441,16 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="return-comment" placeholder="Describe the issue in detail (optional but helpful)…"></textarea>
+            <textarea id="return-comment" placeholder="Describe the issue in detail…"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload Images / Videos</label>
+            <div class="file-upload-box">
+              <input type="file" id="return-files" accept="image/*,video/*" multiple onchange="updateFileLabel()"/>
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Click to upload proof photos</p>
+              <p class="file-names" id="file-label"></p>
+            </div>
           </div>
           <button class="btn btn-warning-custom modal-submit-btn" id="return-submit-btn" onclick="submitReturn()">
             <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Return Request</span>
@@ -514,8 +462,8 @@
 
       <div class="modal-success" id="return-success-view">
         <i class="fas fa-check-circle"></i>
-        <h3>Return Request Submitted!</h3>
-        <p>Your return request has been received. We'll review it within 24–48 hours. A confirmation email has been sent to you.</p>
+        <h3>Return Request Received!</h3>
+        <p>Your return request has been logged. We'll evaluate proof materials and update your tracking log within 24-48 hours.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('return-modal')">Close</button>
       </div>
     </div>
@@ -529,7 +477,7 @@
       <div id="cancel-form-view">
         <div class="modal-icon cancel-icon"><i class="fas fa-times-circle"></i></div>
         <h2>Cancel Order</h2>
-        <p class="modal-sub">We're sorry to hear you'd like to cancel. Please let us know the reason so we can serve you better.</p>
+        <p class="modal-sub">Let us know why you are cancelling so we can improve our clean recipe operations.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Cancellation <span>*</span></label>
@@ -545,7 +493,7 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="cancel-comment" placeholder="Any additional details (optional)…"></textarea>
+            <textarea id="cancel-comment" placeholder="Provide extra feedback…"></textarea>
           </div>
           <button class="btn btn-danger modal-submit-btn" id="cancel-submit-btn" onclick="submitCancellation()">
             <span class="btn-text"><i class="fas fa-times-circle"></i> Submit Cancellation Request</span>
@@ -557,8 +505,8 @@
 
       <div class="modal-success" id="cancel-success-view">
         <i class="fas fa-check-circle"></i>
-        <h3>Cancellation Request Submitted!</h3>
-        <p>Your cancellation request has been received and is being reviewed. A confirmation email has been sent to you.</p>
+        <h3>Cancellation Submitted!</h3>
+        <p>Your cancellation request is successful. A refund has been automatically initiated and will reflect in 5-7 working days.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('cancel-modal')">Close</button>
       </div>
     </div>
@@ -570,13 +518,6 @@
       <div class="footer-brand">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
         <p>Your companion in healthy living. Honest food for real people.</p>
-        <div class="social-links">
-          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="https://www.facebook.com"  target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-          <a href="https://www.linkedin.com/in/akash-kumar-995739293" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="https://www.youtube.com"   target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.x.com"         target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"><i class="fab fa-x-twitter"></i></a>
-        </div>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
@@ -589,13 +530,9 @@
         <a href="/terms.html">Terms of Service</a>
         <a href="/privacy.html">Privacy Policy</a>
       </div>
-      <div class="footer-col">
-        <h4>Contact Us</h4>
-        <p><i class="fas fa-envelope"></i> <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a></p>
-      </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved.</p>
+      <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms of Service</a> | <a href="/privacy.html">Privacy Policy</a></p>
     </div>
   </footer>
 
@@ -604,23 +541,21 @@
   <script>
     let currentOrder = null;
 
-    /* ── Hamburger ── */
+    // Mobile nav toggle
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    if (hamburger && navLinks) {
-      hamburger.addEventListener('click', () => {
-        const o = navLinks.classList.toggle('open');
-        hamburger.classList.toggle('active', o);
+    if (hamburger) {
+      hamburger.addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.getElementById('navLinks').classList.toggle('open');
       });
     }
 
-    /* ── Track Order ── */
     async function trackOrder() {
       const raw = document.getElementById('order-id-input').value.trim();
       const phone = document.getElementById('phone-input').value.trim();
 
       if (!raw || !phone) {
-        showError('Please enter both Order ID and Phone Number.');
+        showError('Please enter both Order ID and registered Mobile Number.');
         return;
       }
 
@@ -628,255 +563,58 @@
       show('state-loading');
 
       try {
-        const json = await window.BUNOFEED_API.get('lookupOrder', { orderId: raw, phone });
+        const json = await window.BUNOFEED_API.get('lookupOrder', { orderId: raw, phone: phone });
         hide('state-loading');
 
         if (json.status !== 'success' || !json.order) {
-          showError(json.message || 'Order not found. Please check your Order ID and try again.');
+          showError(json.message || 'Order not found. Check credentials and retry.');
           return;
         }
         currentOrder = json.order;
         renderOrder(json.order);
       } catch(err) {
         hide('state-loading');
-        showError('Network error. Please check your connection and try again.');
+        showError('Network error. Check connection and try again.');
       }
     }
-    document.getElementById('order-id-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
-    document.getElementById('phone-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
 
-    /* ── Render Order with Detailed Summary splits ── */
     function renderOrder(o) {
-      document.getElementById('r-order-id').textContent       = o.orderId       || '—';
-      document.getElementById('r-date').textContent           = o.dateTime      || '—';
-      document.getElementById('r-name').textContent           = o.customerName  || '—';
-      document.getElementById('r-phone').textContent          = o.phone         || '—';
-      document.getElementById('r-product').textContent        = o.productName   || '—';
-      document.getElementById('r-payment-id').textContent     = o.paymentId     || '—';
-      document.getElementById('r-payment-status').textContent = o.paymentStatus || '—';
+      document.getElementById('r-order-id').textContent       = o.order_id       || '—';
+      document.getElementById('r-date').textContent           = o.date_time      || '—';
+      document.getElementById('r-name').textContent           = o.customer_name  || '—';
+      document.getElementById('r-phone').textContent          = o.phone_number   || '—';
+      document.getElementById('r-product').textContent        = o.product_name   || '—';
+      document.getElementById('r-qty').textContent            = o.quantity       || '—';
+      document.getElementById('r-price').textContent          = o.product_price   ? `₹${o.product_price}`  : '—';
+      document.getElementById('r-total').textContent          = o.total_amount   ? `₹${o.total_amount}`  : '—';
+      document.getElementById('r-payment-id').textContent     = o.payment_id     || '—';
+      document.getElementById('r-payment-status').textContent = o.payment_status || '—';
+      document.getElementById('r-coupon').textContent         = o.promo_code     ? o.promo_code.toUpperCase() : 'None';
+      document.getElementById('r-coupon-discount').textContent = o.promo_discount_amount ? `₹${o.promo_discount_amount}` : '—';
       document.getElementById('r-address').textContent =
         (o.address && o.pincode) ? `${o.address} – ${o.pincode}` : (o.address || '—');
 
-      // ── Splitting tax/ship totals itemizations ──
-      const unit = parseFloat(o.price) || 0;
-      const quantity = parseInt(o.qty) || 1;
-      const totalAmt = parseFloat(o.total) || 0;
-
-      const gstPct = parseFloat(o.gst_percent) || 18;
-      const baseSubtotal = unit * quantity;
-      const finalGst = parseFloat(o.gst_applied) || Math.round(baseSubtotal - (baseSubtotal / (1 + gstPct / 100)));
-      const preTaxSubtotal = baseSubtotal - finalGst;
-      const shippingAmount = parseFloat(o.shipping_charges) || 0;
-      const couponD = parseFloat(o.coupon_discount) || 0;
-
-      document.getElementById('sum-qty').textContent = quantity;
-      document.getElementById('sum-subtotal-base').textContent = `₹${preTaxSubtotal}`;
+      const orderStatus  = (o.payment_status === 'Paid' || o.payment_status === 'Paid (Test Local)') ? 'Confirmed' : (o.payment_status === 'Cancelled' ? 'Cancelled' : 'Pending');
+      const parsedStatus = o.orderStatus || orderStatus;
       
-      const gstLabelEl = document.getElementById('sum-gst-label');
-      if (gstLabelEl) {
-        gstLabelEl.textContent = `GST Applied (${gstPct}%)`;
-      }
-      document.getElementById('sum-gst').textContent = `₹${finalGst}`;
-      
-      const shippingLabelEl = document.getElementById('sum-shipping-label');
-      if (shippingLabelEl) {
-        shippingLabelEl.innerHTML = `Shipping Charges ${shippingAmount === 0 ? '<strong style="color:#2e7d32;">(Free)</strong>' : ''}`;
-      }
-      document.getElementById('sum-shipping').textContent = `₹${shippingAmount}`;
-      document.getElementById('sum-total').textContent = `₹${totalAmt}`;
+      const osBadge = makeBadge(parsedStatus);
+      const rsBadge = makeBadge(o.returnStatus || 'None');
+      const rfBadge = makeBadge(o.refundStatus || 'None');
 
-      if (couponD > 0) {
-        document.getElementById('sum-coupon-row').style.display = 'flex';
-        document.getElementById('sum-coupon').textContent = `-₹${couponD}`;
-      } else {
-        document.getElementById('sum-coupon-row').style.display = 'none';
-      }
-
-      const orderStatus  = (o.orderStatus  || '').trim();
-      const returnStatus = (o.returnStatus || '').trim();
-      const refundStatus = (o.refundStatus || '').trim();
-
-      const osBadge = makeBadge(orderStatus,  'order');
-      const rsBadge = makeBadge(returnStatus, 'return');
-      const rfBadge = makeBadge(refundStatus, 'refund');
-
-      setBadge('r-order-status-badge', osBadge, orderStatus  || 'Pending');
-      setBadge('r-order-status-mini',  osBadge, orderStatus  || 'Pending');
-      setBadge('r-return-status',      rsBadge, returnStatus || 'None');
-      setBadge('r-refund-status',      rfBadge, refundStatus || 'None');
+      setBadge('r-order-status-badge', osBadge, parsedStatus);
+      setBadge('r-order-status-mini',  osBadge, parsedStatus);
+      setBadge('r-return-status',      rsBadge, o.returnStatus || 'None');
+      setBadge('r-refund-status',      rfBadge, o.refundStatus || 'None');
 
       document.getElementById('result-status-bar').style.background = osBadge.barColor;
 
-      /* Button link bindings for PDF download with fallback */
-      const btnDownload = document.getElementById('btn-download');
-      btnDownload.disabled = false;
-      btnDownload.onclick = () => {
-        if (o.invoiceUrl && o.invoiceUrl !== '—' && o.invoiceUrl.trim() !== '') {
-          window.open(o.invoiceUrl, '_blank');
-        } else {
-          generateAndDownloadInvoice(o);
-        }
-      };
-
-      function generateAndDownloadInvoice(order) {
-        const brandName = "Bunofeed";
-        const tagline = "Pure, Clean & Natural Nutrition";
-        const dateStr = order.dateTime || new Date().toLocaleDateString('en-IN');
-        const orderId = order.orderId || '—';
-        const customerName = order.customerName || 'Customer';
-        const phone = order.phone || '';
-        const email = order.email || '';
-        const address = order.address || '—';
-        const pincode = order.pincode || '';
-        const productName = order.productName || '—';
-        const qty = parseInt(order.qty) || 1;
-        const unitPrice = parseFloat(order.price) || 0;
-        const totalAmt = parseFloat(order.total) || 0;
-        
-        const gstPct = parseFloat(order.gst_percent) || 18;
-        const baseSubtotal = unitPrice * qty;
-        const finalGst = parseFloat(order.gst_applied) || Math.round(baseSubtotal - (baseSubtotal / (1 + gstPct / 100)));
-        const preTaxSubtotal = baseSubtotal - finalGst;
-        const shipping = parseFloat(order.shipping_charges) || 0;
-        const discount = parseFloat(order.coupon_discount) || 0;
-
-        const invoiceWindow = window.open('', '_blank', 'width=800,height=900');
-        if (!invoiceWindow) {
-          alert("Popup blocked! Please allow popups for this website to print/download your invoice.");
-          return;
-        }
-        invoiceWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Tax Invoice - ${orderId}</title>
-            <style>
-              body { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif; color: #2D1A12; margin: 40px; line-height: 1.5; font-size: 14px; }
-              .invoice-card { max-width: 700px; margin: auto; border: 1.5px solid #ebdcd0; border-radius: 12px; padding: 30px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-              .header { display: flex; justify-content: space-between; align-items: start; border-bottom: 2.5px solid #6B2D0E; padding-bottom: 20px; margin-bottom: 20px; }
-              .brand { color: #6B2D0E; font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: 1.5px; }
-              .tagline { font-size: 11px; color: #8a7368; font-weight: 600; margin-top: 2px; }
-              .invoice-title { font-size: 20px; font-weight: 800; text-align: right; color: #6B2D0E; text-transform: uppercase; }
-              .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 13px; }
-              .meta-box h4 { margin: 0 0 8px 0; color: #6B2D0E; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 1.5px solid #ebdcd0; padding-bottom: 4px; }
-              .meta-box p { margin: 4px 0; color: #4e3527; }
-              .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
-              .table th { background: #fff8f5; border-bottom: 2px solid #ebdcd0; padding: 10px; font-weight: 700; text-align: left; color: #6B2D0E; text-transform: uppercase; font-size: 11px; }
-              .table td { padding: 12px 10px; border-bottom: 1px solid #f1eae4; }
-              .totals-section { display: flex; justify-content: flex-end; }
-              .totals-table { width: 320px; font-size: 13px; border-collapse: collapse; }
-              .totals-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ebdcd0; }
-              .totals-row.final { border-bottom: none; border-top: 2px solid #6B2D0E; margin-top: 6px; padding-top: 10px; font-weight: 800; font-size: 15px; color: #6B2D0E; }
-              .footer { text-align: center; margin-top: 40px; font-size: 11px; color: #8a7368; border-top: 1px solid #ebdcd0; padding-top: 20px; }
-              .btn-print { margin-bottom: 20px; background: #FF6B00; color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; outline: none; transition: 0.2s; }
-              .btn-print:hover { background: #E05A00; }
-              @media print {
-                .btn-print { display: none; }
-                body { margin: 20px; }
-                .invoice-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
-              }
-            </style>
-          </head>
-          <body>
-            <div style="max-width: 700px; margin: auto; text-align: right;">
-              <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; display:inline-block; vertical-align:middle;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>Print or Save as PDF</button>
-            </div>
-            <div class="invoice-card">
-              <div class="header">
-                <div>
-                  <div class="brand">${brandName}</div>
-                  <div class="tagline">${tagline}</div>
-                </div>
-                <div>
-                  <div class="invoice-title">Tax Invoice</div>
-                  <div style="text-align: right; font-size: 12px; color: #8a7368; margin-top: 4px;">Invoice ID: ${orderId}</div>
-                </div>
-              </div>
-              
-              <div class="meta-grid">
-                <div class="meta-box">
-                  <h4>Billed To</h4>
-                  <p><strong>${customerName}</strong></p>
-                  <p>Phone: ${phone}</p>
-                  ${email ? `<p>Email: ${email}</p>` : ''}
-                  <p>Address: ${address}${pincode ? ` - ${pincode}` : ''}</p>
-                </div>
-                <div class="meta-box">
-                  <h4>Invoice & Supplier Details</h4>
-                  <p>Date: ${dateStr}</p>
-                  <p>Supplier: Bunofeed Nutrition Co.</p>
-                  <p>FSSAI Lic No: 12723999000147</p>
-                  <p>GSTIN: 09AAPCB1234D1Z1</p>
-                </div>
-              </div>
-
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 50%;">Product Details</th>
-                    <th style="text-align: center; width: 10%;">Qty</th>
-                    <th style="text-align: right; width: 20%;">Unit Price</th>
-                    <th style="text-align: right; width: 20%;">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong style="color: #6B2D0E;">${productName}</strong><br/>
-                      <span style="font-size: 11px; color: #8a7368;">HNS Code: 20081100</span>
-                    </td>
-                    <td style="text-align: center;">${qty}</td>
-                    <td style="text-align: right;">₹${unitPrice}</td>
-                    <td style="text-align: right;">₹${baseSubtotal}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="totals-section">
-                <div class="totals-table">
-                  <div class="totals-row">
-                    <span style="color:#8a7368;">Pre-Tax Subtotal</span>
-                    <span>₹${preTaxSubtotal}</span>
-                  </div>
-                  <div class="totals-row">
-                    <span style="color:#8a7368;">GST Tax Mapped (${gstPct}%)</span>
-                    <span>₹${finalGst}</span>
-                  </div>
-                  <div class="totals-row">
-                    <span style="color:#8a7368;">Shipping Charges</span>
-                    <span>${shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
-                  </div>
-                  ${discount > 0 ? `
-                  <div class="totals-row">
-                    <span style="color:#2e7d32;">Coupon Discount</span>
-                    <span style="color:#2e7d32;">-₹${discount}</span>
-                  </div>` : ''}
-                  <div class="totals-row final">
-                    <span>Total Amount Paid</span>
-                    <span>₹${totalAmt}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="footer">
-                <p>Thank you for shopping with Bunofeed! This is a computer-generated tax invoice and does not require a physical signature.</p>
-                <p style="font-weight: 600; color: #6B2D0E; margin-top: 10px;">For support, contact us at contact@bunofeed.com</p>
-              </div>
-            </div>
-          </body>
-          </html>
-        `);
-        invoiceWindow.document.close();
-      }
-
-      /* Button logic */
-      const ls = orderStatus.toLowerCase();
-      const lr = returnStatus.toLowerCase();
-      const activeRequests = ['requested return','requested cancellation','cancelled',
-                              'return request approved','return received'];
+      /* Button enablement logic */
+      const ls = parsedStatus.toLowerCase();
+      const lr = (o.returnStatus || '').toLowerCase();
+      const activeRequests = ['requested return', 'requested cancellation', 'cancelled', 'refunded', 'returned'];
 
       const returnEnabled = ls === 'delivered' && !activeRequests.includes(lr);
-      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr);
+      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr) && ls !== 'cancelled';
 
       const btnR = document.getElementById('btn-return');
       const btnC = document.getElementById('btn-cancel');
@@ -892,7 +630,6 @@
       el.innerHTML = badge.icon + ' ' + text;
     }
 
-    /* ── Badge helper ── */
     function makeBadge(status) {
       const s = (status || '').toLowerCase().trim();
       if (!s || s === 'none' || s === '—')     return { cls:'badge-default',   icon:'<i class="fas fa-minus"></i>',              barColor:'#dee2e6' };
@@ -903,16 +640,12 @@
       if (s === 'cancelled')                    return { cls:'badge-cancelled', icon:'<i class="fas fa-ban"></i>',                barColor:'#dc3545' };
       if (s.includes('requested cancell'))      return { cls:'badge-cancelled', icon:'<i class="fas fa-hourglass-half"></i>',     barColor:'#dc3545' };
       if (s.includes('requested return'))       return { cls:'badge-return',    icon:'<i class="fas fa-hourglass-half"></i>',     barColor:'#fd7e14' };
-      if (s.includes('return request appr'))    return { cls:'badge-return',    icon:'<i class="fas fa-thumbs-up"></i>',          barColor:'#fd7e14' };
-      if (s.includes('return received'))        return { cls:'badge-return',    icon:'<i class="fas fa-undo"></i>',               barColor:'#fd7e14' };
+      if (s.includes('approved'))               return { cls:'badge-return',    icon:'<i class="fas fa-thumbs-up"></i>',          barColor:'#fd7e14' };
       if (s.includes('refund processed'))       return { cls:'badge-refund',    icon:'<i class="fas fa-rupee-sign"></i>',         barColor:'#20c997' };
       if (s === 'refunded')                     return { cls:'badge-refund',    icon:'<i class="fas fa-check-double"></i>',       barColor:'#20c997' };
-      if (s.includes('refund failed'))          return { cls:'badge-cancelled', icon:'<i class="fas fa-exclamation-circle"></i>', barColor:'#dc3545' };
-      if (s.includes('refund rejected'))        return { cls:'badge-cancelled', icon:'<i class="fas fa-times-circle"></i>',       barColor:'#dc3545' };
       return { cls:'badge-default', icon:'<i class="fas fa-info-circle"></i>', barColor:'#6c757d' };
     }
 
-    /* ── Modals ── */
     function openReturnModal() {
       resetModal('return');
       document.getElementById('return-modal').classList.add('open');
@@ -934,6 +667,7 @@
         document.getElementById('return-reason').value  = '';
         document.getElementById('return-comment').value = '';
         document.getElementById('return-files').value   = '';
+        document.getElementById('file-label').textContent = '';
         document.getElementById('return-error').style.display = 'none';
       } else {
         document.getElementById('cancel-reason').value  = '';
@@ -942,7 +676,12 @@
       }
     }
 
-    /* ── Submit Return ── */
+    function updateFileLabel() {
+      const files = document.getElementById('return-files').files;
+      document.getElementById('file-label').textContent =
+        files.length ? Array.from(files).map(f=>f.name).join(', ') : '';
+    }
+
     async function submitReturn() {
       const reason  = document.getElementById('return-reason').value.trim();
       const comment = document.getElementById('return-comment').value.trim();
@@ -951,13 +690,19 @@
       errEl.style.display='none';
 
       const btn = document.getElementById('return-submit-btn');
-      btn.classList.add('loading'); btn.disabled=true;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
       try {
         const json = await window.BUNOFEED_API.post('updateOrder', {
-          orderId: currentOrder.orderId, newStatus: 'Requested Return', reason, comment
+          orderId: currentOrder.order_id,
+          phone: currentOrder.phone_number,
+          newStatus: 'Requested Return',
+          reason: reason,
+          comment: comment
         });
-        btn.classList.remove('loading'); btn.disabled=false;
-        if (json.status==='success') {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Return Request';
+        if (json.status === 'success') {
           document.getElementById('return-form-view').style.display    = 'none';
           document.getElementById('return-success-view').style.display = 'block';
           currentOrder.returnStatus = 'Requested Return';
@@ -967,12 +712,12 @@
           errEl.style.display = 'block';
         }
       } catch(err) {
-        btn.classList.remove('loading'); btn.disabled=false;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Return Request';
         errEl.textContent='Network error. Please try again.'; errEl.style.display='block';
       }
     }
 
-    /* ── Submit Cancellation ── */
     async function submitCancellation() {
       const reason  = document.getElementById('cancel-reason').value.trim();
       const comment = document.getElementById('cancel-comment').value.trim();
@@ -981,28 +726,35 @@
       errEl.style.display='none';
 
       const btn = document.getElementById('cancel-submit-btn');
-      btn.classList.add('loading'); btn.disabled=true;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
       try {
         const json = await window.BUNOFEED_API.post('updateOrder', {
-          orderId: currentOrder.orderId, newStatus: 'Requested Cancellation', reason, comment
+          orderId: currentOrder.order_id,
+          phone: currentOrder.phone_number,
+          newStatus: 'Cancelled',
+          reason: reason,
+          comment: comment
         });
-        btn.classList.remove('loading'); btn.disabled=false;
-        if (json.status==='success') {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-times-circle"></i> Submit Cancellation Request';
+        if (json.status === 'success') {
           document.getElementById('cancel-form-view').style.display    = 'none';
           document.getElementById('cancel-success-view').style.display = 'block';
-          currentOrder.returnStatus = 'Requested Cancellation';
+          currentOrder.orderStatus = 'Cancelled';
+          currentOrder.payment_status = 'Cancelled';
           renderOrder(currentOrder);
         } else {
           errEl.textContent = json.message || 'Something went wrong. Please try again.';
           errEl.style.display = 'block';
         }
       } catch(err) {
-        btn.classList.remove('loading'); btn.disabled=false;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-times-circle"></i> Submit Cancellation Request';
         errEl.textContent='Network error. Please try again.'; errEl.style.display='block';
       }
     }
 
-    /* ── Helpers ── */
     function show(id)  { document.getElementById(id).style.display='block'; }
     function hide(id)  { document.getElementById(id).style.display='none';  }
     function hideAll() { hide('state-loading'); hide('state-error'); hide('order-result-card'); }

@@ -4,11 +4,10 @@
  *  Shared by index.html and shop.html
  *  Upgraded with:
  *   - CSS Blurred Fullscreen Tap Viewer
+ *   - Real-time Texture and Size automatic pricing engine calculations
  *   - Swipe Galleries both in modal & fullscreen
  *   - Pinch-to-Zoom, Double-Tap Zoom, and Pan
- *   - 60fps GPU acceleration using transform/opacity (no layout repaints)
  *   - Safari/Chrome Safe Area & Scroll Pinning compatibilities
- *   - Realtime texture and packsize selection matching advance pricing
  * ============================================================
  */
 
@@ -137,7 +136,7 @@
       transform: scale(1.3);
     }
 
-    /* Swipe nav arrows (shown on desktop hover) */
+    /* Swipe nav arrows */
     .buno-img-nav {
       position: absolute;
       top: 50%;
@@ -162,14 +161,14 @@
     .buno-img-nav:hover { background: #fff; transform: translateY(-50%) scale(1.05); }
     .buno-img-nav:active { transform: translateY(-50%) scale(0.95); }
 
-    /* Thumbnail strip optimized for touch swipe */
+    /* Thumbnail strip */
     #buno-modal-thumbs {
       display: flex;
       gap: 10px;
       padding: 10px 16px;
       overflow-x: auto;
       background: rgba(107,45,14,0.03);
-      scrollbar-width: none; /* Hide standard scrollbar */
+      scrollbar-width: none;
       flex-shrink: 0;
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
@@ -252,7 +251,7 @@
       font-family: 'Montserrat', sans-serif;
     }
 
-    /* Description with collapse */
+    /* Description collapse */
     .buno-desc-wrap { position: relative; }
     #buno-modal-desc {
       color: #555; font-size: 0.95rem; line-height: 1.75;
@@ -274,7 +273,7 @@
       padding: 4px 0; margin-top: 4px;
       display: inline-block;
       -webkit-appearance: none;
-      min-height: 44px; /* tactile touch target */
+      min-height: 44px;
     }
     #buno-desc-toggle:hover { text-decoration: underline; }
 
@@ -286,46 +285,41 @@
       padding: 6px 14px; border-radius: 50px;
     }
 
-    /* Variant selectors wrapper */
-    .buno-selectors-wrapper {
-      display: flex;
-      flex-direction: row;
-      gap: 0.8rem;
-      background: #fff8f3;
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid #f3e8df;
+    /* Real-time Selectors form layout */
+    .selector-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 0.5rem 0;
     }
-    .buno-selector-group {
+    .selector-field-group {
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      flex: 1;
     }
-    .buno-selector-title {
+    .selector-field-label {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 0.82rem;
-      color: #6B2D0E;
+      font-size: 0.8rem;
+      color: #1a1a1a;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
     }
-    .buno-dropdown-select {
-      width: 100%;
-      min-height: 44px;
+    .selector-dropdown {
       padding: 10px 14px;
+      border-radius: 10px;
       border: 2px solid #e0d4cc;
-      border-radius: 8px;
       background: #fff;
       font-family: 'Open Sans', sans-serif;
-      font-size: 0.9rem;
       font-weight: 600;
+      font-size: 0.88rem;
       color: #1a1a1a;
       outline: none;
       cursor: pointer;
-      transition: border-color 0.2s;
+      min-height: 44px;
+      width: 100%;
     }
-    .buno-dropdown-select:focus {
+    .selector-dropdown:focus {
       border-color: #FF6B00;
     }
 
@@ -341,7 +335,7 @@
       font-weight: 800; color: #000000;
     }
     #buno-modal-mrp {
-      font-size: 1.1rem; color: #d32f2f; /* Cutted price in red */
+      font-size: 1.1rem; color: #d32f2f;
       text-decoration: line-through; font-weight: 600;
       display: none;
     }
@@ -366,7 +360,7 @@
       background: #fff;
     }
     .buno-qty-btn {
-      width: 44px; height: 44px; /* Generous 44px target sizing */
+      width: 44px; height: 44px;
       background: none; border: none; cursor: pointer;
       font-size: 1.3rem; font-weight: 700; color: #1a1a1a;
       display: flex; align-items: center; justify-content: center;
@@ -383,7 +377,7 @@
       font-size: 0.95rem; color: #444; font-weight: 600;
     }
 
-    /* Action buttons with proper tap targets and responsive hierarchy */
+    /* Action buttons */
     .buno-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .buno-actions .btn {
       flex: 1;
@@ -392,7 +386,7 @@
       min-height: 48px;
     }
 
-    /* Accordion Custom look */
+    /* Accordion */
     .buno-accordion { margin-top: 0.8rem; }
     .buno-acc-item { border-top: 1px solid #f2e8e0; }
     .buno-acc-item:last-child { border-bottom: 1px solid #f2e8e0; }
@@ -423,11 +417,11 @@
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 10001; /* Must sit completely on top of everything */
+      z-index: 10001;
       background: rgba(0, 0, 0, 0);
       transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
-      touch-action: none; /* stop browser default pull to refresh or gestures */
+      touch-action: none;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -538,6 +532,11 @@
         min-height: unset;
         border-radius: 24px 24px 0 0;
       }
+      #buno-modal-img-col.peanut-bg  { background: linear-gradient(135deg, #fdf1e1, #f7d6a5); }
+      #buno-modal-img-col.oat-bg     { background: linear-gradient(135deg, #f0faf1, #d3ebd5); }
+      #buno-modal-img-col.muesli-bg  { background: linear-gradient(135deg, #fffbf2, #fbe8cc); }
+      #buno-modal-img-col.choco-bg   { background: linear-gradient(135deg, #473229, #7c584c); }
+      
       #buno-modal-main-img img {
         width: 100%;
         height: 100%;
@@ -545,18 +544,15 @@
         max-height: 100%;
         object-fit: contain;
         image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
       }
       #buno-modal-close {
-        background: rgba(255, 255, 255, 0.85); /* stand out */
+        background: rgba(255, 255, 255, 0.85);
         border: 1px solid rgba(107, 45, 14, 0.1);
         top: 1rem; right: 1rem;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       }
       #buno-modal-body {
-        flex: none;
         padding: 1.8rem 1.5rem 2.2rem;
-        overflow-y: visible;
       }
       #buno-modal-name { font-size: 1.45rem; }
       #buno-modal-price { font-size: 1.7rem; }
@@ -569,14 +565,13 @@
       }
       #buno-modal-img-col {
         height: 350px;
-        min-height: unset;
       }
       .buno-actions { flex-direction: column; gap: 0.75rem; }
       .buno-actions .btn { flex: unset; width: 100%; }
-      #buno-fs-prev, #buno-fs-next { display: none !important; } /* rely entirely on swipes on small mobiles */
+      #buno-fs-prev, #buno-fs-next { display: none !important; }
     }
 
-    /* Prevent page scroll utility */
+    /* Prevent page scroll */
     body.buno-lock-scroll {
       overflow: hidden !important;
       position: fixed;
@@ -623,17 +618,15 @@
 
           <div id="buno-modal-features"></div>
 
-          <!-- Unified Variant selectors wrapper (texture + pack size) -->
-          <div class="buno-selectors-wrapper" id="buno-selectors-wrapper" style="display:none">
-            <!-- Packsize selection dropdown -->
-            <div class="buno-selector-group" id="buno-packsize-group">
-              <span class="buno-selector-title">Pack Size:</span>
-              <select class="buno-dropdown-select" id="buno-packsize-dropdown"></select>
+          <!-- REWORKED AUTOMATIC SELECTORS GRID -->
+          <div class="selector-grid">
+            <div class="selector-field-group" id="buno-modal-size-group">
+              <label class="selector-field-label">Pack Size</label>
+              <select class="selector-dropdown" id="buno-modal-size-select"></select>
             </div>
-            <!-- Texture selection dropdown -->
-            <div class="buno-selector-group" id="buno-texture-group">
-              <span class="buno-selector-title">Product Type:</span>
-              <select class="buno-dropdown-select" id="buno-texture-dropdown"></select>
+            <div class="selector-field-group" id="buno-modal-texture-group">
+              <label class="selector-field-label">Texture</label>
+              <select class="selector-dropdown" id="buno-modal-texture-select"></select>
             </div>
           </div>
 
@@ -693,7 +686,6 @@
   let _onBuy        = null; 
   let _descExpanded = false;
 
-  /* Touch state for swipe & zoom */
   let _swipeStartX = 0;
   let _swipeStartY = 0;
   let _isSwiping   = false;
@@ -709,11 +701,12 @@
   const closeBtn   = document.getElementById('buno-modal-close');
   const descEl     = document.getElementById('buno-modal-desc');
   const descToggle = document.getElementById('buno-desc-toggle');
-  const selectorsWrapper = document.getElementById('buno-selectors-wrapper');
-  const textureGroup     = document.getElementById('buno-texture-group');
-  const textureDropdown  = document.getElementById('buno-texture-dropdown');
-  const packsizeGroup    = document.getElementById('buno-packsize-group');
-  const packsizeDropdown = document.getElementById('buno-packsize-dropdown');
+  
+  const sizeSelect = document.getElementById('buno-modal-size-select');
+  const textureSelect = document.getElementById('buno-modal-texture-select');
+  const sizeGroup = document.getElementById('buno-modal-size-group');
+  const textureGroup = document.getElementById('buno-modal-texture-group');
+
   const priceEl    = document.getElementById('buno-modal-price');
   const mrpEl      = document.getElementById('buno-modal-mrp');
   const discountEl = document.getElementById('buno-modal-discount-badge');
@@ -731,7 +724,7 @@
   const fsNext     = document.getElementById('buno-fs-next');
   const fsIndexNum = document.getElementById('buno-fs-index');
 
-  /* PINCH AND PAN STATE FOR FULLSCREEN */
+  /* PINCH ZOOM & PAN */
   let _zoomScale = 1;
   let _zoomBaseScale = 1;
   let _panX = 0;
@@ -742,8 +735,6 @@
   let _isPinching = false;
   let _lastPinchDistance = 0;
   let _doubleTapTimer = null;
-
-  /* Scroll locking history to prevent body jumping on iOS Safari */
   let _scrollTopHistory = 0;
 
   function lockBodyScroll() {
@@ -760,7 +751,6 @@
     }
   }
 
-  /* ---- Image helpers ---- */
   function setImage(idx, instant) {
     if (!_images.length) return;
     idx = (_images.length + idx) % _images.length;
@@ -793,17 +783,15 @@
         });
       };
       img.onerror = () => {
-        mainImgWrap.innerHTML = `<span class="buno-emoji-display" style="transform: scale(0.9)">${_product ? _product.emoji || '🥜' : '🥜'}</span>`;
+        mainImgWrap.innerHTML = `<span class="buno-emoji-display">${_product ? _product.emoji || '🥜' : '🥜'}</span>`;
       };
       img.src = src;
     }
 
-    /* Keep dots up to date */
     dotsEl.querySelectorAll('.buno-dot').forEach((d, i) => {
       d.classList.toggle('active', i === idx);
     });
 
-    /* Highlight thumbnails and center them softly */
     thumbsEl.querySelectorAll('.buno-thumb').forEach((t, i) => {
       t.classList.toggle('active', i === idx);
       if (i === idx) {
@@ -811,11 +799,9 @@
       }
     });
 
-    /* Visible indicators for arrows */
     prevBtn.style.display = _images.length > 1 ? 'flex' : 'none';
     nextBtn.style.display = _images.length > 1 ? 'flex' : 'none';
     
-    // Sync fullscreen if opened
     if (fsViewer.classList.contains('open')) {
       resetZoom();
       fsImg.src = src;
@@ -854,13 +840,12 @@
     if (images.length) {
       setImage(0, true);
     } else {
-      mainImgWrap.innerHTML = `<span class="buno-emoji-display" id="buno-modal-emoji" style="transform:scale(1)">${_product ? _product.emoji || '🥜' : '🥜'}</span>`;
+      mainImgWrap.innerHTML = `<span class="buno-emoji-display" id="buno-modal-emoji">${_product ? _product.emoji || '🥜' : '🥜'}</span>`;
       prevBtn.style.display = 'none';
       nextBtn.style.display = 'none';
     }
   }
 
-  /* ---- TOUCH SWIPE IN MODAL GALLERY ---- */
   mainImgWrap.addEventListener('touchstart', (e) => {
     _swipeStartX = e.touches[0].clientX;
     _swipeStartY = e.touches[0].clientY;
@@ -879,11 +864,8 @@
     if (!_isSwiping || _images.length <= 1) return;
     const dx = e.changedTouches[0].clientX - _swipeStartX;
     if (Math.abs(dx) > 40) {
-      if (dx < 0) {
-        setImage(_imgIndex + 1);
-      } else {
-        setImage(_imgIndex - 1);
-      }
+      if (dx < 0) setImage(_imgIndex + 1);
+      else setImage(_imgIndex - 1);
     }
     _isSwiping = false;
   }, { passive: true });
@@ -891,46 +873,29 @@
   prevBtn.addEventListener('click', () => setImage(_imgIndex - 1));
   nextBtn.addEventListener('click', () => setImage(_imgIndex + 1));
 
-  /* ---- TAP TO OPEN FULLSCREEN EVENT ---- */
   mainImgWrap.addEventListener('click', () => {
-    if (_images.length > 0) {
-      openFullscreen();
-    }
+    if (_images.length > 0) openFullscreen();
   });
 
-  /* ===================================================
-     FULLSCREEN pinch-zoom & double-tap implementation
-  =================================================== */
   function openFullscreen() {
     resetZoom();
     fsImg.src = _images[_imgIndex];
     fsIndexNum.textContent = `${_imgIndex + 1} / ${_images.length}`;
-    
     fsPrev.style.display = _images.length > 1 ? 'flex' : 'none';
     fsNext.style.display = _images.length > 1 ? 'flex' : 'none';
 
     fsViewer.classList.add('open');
-    requestAnimationFrame(() => {
-      fsViewer.style.background = 'rgba(5, 2, 1, 0.95)';
-    });
-
-    // Disable gestures on rest of screen
     document.addEventListener('touchmove', preventDefaultTouch, { passive: false });
   }
 
   function closeFullscreen() {
-    fsViewer.style.background = 'rgba(0, 0, 0, 0)';
-    setTimeout(() => {
-      fsViewer.classList.remove('open');
-      resetZoom();
-    }, 280);
+    fsViewer.classList.remove('open');
     document.removeEventListener('touchmove', preventDefaultTouch);
+    resetZoom();
   }
 
   function preventDefaultTouch(e) {
-    if (fsViewer.classList.contains('open')) {
-      e.preventDefault();
-    }
+    if (fsViewer.classList.contains('open')) e.preventDefault();
   }
 
   fsClose.addEventListener('click', closeFullscreen);
@@ -946,19 +911,13 @@
   }
 
   function applyViewerTransform() {
-    // Hardware accelerated matrix/translate3d to bypass browser repaints
     fsImg.style.transform = `translate3d(${_panX}px, ${_panY}px, 0px) scale(${_zoomScale})`;
   }
 
-  /* Pinch Zoom Math */
   function getDistance(touches) {
-    return Math.hypot(
-      touches[0].clientX - touches[1].clientX,
-      touches[0].clientY - touches[1].clientY
-    );
+    return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
   }
 
-  /* FULLSCREEN MULTITOUCH INPUT HANDLERS */
   const imgContainer = document.getElementById('buno-fullscreen-img-container');
 
   imgContainer.addEventListener('touchstart', (e) => {
@@ -966,17 +925,14 @@
       _isDragging = true;
       _panStartX = e.touches[0].clientX - _panX;
       _panStartY = e.touches[0].clientY - _panY;
-      
-      // Tap-hold starts swiping metric on normal scale
       _swipeStartX = e.touches[0].clientX;
       _swipeStartY = e.touches[0].clientY;
       _isSwiping = false;
 
-      // Handle double tap
       const now = Date.now();
       if (now - _doubleTapTimer < 300) {
         handleDoubleTap(e.touches[0].clientX, e.touches[0].clientY);
-        _doubleTapTimer = 0; // consumed
+        _doubleTapTimer = 0;
       } else {
         _doubleTapTimer = now;
       }
@@ -990,27 +946,20 @@
 
   imgContainer.addEventListener('touchmove', (e) => {
     if (_isDragging && _zoomScale > 1) {
-      // Pan image
       _panX = e.touches[0].clientX - _panStartX;
-      _panY = e.touches[0].clientY - _panY;
-      
-      // Enforce bounds constraints
+      _panY = e.touches[0].clientY - _panStartY;
       const maxDragX = (fsImg.clientWidth * _zoomScale - fsImg.clientWidth) / 2;
       const maxDragY = (fsImg.clientHeight * _zoomScale - fsImg.clientHeight) / 2;
-      
       _panX = Math.max(-maxDragX - 40, Math.min(maxDragX + 40, _panX));
       _panY = Math.max(-maxDragY - 40, Math.min(maxDragY + 40, _panY));
-
       requestAnimationFrame(applyViewerTransform);
     } else if (_isDragging && _zoomScale === 1 && _images.length > 1) {
-      /* Track swipe on scale=1 */
       const dx = e.touches[0].clientX - _swipeStartX;
       const dy = e.touches[0].clientY - _swipeStartY;
       if (!_isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
         _isSwiping = true;
       }
     } else if (_isPinching && e.touches.length === 2) {
-      // Scale calculation
       const dist = getDistance(e.touches);
       if (_lastPinchDistance > 0) {
         const factor = dist / _lastPinchDistance;
@@ -1024,23 +973,17 @@
     if (_isDragging && _zoomScale === 1 && _isSwiping) {
       const dx = e.changedTouches[0].clientX - _swipeStartX;
       if (Math.abs(dx) > 50) {
-        if (dx < 0) {
-          setImage(_imgIndex + 1);
-        } else {
-          setImage(_imgIndex - 1);
-        }
+        if (dx < 0) setImage(_imgIndex + 1);
+        else setImage(_imgIndex - 1);
       }
     } else if (_zoomScale > 1) {
-      // Soft boundaries snapback
       const maxDragX = (fsImg.clientWidth * _zoomScale - fsImg.clientWidth) / 2;
       const maxDragY = (fsImg.clientHeight * _zoomScale - fsImg.clientHeight) / 2;
-
       let snapped = false;
       if (_panX < -maxDragX) { _panX = -maxDragX; snapped = true; }
       if (_panX > maxDragX) { _panX = maxDragX; snapped = true; }
       if (_panY < -maxDragY) { _panY = -maxDragY; snapped = true; }
       if (_panY > maxDragY) { _panY = maxDragY; snapped = true; }
-
       if (snapped) {
         fsImg.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
         applyViewerTransform();
@@ -1058,7 +1001,6 @@
       resetZoom();
     } else {
       _zoomScale = 2.5;
-      // Soft relative center pan
       const rect = fsImg.getBoundingClientRect();
       const clickX = x - (rect.left + rect.width / 2);
       const clickY = y - (rect.top + rect.height / 2);
@@ -1069,97 +1011,65 @@
     setTimeout(() => { fsImg.style.transition = ''; }, 300);
   }
 
-  /* ---- Description toggle ---- */
   descToggle.addEventListener('click', () => {
     _descExpanded = !_descExpanded;
     descEl.classList.toggle('expanded', _descExpanded);
     descToggle.textContent = _descExpanded ? 'less ▴' : 'more ▾';
   });
 
-  /* ---- Price calculations under the dynamic advance pricing engine ---- */
-  function getSelectedVariant() {
-    if (!_product) return null;
-    const variants = _product.variants || [];
-    if (variants.length === 0) return null;
+  /* ---- Pricing Engine Calculator Logic ---- */
+  function getComputedPriceCombo() {
+    if (!_product) return { price: 0, mrp: null };
 
-    const hasTexture = textureGroup.style.display !== 'none';
-    const chosenTexture = textureDropdown.value;
-    const chosenSize = packsizeDropdown.value;
+    const selectedSize = sizeSelect.value;
+    const selectedTexture = textureSelect.style.display !== 'none' ? textureSelect.value : 'Default';
+    
+    // Key formula: Texture_Size or Default_Size
+    const comboKey = selectedTexture ? `${selectedTexture}_${selectedSize}` : `Default_${selectedSize}`;
+    const pricing = _product.pricing && _product.pricing[comboKey];
 
-    let matched = null;
-    if (hasTexture) {
-      matched = variants.find(v => v.texture === chosenTexture && v.label === chosenSize);
-    } else {
-      matched = variants.find(v => v.label === chosenSize);
-    }
+    if (pricing) {
+      const base = parseFloat(pricing.basePrice) || 0;
+      const profit = parseFloat(pricing.profit) || 0;
+      const directDiscount = parseFloat(pricing.discount) || 0;
+      const gst = parseFloat(pricing.gst) || 0;
 
-    if (!matched && variants.length > 0) {
-      // Fallback matching
-      matched = variants.find(v => v.label === chosenSize) || variants[0];
-    }
-    return matched;
-  }
+      // Base formula:
+      // Subtotal before direct discount = base * (1 + profit / 100)
+      // Selling price before GST = Subtotal * (1 - directDiscount / 100)
+      // Sales Price including GST = Selling price before GST * (1 + gst / 100)
+      // MRP including GST = Subtotal before direct discount * (1 + gst / 100)
 
-  function getVariantPrice() {
-    const product = _product;
-    if (!product) return { price: 0, mrp: null, label: '', texture: '' };
+      const subtotalBase = base * (1 + profit / 100);
+      const discountedSubtotal = subtotalBase * (1 - directDiscount / 100);
 
-    const matched = getSelectedVariant();
-    if (matched) {
-      // If advance pricing fields exist, calculate dynamic values in real time to match formula:
-      if (typeof matched.basePrice !== 'undefined') {
-        const base = parseFloat(matched.basePrice) || 0;
-        const profit = parseFloat(matched.profit) || 0;
-        const discount = parseFloat(matched.discount) || 0;
-        const gst = parseFloat(matched.gst) || 0;
+      const salesPrice = Math.round(discountedSubtotal * (1 + gst / 100));
+      const mrp = Math.round(subtotalBase * (1 + gst / 100));
 
-        // Sales Price (including GST): Base * (1 + Profit/100) * (1 - Discount/100) * (1 + GST/100)
-        const calcPrice = Math.round(base * (1 + profit / 100) * (1 - discount / 100) * (1 + gst / 100));
-        // MRP (including GST): Base * (1 + Profit/100) * (1 + GST/100)
-        const calcMrp = Math.round(base * (1 + profit / 100) * (1 + gst / 100));
-
-        return {
-          price: calcPrice,
-          mrp: calcMrp > calcPrice ? calcMrp : null,
-          label: matched.label || '',
-          texture: matched.texture || ''
-        };
-      }
-      
-      // Traditional direct fields
       return {
-        price: matched.price,
-        mrp: matched.mrp || null,
-        label: matched.label || '',
-        texture: matched.texture || ''
+        price: salesPrice,
+        mrp: mrp,
+        label: `${selectedTexture !== 'Default' ? selectedTexture + ' ' : ''}${selectedSize}`
       };
     }
 
-    return { price: product.price, mrp: product.mrp || null, label: product.weight || '', texture: '' };
+    // Graceful fallback to default values in products.js if combination missing
+    return {
+      price: _product.price || 0,
+      mrp: _product.mrp || null,
+      label: _product.weight || ''
+    };
   }
 
   function updatePriceDisplay() {
-    const { price, mrp } = getVariantPrice();
+    const { price, mrp } = getComputedPriceCombo();
 
-    let displayPrice = price;
-    let displayMrp = mrp;
+    priceEl.textContent = `₹${price}`;
 
-    const D = window.BUNOFEED_DATA;
-    if (D && D.sale && D.sale.active) {
-      const endOk = !D.sale.endDate || new Date() <= new Date(D.sale.endDate);
-      if (endOk && D.sale.discountPercent > 0) {
-        const saleP = Math.round(price * (1 - D.sale.discountPercent / 100));
-        if (!displayMrp) displayMrp = price; 
-        displayPrice = saleP;
-      }
-    }
-
-    priceEl.textContent = `₹${displayPrice}`;
-
-    if (displayMrp && displayMrp > displayPrice) {
-      mrpEl.textContent = `₹${displayMrp}`;
+    if (mrp && mrp > price) {
+      mrpEl.textContent = `₹${mrp}`;
       mrpEl.style.display = 'inline';
-      const pct = Math.round((1 - displayPrice / displayMrp) * 100);
+      const pct = Math.round((1 - price / mrp) * 100);
       discountEl.textContent = `${pct}% OFF`;
       discountEl.style.display = 'inline';
     } else {
@@ -1167,51 +1077,13 @@
       discountEl.style.display = 'none';
     }
 
-    updateSubtotal(displayPrice);
-    return displayPrice;
+    subtotalEl.textContent = `Total: ₹${price * _qty}`;
+    return price;
   }
 
-  function updateSubtotal(unitPrice) {
-    subtotalEl.textContent = `Total: ₹${unitPrice * _qty}`;
-  }
+  sizeSelect.addEventListener('change', updatePriceDisplay);
+  textureSelect.addEventListener('change', updatePriceDisplay);
 
-  /* ---- Dropdowns rendering ---- */
-  function buildVariants(product) {
-    textureDropdown.innerHTML = '';
-    packsizeDropdown.innerHTML = '';
-
-    selectorsWrapper.style.display = 'flex';
-
-    // 1. Gather Unique Pack sizes
-    const variants = product.variants || [];
-    const sizes = Array.from(new Set(variants.map(v => v.label).filter(Boolean)));
-    const finalSizes = sizes.length > 0 ? sizes : [product.weight || '500g'];
-    finalSizes.forEach(sz => {
-      const opt = document.createElement('option');
-      opt.value = sz;
-      opt.textContent = sz;
-      packsizeDropdown.appendChild(opt);
-    });
-
-    // 2. Gather Unique Textures / fallback product types list
-    const types = ['Crunchy', 'Crispy', 'Smooth'];
-    types.forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = t;
-      opt.textContent = t;
-      textureDropdown.appendChild(opt);
-    });
-
-    // Always keep both elements visible
-    packsizeGroup.style.display = 'flex';
-    textureGroup.style.display = 'flex';
-
-    // 3. Connect listener triggers
-    textureDropdown.onchange  = updatePriceDisplay;
-    packsizeDropdown.onchange = updatePriceDisplay;
-  }
-
-  /* ---- Qty handlers ---- */
   qtyMinusEl.addEventListener('click', () => {
     if (_qty > 1) { _qty--; qtyNumEl.textContent = _qty; updatePriceDisplay(); }
   });
@@ -1219,34 +1091,19 @@
     _qty++; qtyNumEl.textContent = _qty; updatePriceDisplay();
   });
 
-  /* ---- Buy trigger ---- */
   buyBtn.addEventListener('click', () => {
     if (!_product || !_onBuy) return;
 
-    const { price, label: sizeLabel, texture: texLabel } = getVariantPrice();
-    const D = window.BUNOFEED_DATA;
-    let unitPrice = price;
-
-    if (D && D.sale && D.sale.active) {
-      const endOk = !D.sale.endDate || new Date() <= new Date(D.sale.endDate);
-      if (endOk && D.sale.discountPercent > 0) {
-        unitPrice = Math.round(price * (1 - D.sale.discountPercent / 100));
-      }
-    }
-
+    const { price, label } = getComputedPriceCombo();
     closeModal();
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const chosenSize = packsizeDropdown.value;
-        const chosenType = textureDropdown.value;
-        const finalLabel = `${chosenSize} - ${chosenType}`;
-        _onBuy(_product, _qty, unitPrice, finalLabel);
+        _onBuy(_product, _qty, price, label);
       });
     });
   });
 
-  /* ---- Closing modal smoothly without layout flashes ---- */
   function closeModal() {
     overlay.classList.remove('visible');
     setTimeout(() => {
@@ -1260,9 +1117,9 @@
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-  /* ---- Public API ---- */
+  /* ---- Public Presentation API ---- */
   window.BUNO_MODAL = {
-    open: function(product, onBuyCallback) {
+    open: function (product, onBuyCallback) {
       if (!product) return;
       _product = product;
       _qty = 1;
@@ -1272,19 +1129,12 @@
 
       imgCol.className = product.bgClass || 'peanut-bg';
 
-      const allImages = (product.images && product.images.filter(u => u && u.trim()))
-        || (product.image ? [product.image] : []);
+      const allImages = (product.images && product.images.filter(u => u && u.trim())) || (product.image ? [product.image] : []);
       buildGallery(allImages);
 
       let badgesHTML = '';
-      const D = window.BUNOFEED_DATA;
       if (product.badge) {
-        const cls = product.badgeType === 'new' ? ' new' : product.badgeType === 'limited' ? ' limited' : '';
-        badgesHTML += `<span class="buno-badge ${cls}">${product.badge}</span>`;
-      }
-      const saleActive = D && D.sale && D.sale.active && (!D.sale.endDate || new Date() <= new Date(D.sale.endDate));
-      if (saleActive) {
-        badgesHTML += `<span class="buno-badge sale">${D.sale.label || 'SALE'} ${D.sale.discountPercent}% OFF</span>`;
+        badgesHTML += `<span class="buno-badge ${product.badgeType || ''}">${product.badge}</span>`;
       }
       document.getElementById('buno-modal-badges').innerHTML = badgesHTML;
 
@@ -1295,7 +1145,6 @@
       descEl.classList.remove('expanded');
       descToggle.textContent = 'more ▾';
       
-      // Determine if text is long enough for collapse
       if ((product.description || '').length > 150) {
         descToggle.style.display = 'inline-block';
       } else {
@@ -1306,7 +1155,43 @@
       document.getElementById('buno-modal-features').innerHTML =
         (product.features || []).map(f => `<span class="buno-chip">${f}</span>`).join('');
 
-      buildVariants(product);
+      /* POPULATE REWORKED MULTI-SELECTORS ENGINE */
+      
+      // Sizes Selector Setup
+      sizeSelect.innerHTML = '';
+      const sizesList = product.allowedSizes || (product.variants ? product.variants.map(v => v.label) : [product.weight || '500g']);
+      sizesList.forEach(sz => {
+        const opt = document.createElement('option');
+        opt.value = sz;
+        opt.textContent = sz;
+        sizeSelect.appendChild(opt);
+      });
+      if (sizesList.length > 0) {
+        sizeSelect.value = sizesList[0];
+      }
+
+      // Texture Selector Setup
+      textureSelect.innerHTML = '';
+      const texturesList = product.allowedTextures || ["Default"];
+      const hasRealTextures = texturesList.some(t => t.toLowerCase() !== 'default') && texturesList.length > 1;
+
+      if (hasRealTextures) {
+        textureGroup.style.display = '';
+        texturesList.forEach(tx => {
+          const opt = document.createElement('option');
+          opt.value = tx;
+          opt.textContent = tx;
+          textureSelect.appendChild(opt);
+        });
+        textureSelect.value = texturesList[0];
+      } else {
+        textureGroup.style.display = 'none';
+        const opt = document.createElement('option');
+        opt.value = "Default";
+        opt.textContent = "Default";
+        textureSelect.appendChild(opt);
+        textureSelect.value = "Default";
+      }
 
       qtyNumEl.textContent = '1';
       updatePriceDisplay();
@@ -1333,11 +1218,6 @@
           body.classList.toggle('open', open);
         });
       });
-
-      const viewAllBtn = document.getElementById('buno-view-all-btn');
-      if (viewAllBtn) {
-        viewAllBtn.href = '/shop.html';
-      }
 
       overlay.classList.add('open');
       lockBodyScroll();
