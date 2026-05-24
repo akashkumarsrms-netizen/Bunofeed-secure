@@ -83,8 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const subtotalBase = base * (1 + profit / 100);
       const discountedSubtotal = subtotalBase * (1 - directDiscount / 100);
 
-      const salesPrice = Math.round(discountedSubtotal * (1 + gst / 100));
-      const mrp = Math.round(subtotalBase * (1 + gst / 100));
+      const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
+      const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
 
       return { price: salesPrice, mrp: mrp };
     }
@@ -100,11 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mrp && mrp > price) {
       const pct = Math.round((1 - price / mrp) * 100);
       return `
-        <span class="price-current">₹${price}</span>
-        <span class="price-old">₹${mrp}</span>
+        <span class="price-current">₹${price.toFixed(2)}</span>
+        <span class="price-old">₹${mrp.toFixed(2)}</span>
         <span class="price-save-tag">${pct}% off</span>`;
     }
-    return `<span class="price-original">₹${price}</span>`;
+    return `<span class="price-original">₹${price.toFixed(2)}</span>`;
   }
 
   /* ----------------------------------------------------------
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let promotionalDiscountValue = 0;
     if (activeCoupon) {
       if (activeCoupon.discountType === 'percent') {
-        promotionalDiscountValue = Math.round(itemsSubtotal * (activeCoupon.discountValue / 100));
+        promotionalDiscountValue = parseFloat((itemsSubtotal * (activeCoupon.discountValue / 100)).toFixed(2));
       } else {
         promotionalDiscountValue = Math.min(itemsSubtotal, activeCoupon.discountValue);
       }
@@ -355,9 +355,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const proceedBtn = document.getElementById('proceed-pay-btn');
     if (proceedBtn) {
-      const discountLabel = promotionalDiscountValue > 0 ? ` (₹${promotionalDiscountValue} discount applied)` : '';
+      const discountLabel = promotionalDiscountValue > 0 ? ` (₹${promotionalDiscountValue.toFixed(2)} discount applied)` : '';
       const shippingLabel = grandTotalValue > discountedTotal ? ` (+₹${shippingCharge} shipping)` : ' (Free Shipping)';
-      proceedBtn.textContent = `Pay ₹${grandTotalValue}${discountLabel}${shippingLabel}`;
+      proceedBtn.textContent = `Pay ₹${grandTotalValue.toFixed(2)}${discountLabel}${shippingLabel}`;
     }
   }
 
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let promotionalDiscountValue = 0;
       if (activeCoupon) {
         if (activeCoupon.discountType === 'percent') {
-          promotionalDiscountValue = Math.round(subtotalVal * (activeCoupon.discountValue / 100));
+          promotionalDiscountValue = parseFloat((subtotalVal * (activeCoupon.discountValue / 100)).toFixed(2));
         } else {
           promotionalDiscountValue = Math.min(subtotalVal, activeCoupon.discountValue);
         }
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const grandTotalCombined = discountedTotal + shippingAmt;
 
       const orderId = generateOrderId();
-      const chosenTag = selectedVariantLabel ? `${currentProduct.name} (${selectedVariantLabel})` : currentProduct.name;
+      const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
       const orderPayload = {
         order_id: orderId,

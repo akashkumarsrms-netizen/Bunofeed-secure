@@ -1043,8 +1043,8 @@
       const subtotalBase = base * (1 + profit / 100);
       const discountedSubtotal = subtotalBase * (1 - directDiscount / 100);
 
-      const salesPrice = Math.round(discountedSubtotal * (1 + gst / 100));
-      const mrp = Math.round(subtotalBase * (1 + gst / 100));
+      const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
+      const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
 
       return {
         price: salesPrice,
@@ -1064,10 +1064,10 @@
   function updatePriceDisplay() {
     const { price, mrp } = getComputedPriceCombo();
 
-    priceEl.textContent = `₹${price}`;
+    priceEl.textContent = `₹${price.toFixed(2)}`;
 
     if (mrp && mrp > price) {
-      mrpEl.textContent = `₹${mrp}`;
+      mrpEl.textContent = `₹${mrp.toFixed(2)}`;
       mrpEl.style.display = 'inline';
       const pct = Math.round((1 - price / mrp) * 100);
       discountEl.textContent = `${pct}% OFF`;
@@ -1077,7 +1077,7 @@
       discountEl.style.display = 'none';
     }
 
-    subtotalEl.textContent = `Total: ₹${price * _qty}`;
+    subtotalEl.textContent = `Total: ₹${(price * _qty).toFixed(2)}`;
     return price;
   }
 
