@@ -1309,11 +1309,11 @@ window.recalculateComboRow = function(inputEl) {
   const subtotalBase = base * (1 + profit / 100);
   const discountedSubtotal = subtotalBase * (1 - discount / 100);
 
-  const calculatedSales = Math.round(discountedSubtotal * (1 + gst / 100));
-  const calculatedMrp = Math.round(subtotalBase * (1 + gst / 100));
+  const calculatedSales = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
+  const calculatedMrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
 
-  tr.querySelector('.combo-calculated-price').textContent = `₹${calculatedSales}`;
-  tr.querySelector('.combo-calculated-mrp').textContent = `₹${calculatedMrp}`;
+  tr.querySelector('.combo-calculated-price').textContent = `₹${calculatedSales.toFixed(2)}`;
+  tr.querySelector('.combo-calculated-mrp').textContent = `₹${calculatedMrp.toFixed(2)}`;
 
   // Keep internal dictionary sync updated immediately
   const comboKey = tr.dataset.combo;

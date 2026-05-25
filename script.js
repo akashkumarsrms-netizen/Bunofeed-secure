@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
       const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
-      // GST amount included in salesPrice = salesPrice - discountedSubtotal
       const gstAmount = parseFloat((salesPrice - discountedSubtotal).toFixed(2));
 
       return { price: salesPrice, mrp: mrp, gstRate: gst, gstAmount: gstAmount };
@@ -454,16 +453,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const grand = parseFloat((discountedTotal + shipAmt).toFixed(2));
     const varLabel = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
 
-    // Compute GST info from pricing engine
+    // GST breakdown
     let gstRate = 0, gstAmountTotal = 0;
     if (currentProduct && selectedVariantLabel) {
-      const parts = selectedVariantLabel.split(' ');
-      const sizePart = parts[parts.length - 1];
-      const texPart  = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
-      const priceInfo = parseComboPrice(currentProduct, sizePart, texPart);
-      gstRate = priceInfo.gstRate || 0;
-      // GST amount per unit × qty
-      gstAmountTotal = parseFloat((priceInfo.gstAmount * qty).toFixed(2));
+      const _parts = selectedVariantLabel.split(' ');
+      const _sz = _parts[_parts.length - 1];
+      const _tx = _parts.length > 1 ? _parts.slice(0, _parts.length - 1).join(' ') : 'Default';
+      const _pi = parseComboPrice(currentProduct, _sz, _tx);
+      gstRate = _pi.gstRate || 0;
+      gstAmountTotal = parseFloat(((_pi.gstAmount || 0) * qty).toFixed(2));
     }
 
     let rows = '';
@@ -471,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rows += '<div class="os-row"><span>Quantity</span><span>× ' + qty + '</span></div>';
     rows += '<div class="os-row os-subtotal"><span>Subtotal (incl. GST)</span><span>₹' + subtotalVal.toFixed(2) + '</span></div>';
     if (gstRate > 0 && gstAmountTotal > 0) {
-      rows += '<div class="os-row" style="color:#888;font-size:.78rem;"><span>GST (' + gstRate + '%) included in above</span><span style="color:#888;">₹' + gstAmountTotal.toFixed(2) + '</span></div>';
+      rows += '<div class="os-row" style="color:#999;font-size:.78rem;"><span>GST (' + gstRate + '%) included above</span><span style="color:#999;">₹' + gstAmountTotal.toFixed(2) + '</span></div>';
     }
     if (promoDiscount > 0 && activeCoupon) {
       const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
@@ -607,7 +605,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Local JSON order synchronization failed:', err);
       }
 
-      executeRazorpayGateway(currentProduct, qty, grandTotalCombined, shippingAmt, orderPayload, chosenTag);
+      // Compute GST to pass to success page
+      const _gstInfo = (() => {
+        if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
+        const _p = selectedVariantLabel.split(' ');
+        const _sz = _p[_p.length - 1];
+        const _tx = _p.length > 1 ? _p.slice(0, _p.length - 1).join(' ') : 'Default';
+        const _pi = parseComboPrice(currentProduct, _sz, _tx);
+        return { rate: _pi.gstRate || 0, amt: parseFloat(((_pi.gstAmount || 0) * qty).toFixed(2)) };
+      })();
+      executeRazorpayGateway(currentProduct, qty, grandTotalCombined, shippingAmt, orderPayload, chosenTag, _gstInfo);
     });
   }
 
@@ -631,7 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(overlay);
   }
 
-  function executeRazorpayGateway(product, quantity, grandTotal, shippingAmt, orderPayload, displayTitle) {
+  function executeRazorpayGateway(product, quantity, grandTotal, shippingAmt, orderPayload, displayTitle, gstInfo) {
+    gstInfo = gstInfo || { rate: 0, amt: 0 };
     const rzpKey = D.payment && D.payment.razorpayKeyId;
 
     if (!rzpKey || rzpKey.includes('PASTE_YOUR') || rzpKey.includes('rzp_test_XXXX')) {
@@ -642,17 +650,8 @@ document.addEventListener('DOMContentLoaded', () => {
       window.BUNOFEED_API.post('createOrder', orderPayload).then(() => {
         closeCheckoutModal();
         launchSuccessFullscreenOverlay();
-        // compute GST for success page
-        const _gstInfo = (() => {
-          if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
-          const parts = selectedVariantLabel.split(' ');
-          const sz = parts[parts.length - 1];
-          const tx = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
-          const pi = parseComboPrice(currentProduct, sz, tx);
-          return { rate: pi.gstRate || 0, amt: parseFloat(((pi.gstAmount || 0) * quantity).toFixed(2)) };
-        })();
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${_gstInfo.rate}&gst_amount=${_gstInfo.amt}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}`;
         }, 1200);
       });
       return;
@@ -690,18 +689,8 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Finalizing order record update failed:', err);
         }
 
-        // compute GST for success page
-        const _gstInfo = (() => {
-          if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
-          const parts = selectedVariantLabel.split(' ');
-          const sz = parts[parts.length - 1];
-          const tx = parts.length > 1 ? parts.slice(0, parts.length - 1).join(' ') : 'Default';
-          const pi = parseComboPrice(currentProduct, sz, tx);
-          return { rate: pi.gstRate || 0, amt: parseFloat(((pi.gstAmount || 0) * quantity).toFixed(2)) };
-        })();
-
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${_gstInfo.rate}&gst_amount=${_gstInfo.amt}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}`;
         }, 1200);
       },
       modal: {

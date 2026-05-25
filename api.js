@@ -22,7 +22,6 @@ window.BUNOFEED_API = {
     createOrder: '/api/order/create',   // POST — save new order
     lookupOrder: '/api/order/lookup',   // GET  — fetch order by ID + phone
     updateOrder: '/api/order/update',   // POST — update return/cancel status
-    getInvoice:  '/api/order/invoice',  // GET  — fetch invoice PDF URL by order ID
   },
 
   // ── Helper: full URL builder ──

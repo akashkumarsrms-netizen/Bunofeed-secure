@@ -114,27 +114,8 @@
     .ps-row.ps-discount span:last-child { color: #28a745 !important; }
     .ps-row.ps-total { border-top: 2px solid #e0d4cc; border-bottom: none; margin-top: .3rem; padding-top: .7rem; }
     .ps-row.ps-total span { color: var(--brown-dark) !important; font-size: .97rem; }
-    .ps-row.ps-gst span { color: #888 !important; font-size: .82rem; }
-    .ps-row.ps-gst span:last-child { color: #888 !important; }
-    .btn-invoice {
-      background: #6B2D0E;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 22px;
-      font-family: var(--font-head, 'Montserrat', sans-serif);
-      font-weight: 700;
-      font-size: .9rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      min-height: 44px;
-      transition: background .2s, transform .2s;
-      text-decoration: none;
-    }
-    .btn-invoice:hover { background: #4a1e08; transform: translateY(-2px); }
-    .btn-invoice:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .ps-free { color: #28a745; font-weight: 700; }
+    .ps-row.ps-gst span { color: #999 !important; font-size: .82rem; }
   </style>
 </head>
 <body>
@@ -165,8 +146,8 @@
       <!-- Price Breakdown Summary -->
       <div class="price-summary" id="price-summary" style="display:none;">
         <h3><i class="fas fa-receipt"></i> Price Breakdown</h3>
-        <div class="ps-row"><span>Item Price × Qty</span><span id="ps-subtotal">—</span></div>
-        <div class="ps-row ps-gst" id="ps-gst-row" style="display:none;"><span id="ps-gst-label">GST (18%) included</span><span id="ps-gst-val">—</span></div>
+        <div class="ps-row"><span>Item Price × Qty (incl. GST)</span><span id="ps-subtotal">—</span></div>
+        <div class="ps-row ps-gst" id="ps-gst-row" style="display:none;"><span id="ps-gst-label">GST</span><span id="ps-gst-val">—</span></div>
         <div class="ps-row ps-discount" id="ps-coupon-row" style="display:none;"><span id="ps-coupon-label">Coupon Discount</span><span id="ps-coupon-val">—</span></div>
         <div class="ps-row" id="ps-ship-row"><span>Shipping</span><span id="ps-shipping">—</span></div>
         <div class="ps-row ps-total"><span>Total Charged</span><span id="ps-grand">—</span></div>
@@ -175,14 +156,10 @@
       <div class="success-actions">
         <a href="/shop.html"  class="btn btn-primary">Continue Shopping</a>
         <a href="/orders.html" class="btn btn-brown">Track Order</a>
-        <button class="btn-invoice" id="btn-download-invoice" onclick="downloadInvoice()" style="display:none;">
-          <i class="fas fa-file-pdf"></i> Download Invoice
-        </button>
       </div>
     </div>
   </div>
 
-  <script src="/api.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     document.getElementById('order-id').textContent      = params.get('order_id') || '—';
@@ -200,22 +177,19 @@
     const couponCode      = params.get('coupon');
     const gstRateParam    = params.get('gst_rate');
     const gstAmtParam     = params.get('gst_amount');
-
     if (subtotalParam !== null) {
       const subtotal       = parseFloat(subtotalParam);
       const shipping       = parseFloat(shippingParam) || 0;
       const promoDiscount  = parseFloat(promoParam) || 0;
       const qty            = parseInt(params.get('qty')) || 1;
       const gstRate        = parseFloat(gstRateParam) || 0;
-      const gstAmt         = parseFloat(gstAmtParam) || 0;
+      const gstAmt         = parseFloat(gstAmtParam)  || 0;
 
       document.getElementById('ps-subtotal').textContent  = '₹' + subtotal.toFixed(2);
 
-      // GST row
       if (gstRate > 0 && gstAmt > 0) {
-        const gstRow = document.getElementById('ps-gst-row');
-        gstRow.style.display = 'flex';
-        document.getElementById('ps-gst-label').textContent = 'GST (' + gstRate + '%) included in above';
+        document.getElementById('ps-gst-row').style.display = 'flex';
+        document.getElementById('ps-gst-label').textContent = 'GST (' + gstRate + '%) included above';
         document.getElementById('ps-gst-val').textContent   = '₹' + gstAmt.toFixed(2);
       }
 
@@ -235,34 +209,6 @@
 
       document.getElementById('ps-grand').textContent = total ? '₹' + parseFloat(total).toFixed(2) : '—';
       document.getElementById('price-summary').style.display = 'block';
-    }
-
-    // Show Download Invoice button if we have order_id and payment_id
-    const orderId = params.get('order_id');
-    const paymentId = params.get('payment_id');
-    if (orderId && paymentId && !paymentId.startsWith('SANDBOX_')) {
-      document.getElementById('btn-download-invoice').style.display = 'inline-flex';
-    } else if (orderId) {
-      // show even in test mode
-      document.getElementById('btn-download-invoice').style.display = 'inline-flex';
-    }
-
-    async function downloadInvoice() {
-      const btn = document.getElementById('btn-download-invoice');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating…';
-      try {
-        const res = await window.BUNOFEED_API.get('getInvoice', { orderId: orderId });
-        if (res.status === 'success' && res.invoiceUrl) {
-          window.open(res.invoiceUrl, '_blank');
-        } else {
-          alert(res.message || 'Invoice not ready yet. Please try from My Orders page after a minute.');
-        }
-      } catch (e) {
-        alert('Could not fetch invoice. Please try again shortly.');
-      }
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Invoice';
     }
   </script>
 </body>
