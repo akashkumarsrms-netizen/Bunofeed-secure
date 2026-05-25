@@ -643,6 +643,35 @@
           window.BUNOFEED_API.get('lookupOrder', { orderId: raw, phone }),
           window.BUNOFEED_API.get('lookupInvoice', { orderId: raw }),
         ]);
+        // ─────────────────────────────────────
+// Invoice Download Button
+// ─────────────────────────────────────
+
+console.log("Invoice JSON:", invoiceJson);
+
+const invoiceBtnRow = document.getElementById('invoice-download-row');
+const invoiceBtn    = document.getElementById('btn-invoice');
+
+if (
+  invoiceJson &&
+  invoiceJson.status === 'success' &&
+  invoiceJson.invoice &&
+  invoiceJson.invoice.invoiceDriveUrl
+) {
+
+  invoiceBtn.href = invoiceJson.invoice.invoiceDriveUrl;
+
+  // optional
+  invoiceBtn.setAttribute('download', '');
+
+  // SHOW BUTTON
+  invoiceBtnRow.style.display = 'block';
+
+} else {
+
+  // HIDE BUTTON IF NO URL
+  invoiceBtnRow.style.display = 'none';
+}
         hide('state-loading');
 
         if (orderJson.status !== 'success' || !orderJson.order) {
