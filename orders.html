@@ -8,8 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <style>
+
     /* ── Page wrapper ── */
     .orders-page {
       min-height: 80vh;
@@ -59,11 +60,10 @@
     }
     .search-row {
       display: flex;
-      flex-direction: column;
       gap: .8rem;
     }
     .search-row .form-input {
-      width: 100%;
+      flex: 1;
       padding: 13px 16px;
       border: 2px solid #e0d4cc;
       border-radius: 12px;
@@ -73,7 +73,7 @@
       transition: border-color .2s;
     }
     .search-row .form-input:focus { border-color: var(--orange); }
-    .search-row .btn { white-space: nowrap; padding: 13px 24px; width: 100%; }
+    .search-row .btn { white-space: nowrap; padding: 13px 24px; }
     .search-hint {
       font-size: .78rem;
       color: var(--gray);
@@ -255,12 +255,56 @@
     .modal-success h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--dark); margin-bottom: .4rem; }
     .modal-success p  { color: var(--gray); font-size: .9rem; }
 
+    /* ── Payment Breakdown Panel ── */
+    .pay-breakdown {
+      background: #fffaf7;
+      border: 1px solid #e0d4cc;
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .pay-breakdown.visible { display: block; }
+    .pay-breakdown-header {
+      font-family: var(--font-head);
+      font-size: .75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #6B2D0E;
+      margin-bottom: .7rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .pb-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .35rem 0;
+      border-bottom: 1px dashed #f0e8e0;
+      font-size: .83rem;
+      gap: .5rem;
+    }
+    .pb-row:last-child { border-bottom: none; }
+    .pb-row span:first-child { color: #666; flex: 1; }
+    .pb-row span:last-child { font-family: var(--font-head); font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+    .pb-subtotal span:last-child { color: #6B2D0E; }
+    .pb-discount span { color: #28a745 !important; }
+    .pb-gst span { color: #999 !important; font-size: .79rem; }
+    .pb-free { color: #28a745; font-weight: 700; }
+    .pb-total { border-top: 2px solid #e0d4cc !important; border-bottom: none !important; margin-top: .3rem; padding-top: .55rem !important; }
+    .pb-total span { font-size: .95rem !important; color: #4a1e08 !important; }
+    .pb-invoice { font-size: .75rem; color: var(--gray); margin-top: .5rem; display: flex; justify-content: space-between; }
+    .pb-invoice span:last-child { font-weight: 700; color: var(--dark); }
+
     /* ── Responsive ── */
     @media(max-width:560px){
       .info-grid { grid-template-columns: 1fr; }
       .info-row:nth-last-child(-n+2) { border-bottom: 1px solid #f0e8e0; }
       .info-row:last-child { border-bottom: none; }
       .action-row .btn { flex: 1 1 100%; }
+      .search-row { flex-direction: column; }
       .modal-box { padding: 1.5rem 1.2rem; }
     }
   </style>
@@ -270,17 +314,17 @@
   <!-- ═══════════ NAVBAR ═══════════ -->
   <header class="navbar">
     <div class="nav-container">
-      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
-        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
+      <a href="index.html" class="logo" aria-label="Bunofeed Home">
+        <img src="https://i.ibb.co/5W7myd6t/Brand-logo-2.png" alt="Bunofeed Logo" class="logo-img"/>
       </a>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html"      class="nav-link">Home</a>
-        <a href="/shop.html"       class="nav-link">Products</a>
-        <a href="/orders.html"     class="nav-link active">My Orders</a>
-        <a href="/index.html#contact" class="nav-link">Contact</a>
+        <a href="index.html"      class="nav-link">Home</a>
+        <a href="shop.html"       class="nav-link">Products</a>
+        <a href="orders.html"     class="nav-link active">My Orders</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
@@ -292,25 +336,32 @@
       <div class="page-heading">
         <div class="section-tag">Order Tracking</div>
         <h1>Track Your <span>Order</span></h1>
-        <p>Enter your Order ID and mobile number to track packages and raise return requests.</p>
+        <p>Enter your Order ID to see the latest status and manage your order.</p>
       </div>
 
       <!-- Search -->
       <div class="order-search-card">
-        <div class="search-row">
-          <div class="form-group">
-            <label for="order-id-input">Order ID <span>*</span></label>
-            <input type="text" id="order-id-input" class="form-input" placeholder="e.g. ORD1720892098" autocomplete="off" spellcheck="false"/>
-          </div>
-          <div class="form-group">
-            <label for="phone-input">Mobile Number <span>*</span></label>
-            <input type="tel" id="phone-input" class="form-input" placeholder="10-digit registered number" maxlength="10" autocomplete="off" spellcheck="false"/>
-          </div>
-          <button class="btn btn-primary" id="track-btn" onclick="trackOrder()" style="margin-top: 0.5rem;">
-            <i class="fas fa-search"></i> Track Order
-          </button>
+        <label for="order-id-input">Your Order ID</label>
+        <div class="search-row" style="flex-direction:column;">
+  
+  <input type="text" id="order-id-input" class="form-input"
+    placeholder="Enter Order ID"
+    autocomplete="off"
+    spellcheck="false"/>
+
+  <input type="tel" id="phone-input" class="form-input"
+    placeholder="Enter Phone Number"
+    autocomplete="off"
+    spellcheck="false"/>
+
+  <button class="btn btn-primary" id="track-btn" onclick="trackOrder()">
+    <i class="fas fa-search"></i> Track
+  </button>
+
+</div>
+          
         </div>
-        <p class="search-hint">Your Order ID was sent to your email and phone after placing the order.</p>
+        <p class="search-hint">Your Order ID was sent to your email after placing the order.</p>
       </div>
 
       <!-- Loading -->
@@ -322,7 +373,7 @@
       <!-- Error -->
       <div class="state-box error" id="state-error">
         <i class="fas fa-exclamation-circle"></i>
-        <span id="error-text">Order not found. Please verify details and retry.</span>
+        <span id="error-text">Order not found. Please check your Order ID and try again.</span>
       </div>
 
       <!-- Result Card -->
@@ -348,7 +399,7 @@
               <span class="info-value" id="r-phone">—</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Product Option</span>
+              <span class="info-label">Product</span>
               <span class="info-value" id="r-product">—</span>
             </div>
             <div class="info-row">
@@ -360,15 +411,7 @@
               <span class="info-value" id="r-price">—</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Promo Code</span>
-              <span class="info-value" id="r-coupon">—</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Promo Discount</span>
-              <span class="info-value" id="r-coupon-discount">—</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Total Paid (with shipping)</span>
+              <span class="info-label">Total Paid</span>
               <span class="info-value" id="r-total">—</span>
             </div>
             <div class="info-row">
@@ -385,14 +428,25 @@
             </div>
           </div>
 
+          <!-- Payment Breakdown (fetched from invoices sheet) -->
+          <div class="pay-breakdown" id="pay-breakdown">
+            <div class="pay-breakdown-header"><i class="fas fa-receipt"></i> Payment Breakdown</div>
+            <div class="pb-row pb-subtotal"><span id="pb-product-label">Item (incl. GST)</span><span id="pb-subtotal">—</span></div>
+            <div class="pb-row pb-gst" id="pb-gst-row" style="display:none;"><span id="pb-gst-label">GST included above</span><span id="pb-gst-val">—</span></div>
+            <div class="pb-row pb-discount" id="pb-discount-row" style="display:none;"><span id="pb-discount-label">Coupon Discount</span><span id="pb-discount-val">—</span></div>
+            <div class="pb-row" id="pb-ship-row"><span>Shipping</span><span id="pb-shipping">—</span></div>
+            <div class="pb-row pb-total"><span>Total Paid</span><span id="pb-total">—</span></div>
+            <div class="pb-invoice"><span>Invoice No.</span><span id="pb-invoice-no">—</span></div>
+          </div>
+
           <!-- Status summary -->
           <div class="status-section">
             <div class="status-item">
-              <span class="s-label">Order Progress</span>
+              <span class="s-label">Order Status</span>
               <span class="status-badge" id="r-order-status-mini">—</span>
             </div>
             <div class="status-item">
-              <span class="s-label">Operation Requests</span>
+              <span class="s-label">Return / Cancel</span>
               <span class="status-badge" id="r-return-status">—</span>
             </div>
             <div class="status-item">
@@ -404,7 +458,7 @@
           <!-- Actions -->
           <div class="action-row">
             <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()">
-              <i class="fas fa-undo-alt"></i> Request Return / Refund
+              <i class="fas fa-undo-alt"></i> Request Return
             </button>
             <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
               <i class="fas fa-times-circle"></i> Cancel Order
@@ -425,7 +479,7 @@
       <div id="return-form-view">
         <div class="modal-icon return-icon"><i class="fas fa-undo-alt"></i></div>
         <h2>Request Return</h2>
-        <p class="modal-sub">Tell us why you'd like a return. We will process payouts within 48 hours elements.</p>
+        <p class="modal-sub">Please tell us why you'd like to return this order. We'll review your request within 24–48 hours.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Return <span>*</span></label>
@@ -441,14 +495,14 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="return-comment" placeholder="Describe the issue in detail…"></textarea>
+            <textarea id="return-comment" placeholder="Describe the issue in detail (optional but helpful)…"></textarea>
           </div>
           <div class="form-group">
-            <label>Upload Images / Videos</label>
+            <label>Upload Images / Videos <span style="color:var(--gray);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></label>
             <div class="file-upload-box">
               <input type="file" id="return-files" accept="image/*,video/*" multiple onchange="updateFileLabel()"/>
               <i class="fas fa-cloud-upload-alt"></i>
-              <p>Click to upload proof photos</p>
+              <p>Click to upload or drag &amp; drop photos / videos</p>
               <p class="file-names" id="file-label"></p>
             </div>
           </div>
@@ -462,8 +516,8 @@
 
       <div class="modal-success" id="return-success-view">
         <i class="fas fa-check-circle"></i>
-        <h3>Return Request Received!</h3>
-        <p>Your return request has been logged. We'll evaluate proof materials and update your tracking log within 24-48 hours.</p>
+        <h3>Return Request Submitted!</h3>
+        <p>Your return request has been received. We'll review it within 24–48 hours. A confirmation email has been sent to you.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('return-modal')">Close</button>
       </div>
     </div>
@@ -477,7 +531,7 @@
       <div id="cancel-form-view">
         <div class="modal-icon cancel-icon"><i class="fas fa-times-circle"></i></div>
         <h2>Cancel Order</h2>
-        <p class="modal-sub">Let us know why you are cancelling so we can improve our clean recipe operations.</p>
+        <p class="modal-sub">We're sorry to hear you'd like to cancel. Please let us know the reason so we can serve you better.</p>
         <div class="modal-form">
           <div class="form-group">
             <label>Reason for Cancellation <span>*</span></label>
@@ -493,7 +547,7 @@
           </div>
           <div class="form-group">
             <label>Additional Comments</label>
-            <textarea id="cancel-comment" placeholder="Provide extra feedback…"></textarea>
+            <textarea id="cancel-comment" placeholder="Any additional details (optional)…"></textarea>
           </div>
           <button class="btn btn-danger modal-submit-btn" id="cancel-submit-btn" onclick="submitCancellation()">
             <span class="btn-text"><i class="fas fa-times-circle"></i> Submit Cancellation Request</span>
@@ -505,8 +559,8 @@
 
       <div class="modal-success" id="cancel-success-view">
         <i class="fas fa-check-circle"></i>
-        <h3>Cancellation Submitted!</h3>
-        <p>Your cancellation request is successful. A refund has been automatically initiated and will reflect in 5-7 working days.</p>
+        <h3>Cancellation Request Submitted!</h3>
+        <p>Your cancellation request has been received and is being reviewed. A confirmation email has been sent to you.</p>
         <button class="btn btn-brown" style="margin-top:1.2rem;width:100%;" onclick="closeModal('cancel-modal')">Close</button>
       </div>
     </div>
@@ -516,46 +570,59 @@
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
+        <img src="https://i.ibb.co/5W7myd6t/Brand-logo-2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
         <p>Your companion in healthy living. Honest food for real people.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.facebook.com"  target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="https://www.linkedin.com/in/akash-kumar-995739293" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.youtube.com"   target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.x.com"         target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"><i class="fab fa-x-twitter"></i></a>
+        </div>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="/index.html">Home</a>
-        <a href="/shop.html">Products</a>
-        <a href="/orders.html">My Orders</a>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Products</a>
+        <a href="orders.html">My Orders</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="/privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a></p>
+        <p><i class="fas fa-map-marker-alt"></i> Bareilly, UP, India</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms of Service</a> | <a href="/privacy.html">Privacy Policy</a></p>
+      <p>© 2026 Bunofeed. All rights reserved. | <a href="terms.html">Terms of Service</a> | <a href="privacy.html">Privacy Policy</a></p>
+      <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
   </footer>
 
   <!-- ═══════════ SCRIPT ═══════════ -->
-  <script src="/api.js"></script>
+  <script src="api.js"></script>
   <script>
+    // API config loaded from api.js (window.BUNOFEED_API)
     let currentOrder = null;
 
-    // Mobile nav toggle
-    const hamburger = document.getElementById('hamburger');
-    if (hamburger) {
-      hamburger.addEventListener('click', function() {
-        this.classList.toggle('active');
-        document.getElementById('navLinks').classList.toggle('open');
-      });
-    }
+    /* ── Hamburger ── */
+    document.getElementById('hamburger').addEventListener('click', function(){
+      this.classList.toggle('active');
+      this.setAttribute('aria-expanded', this.classList.contains('active'));
+      document.getElementById('navLinks').classList.toggle('open');
+    });
 
+    /* ── Track Order ── */
     async function trackOrder() {
       const raw = document.getElementById('order-id-input').value.trim();
       const phone = document.getElementById('phone-input').value.trim();
 
       if (!raw || !phone) {
-        showError('Please enter both Order ID and registered Mobile Number.');
+        showError('Please enter both Order ID and Phone Number.');
         return;
       }
 
@@ -563,63 +630,130 @@
       show('state-loading');
 
       try {
-        const json = await window.BUNOFEED_API.get('lookupOrder', { orderId: raw, phone: phone });
+        // Fetch order and invoice in parallel
+        const [orderJson, invoiceJson] = await Promise.all([
+          window.BUNOFEED_API.get('lookupOrder', { orderId: raw, phone }),
+          window.BUNOFEED_API.get('lookupInvoice', { orderId: raw }),
+        ]);
         hide('state-loading');
 
-        if (json.status !== 'success' || !json.order) {
-          showError(json.message || 'Order not found. Check credentials and retry.');
+        if (orderJson.status !== 'success' || !orderJson.order) {
+          showError(orderJson.message || 'Order not found. Please check your Order ID and try again.');
           return;
         }
-        currentOrder = json.order;
-        renderOrder(json.order);
+        currentOrder = orderJson.order;
+        renderOrder(orderJson.order);
+
+        // Render invoice breakdown if available
+        if (invoiceJson && invoiceJson.status === 'success' && invoiceJson.invoice) {
+          renderInvoice(invoiceJson.invoice);
+        } else {
+          document.getElementById('pay-breakdown').classList.remove('visible');
+        }
       } catch(err) {
         hide('state-loading');
-        showError('Network error. Check connection and try again.');
+        showError('Network error. Please check your connection and try again.');
       }
     }
+    document.getElementById('order-id-input').addEventListener('keydown', e => { if(e.key==='Enter') trackOrder(); });
 
+    /* ── Render Invoice Breakdown ── */
+    function renderInvoice(inv) {
+      const panel = document.getElementById('pay-breakdown');
+      const qty   = parseFloat(inv.qty)             || 1;
+      const sub   = parseFloat(inv.subtotalInclGst) || 0;
+      const gst   = parseFloat(inv.gstAmount)       || 0;
+      const disc  = parseFloat(inv.discount)        || 0;
+      const coup  = parseFloat(inv.couponDiscount)  || 0;
+      const ship  = parseFloat(inv.shippingCharges) || 0;
+      const total = parseFloat(inv.totalPaid)       || 0;
+
+      // Product label
+      document.getElementById('pb-product-label').textContent =
+        (inv.productName ? inv.productName + ' × ' + qty : 'Item × ' + qty) + ' (incl. GST)';
+      document.getElementById('pb-subtotal').textContent = '₹' + sub.toFixed(2);
+
+      // GST row
+      if (gst > 0) {
+        // Back-calculate rate from subtotal
+        const gstRate = sub > 0 ? Math.round((gst / sub) * 100 * 105) : 0;
+        document.getElementById('pb-gst-row').style.display   = 'flex';
+        document.getElementById('pb-gst-label').textContent   = 'GST (' + (inv.gstRate || gstRate) + '%) included above';
+        document.getElementById('pb-gst-val').textContent     = '₹' + gst.toFixed(2);
+      } else {
+        document.getElementById('pb-gst-row').style.display   = 'none';
+      }
+
+      // Coupon / discount row
+      const totalDiscount = disc + coup;
+      if (totalDiscount > 0) {
+        document.getElementById('pb-discount-row').style.display  = 'flex';
+        const dLabel = coup > 0 && disc > 0 ? 'Coupon + Discount'
+                     : coup > 0 ? 'Coupon Discount' : 'Discount';
+        document.getElementById('pb-discount-label').textContent  = dLabel;
+        document.getElementById('pb-discount-val').textContent    = '− ₹' + totalDiscount.toFixed(2);
+      } else {
+        document.getElementById('pb-discount-row').style.display  = 'none';
+      }
+
+      // Shipping
+      if (ship <= 0) {
+        document.getElementById('pb-shipping').innerHTML = '<span class="pb-free">FREE</span>';
+      } else {
+        document.getElementById('pb-shipping').textContent = '₹' + ship.toFixed(2);
+      }
+
+      document.getElementById('pb-total').textContent      = '₹' + total.toFixed(2);
+      document.getElementById('pb-invoice-no').textContent = inv.invoiceNumber || '—';
+
+      panel.classList.add('visible');
+    }
+
+    /* ── Render Order ── */
     function renderOrder(o) {
-      document.getElementById('r-order-id').textContent       = o.order_id       || '—';
-      document.getElementById('r-date').textContent           = o.date_time      || '—';
-      document.getElementById('r-name').textContent           = o.customer_name  || '—';
-      document.getElementById('r-phone').textContent          = o.phone_number   || '—';
-      document.getElementById('r-product').textContent        = o.product_name   || '—';
-      document.getElementById('r-qty').textContent            = o.quantity       || '—';
-      document.getElementById('r-price').textContent          = o.product_price   ? `₹${o.product_price}`  : '—';
-      document.getElementById('r-total').textContent          = o.total_amount   ? `₹${o.total_amount}`  : '—';
-      document.getElementById('r-payment-id').textContent     = o.payment_id     || '—';
-      document.getElementById('r-payment-status').textContent = o.payment_status || '—';
-      document.getElementById('r-coupon').textContent         = o.promo_code     ? o.promo_code.toUpperCase() : 'None';
-      document.getElementById('r-coupon-discount').textContent = o.promo_discount_amount ? `₹${o.promo_discount_amount}` : '—';
+      document.getElementById('r-order-id').textContent       = o.orderId       || '—';
+      document.getElementById('r-date').textContent           = o.dateTime      || '—';
+      document.getElementById('r-name').textContent           = o.customerName  || '—';
+      document.getElementById('r-phone').textContent          = o.phone         || '—';
+      document.getElementById('r-product').textContent        = o.productName   || '—';
+      document.getElementById('r-qty').textContent            = o.qty           || '—';
+      document.getElementById('r-price').textContent          = o.price   ? `₹${o.price}`  : '—';
+      document.getElementById('r-total').textContent          = o.total   ? `₹${o.total}`  : '—';
+      document.getElementById('r-payment-id').textContent     = o.paymentId     || '—';
+      document.getElementById('r-payment-status').textContent = o.paymentStatus || '—';
       document.getElementById('r-address').textContent =
         (o.address && o.pincode) ? `${o.address} – ${o.pincode}` : (o.address || '—');
 
-      const orderStatus  = (o.payment_status === 'Paid' || o.payment_status === 'Paid (Test Local)') ? 'Confirmed' : (o.payment_status === 'Cancelled' ? 'Cancelled' : 'Pending');
-      const parsedStatus = o.orderStatus || orderStatus;
-      
-      const osBadge = makeBadge(parsedStatus);
-      const rsBadge = makeBadge(o.returnStatus || 'None');
-      const rfBadge = makeBadge(o.refundStatus || 'None');
+      const orderStatus  = (o.orderStatus  || '').trim();
+      const returnStatus = (o.returnStatus || '').trim();
+      const refundStatus = (o.refundStatus || '').trim();
 
-      setBadge('r-order-status-badge', osBadge, parsedStatus);
-      setBadge('r-order-status-mini',  osBadge, parsedStatus);
-      setBadge('r-return-status',      rsBadge, o.returnStatus || 'None');
-      setBadge('r-refund-status',      rfBadge, o.refundStatus || 'None');
+      const osBadge = makeBadge(orderStatus,  'order');
+      const rsBadge = makeBadge(returnStatus, 'return');
+      const rfBadge = makeBadge(refundStatus, 'refund');
+
+      setBadge('r-order-status-badge', osBadge, orderStatus  || 'Pending');
+      setBadge('r-order-status-mini',  osBadge, orderStatus  || 'Pending');
+      setBadge('r-return-status',      rsBadge, returnStatus || 'None');
+      setBadge('r-refund-status',      rfBadge, refundStatus || 'None');
 
       document.getElementById('result-status-bar').style.background = osBadge.barColor;
 
-      /* Button enablement logic */
-      const ls = parsedStatus.toLowerCase();
-      const lr = (o.returnStatus || '').toLowerCase();
-      const activeRequests = ['requested return', 'requested cancellation', 'cancelled', 'refunded', 'returned'];
+      /* Button logic */
+      const ls = orderStatus.toLowerCase();
+      const lr = returnStatus.toLowerCase();
+      const activeRequests = ['requested return','requested cancellation','cancelled',
+                              'return request approved','return received'];
 
       const returnEnabled = ls === 'delivered' && !activeRequests.includes(lr);
-      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr) && ls !== 'cancelled';
+      const cancelEnabled = ls !== 'delivered' && !activeRequests.includes(lr);
 
       const btnR = document.getElementById('btn-return');
       const btnC = document.getElementById('btn-cancel');
       btnR.disabled = !returnEnabled;
       btnC.disabled = !cancelEnabled;
+      btnR.title = returnEnabled ? '' : (ls !== 'delivered' ? 'Available only after delivery.' : 'A request already exists.');
+      btnC.title = cancelEnabled ? '' : (ls === 'delivered' ? 'Order delivered — use Return instead.' : 'A request already exists.');
 
       show('order-result-card');
     }
@@ -630,6 +764,7 @@
       el.innerHTML = badge.icon + ' ' + text;
     }
 
+    /* ── Badge helper ── */
     function makeBadge(status) {
       const s = (status || '').toLowerCase().trim();
       if (!s || s === 'none' || s === '—')     return { cls:'badge-default',   icon:'<i class="fas fa-minus"></i>',              barColor:'#dee2e6' };
@@ -640,12 +775,16 @@
       if (s === 'cancelled')                    return { cls:'badge-cancelled', icon:'<i class="fas fa-ban"></i>',                barColor:'#dc3545' };
       if (s.includes('requested cancell'))      return { cls:'badge-cancelled', icon:'<i class="fas fa-hourglass-half"></i>',     barColor:'#dc3545' };
       if (s.includes('requested return'))       return { cls:'badge-return',    icon:'<i class="fas fa-hourglass-half"></i>',     barColor:'#fd7e14' };
-      if (s.includes('approved'))               return { cls:'badge-return',    icon:'<i class="fas fa-thumbs-up"></i>',          barColor:'#fd7e14' };
+      if (s.includes('return request appr'))    return { cls:'badge-return',    icon:'<i class="fas fa-thumbs-up"></i>',          barColor:'#fd7e14' };
+      if (s.includes('return received'))        return { cls:'badge-return',    icon:'<i class="fas fa-undo"></i>',               barColor:'#fd7e14' };
       if (s.includes('refund processed'))       return { cls:'badge-refund',    icon:'<i class="fas fa-rupee-sign"></i>',         barColor:'#20c997' };
       if (s === 'refunded')                     return { cls:'badge-refund',    icon:'<i class="fas fa-check-double"></i>',       barColor:'#20c997' };
+      if (s.includes('refund failed'))          return { cls:'badge-cancelled', icon:'<i class="fas fa-exclamation-circle"></i>', barColor:'#dc3545' };
+      if (s.includes('refund rejected'))        return { cls:'badge-cancelled', icon:'<i class="fas fa-times-circle"></i>',       barColor:'#dc3545' };
       return { cls:'badge-default', icon:'<i class="fas fa-info-circle"></i>', barColor:'#6c757d' };
     }
 
+    /* ── Modals ── */
     function openReturnModal() {
       resetModal('return');
       document.getElementById('return-modal').classList.add('open');
@@ -675,6 +814,8 @@
         document.getElementById('cancel-error').style.display = 'none';
       }
     }
+    document.getElementById('return-modal').addEventListener('click', function(e){ if(e.target===this) closeModal('return-modal'); });
+    document.getElementById('cancel-modal').addEventListener('click', function(e){ if(e.target===this) closeModal('cancel-modal'); });
 
     function updateFileLabel() {
       const files = document.getElementById('return-files').files;
@@ -682,6 +823,7 @@
         files.length ? Array.from(files).map(f=>f.name).join(', ') : '';
     }
 
+    /* ── Submit Return ── */
     async function submitReturn() {
       const reason  = document.getElementById('return-reason').value.trim();
       const comment = document.getElementById('return-comment').value.trim();
@@ -690,19 +832,13 @@
       errEl.style.display='none';
 
       const btn = document.getElementById('return-submit-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
+      btn.classList.add('loading'); btn.disabled=true;
       try {
         const json = await window.BUNOFEED_API.post('updateOrder', {
-          orderId: currentOrder.order_id,
-          phone: currentOrder.phone_number,
-          newStatus: 'Requested Return',
-          reason: reason,
-          comment: comment
+          orderId: currentOrder.orderId, newStatus: 'Requested Return', reason, comment
         });
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Return Request';
-        if (json.status === 'success') {
+        btn.classList.remove('loading'); btn.disabled=false;
+        if (json.status==='success') {
           document.getElementById('return-form-view').style.display    = 'none';
           document.getElementById('return-success-view').style.display = 'block';
           currentOrder.returnStatus = 'Requested Return';
@@ -712,12 +848,12 @@
           errEl.style.display = 'block';
         }
       } catch(err) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Return Request';
+        btn.classList.remove('loading'); btn.disabled=false;
         errEl.textContent='Network error. Please try again.'; errEl.style.display='block';
       }
     }
 
+    /* ── Submit Cancellation ── */
     async function submitCancellation() {
       const reason  = document.getElementById('cancel-reason').value.trim();
       const comment = document.getElementById('cancel-comment').value.trim();
@@ -726,35 +862,28 @@
       errEl.style.display='none';
 
       const btn = document.getElementById('cancel-submit-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
+      btn.classList.add('loading'); btn.disabled=true;
       try {
         const json = await window.BUNOFEED_API.post('updateOrder', {
-          orderId: currentOrder.order_id,
-          phone: currentOrder.phone_number,
-          newStatus: 'Cancelled',
-          reason: reason,
-          comment: comment
+          orderId: currentOrder.orderId, newStatus: 'Requested Cancellation', reason, comment
         });
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-times-circle"></i> Submit Cancellation Request';
-        if (json.status === 'success') {
+        btn.classList.remove('loading'); btn.disabled=false;
+        if (json.status==='success') {
           document.getElementById('cancel-form-view').style.display    = 'none';
           document.getElementById('cancel-success-view').style.display = 'block';
-          currentOrder.orderStatus = 'Cancelled';
-          currentOrder.payment_status = 'Cancelled';
+          currentOrder.returnStatus = 'Requested Cancellation';
           renderOrder(currentOrder);
         } else {
           errEl.textContent = json.message || 'Something went wrong. Please try again.';
           errEl.style.display = 'block';
         }
       } catch(err) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-times-circle"></i> Submit Cancellation Request';
+        btn.classList.remove('loading'); btn.disabled=false;
         errEl.textContent='Network error. Please try again.'; errEl.style.display='block';
       }
     }
 
+    /* ── Helpers ── */
     function show(id)  { document.getElementById(id).style.display='block'; }
     function hide(id)  { document.getElementById(id).style.display='none';  }
     function hideAll() { hide('state-loading'); hide('state-error'); hide('order-result-card'); }

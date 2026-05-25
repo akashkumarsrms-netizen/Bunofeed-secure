@@ -1039,6 +1039,20 @@
         <textarea class="form-textarea" id="edit-allergenInfo" style="min-height:70px"></textarea>
       </div>
 
+      <!-- HSN CODE — Internal / Invoice use only, never shown to customers -->
+      <div class="form-group" style="grid-column:1/-1; border:1.5px dashed var(--border); border-radius:10px; padding:1rem 1.1rem; background:var(--off-white);">
+        <label class="form-label" style="display:flex;align-items:center;gap:.5rem;">
+          <i class="fas fa-file-invoice" style="color:var(--orange)"></i>
+          HSN Code
+          <span style="background:#e8f5e9;color:#28a745;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:.04em;">Invoice Only</span>
+        </label>
+        <input type="text" class="form-input" id="edit-hsnCode"
+          placeholder="e.g. 2106"
+          maxlength="8"
+          style="font-family:monospace;letter-spacing:.1em;max-width:220px;"/>
+        <span class="form-hint" style="margin-top:.3rem;">Used only for invoicing &amp; GST compliance. Never displayed to customers on the website.</span>
+      </div>
+
     </div>
 
     <div style="display:flex;flex-direction:column;gap:.8rem;padding:1rem;background:var(--off-white);border-radius:10px;margin-bottom:1rem;">
@@ -1355,6 +1369,7 @@ function openEditModal(idx) {
   document.getElementById('edit-keyBenefits').value    = p.keyBenefits  || '';
   document.getElementById('edit-storageInfo').value    = p.storageInfo  || '';
   document.getElementById('edit-allergenInfo').value   = p.allergenInfo || '';
+  document.getElementById('edit-hsnCode').value        = p.hsnCode || '';
   document.getElementById('edit-visible').checked      = p.visible !== false;
   document.getElementById('edit-bestseller').checked   = p.bestSeller === true;
 
@@ -1443,6 +1458,7 @@ function saveEditedProduct() {
     keyBenefits: document.getElementById('edit-keyBenefits').value.trim(),
     storageInfo: document.getElementById('edit-storageInfo').value.trim(),
     allergenInfo:document.getElementById('edit-allergenInfo').value.trim(),
+    hsnCode:     document.getElementById('edit-hsnCode').value.trim(),
     visible:     document.getElementById('edit-visible').checked,
     bestSeller:  document.getElementById('edit-bestseller').checked,
   };

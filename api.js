@@ -19,9 +19,10 @@ window.BUNOFEED_API = {
 
   // ── API Endpoints ──
   endpoints: {
-    createOrder: '/api/order/create',   // POST — save new order
-    lookupOrder: '/api/order/lookup',   // GET  — fetch order by ID + phone
-    updateOrder: '/api/order/update',   // POST — update return/cancel status
+    createOrder:   '/api/order/create',    // POST — save new order
+    lookupOrder:   '/api/order/lookup',    // GET  — fetch order by ID + phone
+    updateOrder:   '/api/order/update',    // POST — update return/cancel status
+    lookupInvoice: '/api/invoice/lookup',  // GET  — fetch invoice/payment breakdown by order ID
   },
 
   // ── Helper: full URL builder ──

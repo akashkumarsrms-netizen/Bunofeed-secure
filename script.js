@@ -579,6 +579,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const orderId = generateOrderId();
       const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
+      // Compute GST for invoice fields
+      const _gstForPayload = (() => {
+        if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
+        const _p = selectedVariantLabel.split(' ');
+        const _sz = _p[_p.length - 1];
+        const _tx = _p.length > 1 ? _p.slice(0, _p.length - 1).join(' ') : 'Default';
+        const _pi = parseComboPrice(currentProduct, _sz, _tx);
+        return { rate: _pi.gstRate || 0, amt: parseFloat(((_pi.gstAmount || 0) * qty).toFixed(2)) };
+      })();
+
       const orderPayload = {
         order_id: orderId,
         date_time: new Date().toLocaleString('en-IN'),
@@ -595,7 +605,14 @@ document.addEventListener('DOMContentLoaded', () => {
         promo_code: activeCoupon ? activeCoupon.code : '',
         promo_discount_amount: promotionalDiscountValue,
         payment_id: '',
-        payment_status: 'Pending'
+        payment_status: 'Pending',
+        // ── Invoice fields ──
+        hsn_code: currentProduct.hsnCode || '',
+        discount: 0,                              // product-level discount already in price
+        coupon_discount: promotionalDiscountValue,
+        shipping_charges: shippingAmt,
+        gst_rate: _gstForPayload.rate,
+        gst_amount: _gstForPayload.amt,
       };
 
       // Create Order Entry Statically or locally on Express database file
@@ -605,16 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Local JSON order synchronization failed:', err);
       }
 
-      // Compute GST to pass to success page
-      const _gstInfo = (() => {
-        if (!currentProduct || !selectedVariantLabel) return { rate: 0, amt: 0 };
-        const _p = selectedVariantLabel.split(' ');
-        const _sz = _p[_p.length - 1];
-        const _tx = _p.length > 1 ? _p.slice(0, _p.length - 1).join(' ') : 'Default';
-        const _pi = parseComboPrice(currentProduct, _sz, _tx);
-        return { rate: _pi.gstRate || 0, amt: parseFloat(((_pi.gstAmount || 0) * qty).toFixed(2)) };
-      })();
-      executeRazorpayGateway(currentProduct, qty, grandTotalCombined, shippingAmt, orderPayload, chosenTag, _gstInfo);
+      executeRazorpayGateway(currentProduct, qty, grandTotalCombined, shippingAmt, orderPayload, chosenTag, _gstForPayload);
     });
   }
 
