@@ -465,6 +465,14 @@
             </button>
           </div>
 
+          <!-- Invoice Download -->
+          <div id="invoice-download-row" style="display:none;padding-top:.9rem;border-top:1px solid #f0e8e0;margin-top:.4rem;">
+            <a id="btn-invoice" href="#" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:.45rem;font-family:var(--font-head);font-weight:700;font-size:.82rem;color:#6B2D0E;background:#fff8f3;border:1.5px solid #e0d4cc;border-radius:8px;padding:8px 16px;text-decoration:none;transition:background .2s,border-color .2s;">
+              <i class="fas fa-file-invoice" style="font-size:.9rem;"></i> Download Invoice
+            </a>
+          </div>
+
         </div>
       </div><!-- /order-result-card -->
 
@@ -649,6 +657,7 @@
           renderInvoice(invoiceJson.invoice);
         } else {
           document.getElementById('pay-breakdown').classList.remove('visible');
+          document.getElementById('invoice-download-row').style.display = 'none';
         }
       } catch(err) {
         hide('state-loading');
@@ -707,6 +716,17 @@
       document.getElementById('pb-invoice-no').textContent = inv.invoiceNumber || '—';
 
       panel.classList.add('visible');
+
+      // Invoice download button
+      const invoiceRow = document.getElementById('invoice-download-row');
+      const invoiceBtn = document.getElementById('btn-invoice');
+      const driveUrl   = inv.invoiceDriveUrl || '';
+      if (driveUrl) {
+        invoiceBtn.href = driveUrl;
+        invoiceRow.style.display = 'block';
+      } else {
+        invoiceRow.style.display = 'none';
+      }
     }
 
     /* ── Render Order ── */
