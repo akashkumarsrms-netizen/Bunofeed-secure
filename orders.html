@@ -179,6 +179,28 @@
     .btn-warning-custom:hover:not(:disabled) { background: #e8620a; border-color: #e8620a; transform: translateY(-2px); }
     .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
+    /* ── Cancel/Return accordion ── */
+    .cr-accordion {
+      margin-top: 1.2rem;
+      border-top: 1px solid #f0e8e0;
+      padding-top: 1rem;
+    }
+    .cr-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; background: none; border: 1.5px solid #e0d4cc;
+      border-radius: 10px; padding: 10px 16px;
+      font-family: var(--font-head); font-weight: 700; font-size: .82rem;
+      color: var(--gray); cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .cr-toggle:hover { border-color: #aaa; color: var(--dark); background: #faf7f5; }
+    .cr-toggle .cr-toggle-left { display: flex; align-items: center; gap: .5rem; }
+    .cr-toggle .cr-chevron { font-size: .75rem; transition: transform .25s ease; }
+    .cr-accordion.open .cr-chevron { transform: rotate(180deg); }
+    .cr-body { display: none; padding-top: .9rem; }
+    .cr-accordion.open .cr-body { display: block; }
+    .cr-body .action-row { padding-top: 0; border-top: none; margin-top: 0; }
+
     /* ── Modals ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -455,14 +477,24 @@
             </div>
           </div>
 
-          <!-- Actions -->
-          <div class="action-row">
-            <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()">
-              <i class="fas fa-undo-alt"></i> Request Return
+          <!-- Actions (accordion) -->
+          <div class="cr-accordion" id="cr-accordion">
+            <button class="cr-toggle" onclick="toggleCRAccordion()" type="button">
+              <span class="cr-toggle-left">
+                <i class="fas fa-ellipsis-h"></i> Cancel / Return
+              </span>
+              <i class="fas fa-chevron-down cr-chevron"></i>
             </button>
-            <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
-              <i class="fas fa-times-circle"></i> Cancel Order
-            </button>
+            <div class="cr-body">
+              <div class="action-row">
+                <button class="btn btn-warning-custom" id="btn-return" onclick="openReturnModal()">
+                  <i class="fas fa-undo-alt"></i> Request Return
+                </button>
+                <button class="btn btn-danger" id="btn-cancel" onclick="openCancelModal()">
+                  <i class="fas fa-times-circle"></i> Cancel Order
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Invoice Download -->
@@ -805,6 +837,10 @@
     }
 
     /* ── Modals ── */
+    function toggleCRAccordion() {
+      document.getElementById('cr-accordion').classList.toggle('open');
+    }
+
     function openReturnModal() {
       resetModal('return');
       document.getElementById('return-modal').classList.add('open');
