@@ -1822,7 +1822,7 @@ function loadOffersForm() {
   renderShippingMatrix();
 }
 
-function saveOffers() {
+function saveOffers(silent = false) {
   adminData.campaign = {
     active:     document.getElementById('campaign-active').checked,
     text:       document.getElementById('campaign-text').value.trim(),
@@ -1832,15 +1832,18 @@ function saveOffers() {
     textColor:  '#ffffff',
     expiryDate: document.getElementById('campaign-expiry').value,
   };
+  const _saleDisc = document.getElementById('sale-discount').value;
   adminData.sale = {
     active:         document.getElementById('sale-active').checked,
-    discountPercent:parseFloat(document.getElementById('sale-discount').value)||15,
-    label:          document.getElementById('sale-label').value.trim()||'SALE',
+    discountPercent:_saleDisc !== '' ? parseFloat(_saleDisc) : 15,
+    label:          document.getElementById('sale-label').value.trim() || 'SALE',
     endDate:        document.getElementById('sale-end').value,
   };
+  const _freeAbove  = document.getElementById('ship-free-above').value;
+  const _shipCharge = document.getElementById('ship-charge').value;
   adminData.shipping = {
-    freeShippingAbove: parseFloat(document.getElementById('ship-free-above').value)||499,
-    shippingCharge:    parseFloat(document.getElementById('ship-charge').value)||60,
+    freeShippingAbove: _freeAbove  !== '' ? parseFloat(_freeAbove)  : 499,
+    shippingCharge:    _shipCharge !== '' ? parseFloat(_shipCharge) : 60,
     shippingMatrix:    adminData.shipping && adminData.shipping.shippingMatrix
                          ? adminData.shipping.shippingMatrix : [],
   };
@@ -1850,8 +1853,7 @@ function saveOffers() {
     .map(p => p.trim())
     .filter(p => /^\d{6}$/.test(p));
   renderDashboard();
-  markUnsaved();
-  toast('Offer settings updated!', 'success');
+  if (!silent) { markUnsaved(); toast('Offer settings updated!', 'success'); }
 }
 
 function loadPaymentForm() {
@@ -1861,7 +1863,7 @@ function loadPaymentForm() {
   document.getElementById('rzp-color').value = p.themeColor    || '#FF6B00';
 }
 
-function savePayment() {
+function savePayment(silent = false) {
   adminData.payment = {
     ...(adminData.payment || {}),
     razorpayKeyId: document.getElementById('rzp-key').value.trim(),
@@ -1870,8 +1872,7 @@ function savePayment() {
     currency:      'INR',
     logoUrl:       'https://bunofeed.in/images/logo2.png',
   };
-  markUnsaved();
-  toast('Payment settings updated!', 'success');
+  if (!silent) { markUnsaved(); toast('Payment settings updated!', 'success'); }
 }
 
 function loadBrandForm() {
@@ -1883,7 +1884,7 @@ function loadBrandForm() {
   document.getElementById('brand-linkedin').value  = b.linkedin       || '';
 }
 
-function saveBrand() {
+function saveBrand(silent = false) {
   adminData.brand = {
     email:          document.getElementById('brand-email').value.trim(),
     feedbackFormUrl:document.getElementById('brand-feedback').value.trim(),
@@ -1891,8 +1892,7 @@ function saveBrand() {
     facebook:       document.getElementById('brand-facebook').value.trim(),
     linkedin:       document.getElementById('brand-linkedin').value.trim(),
   };
-  markUnsaved();
-  toast('Brand settings updated!', 'success');
+  if (!silent) { markUnsaved(); toast('Brand settings updated!', 'success'); }
 }
 
 function markUnsaved() {
@@ -1905,10 +1905,10 @@ function markUnsaved() {
    No download here. Use the Export panel to download products.js.
 ============================================================== */
 function saveAll() {
-  // Flush every section form into adminData
-  saveOffers();
-  savePayment();
-  saveBrand();
+  // Flush every section form into adminData (silently — no individual toasts)
+  saveOffers(true);
+  savePayment(true);
+  saveBrand(true);
 
   // Hide the unsaved badge
   document.getElementById('topbar-save-badge').style.display = 'none';
@@ -1917,7 +1917,7 @@ function saveAll() {
   // Refresh export preview with latest state
   generateExport();
 
-  toast('All changes saved! Go to Export panel to download products.js.', 'success');
+  toast('✅ All changes saved! Go to Export panel to download products.js.', 'success');
 }
 
 function generateExport() {
