@@ -920,8 +920,8 @@
       <div class="card">
         <div class="card-title"><i class="fas fa-download"></i> Export products.js backup</div>
         <p style="color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.7;">
-          Our local database writes automatic changes onto the filesystem, so they are saved <strong>instantly</strong> when you tap "Save All Changes" on top! 
-          You can also download a backup copy of your <code>products.js</code> structure anytime to keep safe.
+          Click <strong>"Save All Changes"</strong> (top bar) or <strong>"Download products.js"</strong> below to get the latest generated file.
+          Then <strong>upload it to your website's root folder</strong> (replacing the old <code>products.js</code>) — all price updates, shipping rules, coupons, and product changes go live instantly on your site.
         </p>
         <textarea class="form-textarea" id="export-preview" style="font-family:monospace;font-size:.75rem;height:250px;background:#1a1a1a;color:#a8ff78;border-color:#333" readonly></textarea>
         <div style="display:flex;gap:.8rem;margin-top:1rem;flex-wrap:wrap;">
@@ -1902,27 +1902,24 @@ function markUnsaved() {
 }
 
 /* ==============================================================
-   REAL TIME AUTO-SAVE SERVER CONNECTS
+   SAVE ALL — Generates & downloads products.js directly.
+   No server needed. Upload the downloaded file to your site.
 ============================================================== */
-async function saveAll() {
+function saveAll() {
   document.getElementById('topbar-save-badge').style.display = 'none';
   document.getElementById('global-save-btn').style.display   = 'none';
-  
-  const content = generateExport();
-  
-  try {
-    const res = await window.BUNOFEED_API.post('saveProducts', { content: content });
-    if (res.status === 'success') {
-      toast('All changes saved of products & coupons persistently!', 'success');
-    } else {
-      toast('Persistent saving failed, fallback output active!', 'error');
-    }
-  } catch (err) {
-    console.error('Server sync failed:', err);
-    toast('Server connection failed. Backup output is available in Export panel.', 'error');
-    document.getElementById('topbar-save-badge').style.display = 'inline-flex';
-    document.getElementById('global-save-btn').style.display   = 'inline-flex';
-  }
+
+  const code = generateExport();
+
+  const blob = new Blob([code], { type: 'text/javascript' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'products.js';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  toast('✅ products.js downloaded! Upload it to your site root to apply all changes.', 'success');
 }
 
 function generateExport() {
