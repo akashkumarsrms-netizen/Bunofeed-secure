@@ -135,24 +135,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const combo = pricing && pricing[comboKey];
 
     if (combo) {
-      const base = parseFloat(combo.basePrice) || 0;
-      const profit = parseFloat(combo.profit) || 0;
-      const directDiscount = parseFloat(combo.discount) || 0;
-      const gst = parseFloat(combo.gst) || 0;
+      const base     = parseFloat(combo.basePrice) || 0;
+      const gst      = parseFloat(combo.gst)       || 0;
+      const discount = parseFloat(combo.discount)  || 0;
 
-      // Pricing combination logic
-      const subtotalBase = base * (1 + profit / 100);
-      const discountedSubtotal = subtotalBase * (1 - directDiscount / 100);
+      // New simplified formula:
+      // Selling Price = Base Price + GST on Base Price
+      const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
 
-      const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
-      const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
-      const gstAmount = parseFloat((salesPrice - discountedSubtotal).toFixed(2));
+      // MRP back-calculated so that:  MRP × (1 − discount/100) = Selling Price
+      // → MRP = Selling Price / (1 − discount/100)
+      const mrp = discount < 100
+        ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
+        : sellingPrice;
 
-      return { price: salesPrice, mrp: mrp, gstRate: gst, gstAmount: gstAmount };
+      // GST amount = GST included in the selling price
+      const gstAmount = parseFloat((base * (gst / 100)).toFixed(2));
+
+      return { price: sellingPrice, mrp: mrp, gstRate: gst, gstAmount: gstAmount };
     }
 
     // Default configuration fallback
     return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0 };
+  }
+
+  /* ----------------------------------------------------------
+     SHIPPING CHARGE RESOLVER
+     Matches pincode + packSize against shippingMatrix rules.
+     Falls back to global freeShippingAbove / shippingCharge.
+  ---------------------------------------------------------- */
+  function resolveShippingCharge(pincode, packSize, orderTotal) {
+    const shipping = D.shipping || {};
+    const matrix   = shipping.shippingMatrix || [];
+    const pinStr   = String(pincode || '').trim();
+    const sizeStr  = String(packSize || '').trim().toLowerCase();
+
+    // Walk rules in order — first match wins
+    for (const rule of matrix) {
+      const rulePin  = String(rule.pincodes || '').trim();
+      const ruleSize = String(rule.packSize  || '').trim().toLowerCase();
+
+      // Wildcard helpers — accept both * and ALL (case-insensitive)
+      const isPinWildcard  = rulePin  === '*' || rulePin.toLowerCase()  === 'all';
+      const isSizeWildcard = ruleSize === '*' || ruleSize === 'all';
+
+      // Pincode match: wildcard OR exact OR comma-list contains
+      const pinMatch = isPinWildcard ||
+        rulePin.split(',').map(p => p.trim()).includes(pinStr);
+
+      // Size match: wildcard OR exact (case-insensitive)
+      const sizeMatch = isSizeWildcard || ruleSize === sizeStr;
+
+      if (pinMatch && sizeMatch) {
+        return parseFloat(rule.charge) || 0;
+      }
+    }
+
+    // No matrix rule matched → use global threshold logic
+    const freeAbove = parseFloat(shipping.freeShippingAbove) || 499;
+    const charge    = parseFloat(shipping.shippingCharge)    || 60;
+    return orderTotal >= freeAbove ? 0 : charge;
   }
 
   /* ----------------------------------------------------------
@@ -410,16 +452,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const discountedTotal = itemsSubtotal - promotionalDiscountValue;
-    const freeShippingThreshold = D.shipping ? D.shipping.freeShippingAbove : 499;
-    const shippingCharge = D.shipping ? D.shipping.shippingCharge : 60;
-    const hasFreeShipping = discountedTotal >= freeShippingThreshold;
-    const grandTotalValue = discountedTotal + (hasFreeShipping ? 0 : shippingCharge);
+
+    // Resolve shipping using pincode + pack size if entered, else fall back to global
+    const pincodeInput = document.getElementById('cust-pincode');
+    const enteredPincode = pincodeInput ? pincodeInput.value.trim() : '';
+    // Extract pack size from selectedVariantLabel (last word, e.g. "Smooth 400g" → "400g")
+    const packSizeParts = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
+    const packSize = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
+    const shippingAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
+    const grandTotalValue = discountedTotal + shippingAmt;
 
     injectOrUpdateOrderSummary();
     const proceedBtn = document.getElementById('proceed-pay-btn');
     if (proceedBtn) {
       const discountLabel = promotionalDiscountValue > 0 ? ` (₹${promotionalDiscountValue.toFixed(2)} discount applied)` : '';
-      const shippingLabel = grandTotalValue > discountedTotal ? ` (+₹${shippingCharge} shipping)` : ' (Free Shipping)';
+      const shippingLabel = shippingAmt > 0 ? ` (+₹${shippingAmt.toFixed(2)} shipping)` : ' (Free Shipping)';
       proceedBtn.textContent = `Pay ₹${grandTotalValue.toFixed(2)}${discountLabel}${shippingLabel}`;
     }
   }
@@ -445,13 +492,17 @@ document.addEventListener('DOMContentLoaded', () => {
         promoDiscount = parseFloat(Math.min(subtotalVal, activeCoupon.discountValue).toFixed(2));
       }
     }
-    const freeThreshold = D.shipping ? D.shipping.freeShippingAbove : 499;
-    const shipCharge = D.shipping ? D.shipping.shippingCharge : 60;
     const discountedTotal = parseFloat((subtotalVal - promoDiscount).toFixed(2));
-    const freeShip = discountedTotal >= freeThreshold;
-    const shipAmt = freeShip ? 0 : shipCharge;
-    const grand = parseFloat((discountedTotal + shipAmt).toFixed(2));
-    const varLabel = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
+
+    // Resolve shipping: use pincode + pack size if available
+    const pincodeInput   = document.getElementById('cust-pincode');
+    const enteredPincode = pincodeInput ? pincodeInput.value.trim() : '';
+    const packSizeParts  = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
+    const packSize       = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
+    const shipAmt        = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
+    const freeShip       = shipAmt === 0;
+    const grand          = parseFloat((discountedTotal + shipAmt).toFixed(2));
+    const varLabel       = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
 
     // GST breakdown
     let gstRate = 0, gstAmountTotal = 0;
@@ -464,6 +515,9 @@ document.addEventListener('DOMContentLoaded', () => {
       gstAmountTotal = parseFloat(((_pi.gstAmount || 0) * qty).toFixed(2));
     }
 
+    // Shipping note for the user
+    const freeAbove = (D.shipping && D.shipping.freeShippingAbove) || 499;
+
     let rows = '';
     rows += '<div class="os-row"><span>Product' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
     rows += '<div class="os-row"><span>Quantity</span><span>× ' + qty + '</span></div>';
@@ -475,9 +529,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
       rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') <span class="os-tag">' + dLabel + '</span></span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
     }
-    rows += '<div class="os-row"><span>Shipping</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
-    if (freeShip) {
-      rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeThreshold + '</span><span></span></div>';
+    rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
+    if (freeShip && discountedTotal < freeAbove && !enteredPincode) {
+      // Show note only when free shipping comes from global threshold, not a matrix rule
+      rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeAbove + '</span><span></span></div>';
     }
     rows += '<div class="os-row os-total"><span>Total Payable</span><span>₹' + grand.toFixed(2) + '</span></div>';
 
@@ -513,6 +568,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
+
+  // Live-refresh shipping when pincode changes
+  const pincodeEl = document.getElementById('cust-pincode');
+  if (pincodeEl) {
+    pincodeEl.addEventListener('input', () => {
+      if (currentProduct) refreshCheckoutCalculation();
+    });
+  }
 
   function generateOrderId() {
     const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
@@ -570,10 +633,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const discountedTotal = subtotalVal - promotionalDiscountValue;
-      const freeShippingThreshold = D.shipping ? D.shipping.freeShippingAbove : 499;
-      const shippingCharge = D.shipping ? D.shipping.shippingCharge : 60;
-      const hasFreeShipping = discountedTotal >= freeShippingThreshold;
-      const shippingAmt = hasFreeShipping ? 0 : shippingCharge;
+      // Resolve shipping using entered pincode + selected pack size
+      const packSizeParts2 = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
+      const packSize2      = packSizeParts2.length > 0 ? packSizeParts2[packSizeParts2.length - 1] : '';
+      const shippingAmt    = resolveShippingCharge(pincode, packSize2, discountedTotal);
       const grandTotalCombined = discountedTotal + shippingAmt;
 
       const orderId = generateOrderId();

@@ -1021,42 +1021,37 @@
   function getComputedPriceCombo() {
     if (!_product) return { price: 0, mrp: null };
 
-    const selectedSize = sizeSelect.value;
+    const selectedSize    = sizeSelect.value;
     const selectedTexture = textureSelect.style.display !== 'none' ? textureSelect.value : 'Default';
-    
-    // Key formula: Texture_Size or Default_Size
+
     const comboKey = selectedTexture ? `${selectedTexture}_${selectedSize}` : `Default_${selectedSize}`;
-    const pricing = _product.pricing && _product.pricing[comboKey];
+    const pricing  = _product.pricing && _product.pricing[comboKey];
 
     if (pricing) {
-      const base = parseFloat(pricing.basePrice) || 0;
-      const profit = parseFloat(pricing.profit) || 0;
-      const directDiscount = parseFloat(pricing.discount) || 0;
-      const gst = parseFloat(pricing.gst) || 0;
+      const base     = parseFloat(pricing.basePrice) || 0;
+      const gst      = parseFloat(pricing.gst)       || 0;
+      const discount = parseFloat(pricing.discount)  || 0;
 
-      // Base formula:
-      // Subtotal before direct discount = base * (1 + profit / 100)
-      // Selling price before GST = Subtotal * (1 - directDiscount / 100)
-      // Sales Price including GST = Selling price before GST * (1 + gst / 100)
-      // MRP including GST = Subtotal before direct discount * (1 + gst / 100)
+      // New simplified formula (matches admin panel & script.js):
+      // Selling Price = Base Price × (1 + GST/100)
+      const salesPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
 
-      const subtotalBase = base * (1 + profit / 100);
-      const discountedSubtotal = subtotalBase * (1 - directDiscount / 100);
-
-      const salesPrice = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
-      const mrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
+      // MRP = Selling Price / (1 - discount/100)
+      const mrp = discount < 100
+        ? parseFloat((salesPrice / (1 - discount / 100)).toFixed(2))
+        : salesPrice;
 
       return {
         price: salesPrice,
-        mrp: mrp,
+        mrp:   mrp,
         label: `${selectedTexture !== 'Default' ? selectedTexture + ' ' : ''}${selectedSize}`
       };
     }
 
-    // Graceful fallback to default values in products.js if combination missing
+    // Graceful fallback
     return {
       price: _product.price || 0,
-      mrp: _product.mrp || null,
+      mrp:   _product.mrp   || null,
       label: _product.weight || ''
     };
   }
