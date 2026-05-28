@@ -804,6 +804,50 @@
         </div>
       </div>
 
+      <!-- ── PINCODE × PACK SIZE SHIPPING MATRIX ── -->
+      <div class="card" style="margin-top:1.5rem;">
+        <div class="card-title"><i class="fas fa-truck"></i> Shipping Rates by Pincode &amp; Pack Size</div>
+        <p style="color:var(--gray);font-size:.9rem;line-height:1.7;margin-bottom:1.2rem;">
+          Set custom shipping charges for specific pincode groups and pack size/weight combinations.
+          When a customer checks out, the system matches their pincode + selected pack size to find the exact charge.
+          If no specific rule is found, the global default charge above is applied.
+        </p>
+
+        <!-- Existing rules list -->
+        <div id="ship-matrix-list" style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;"></div>
+
+        <!-- Add new rule -->
+        <div style="background:var(--off-white);border-radius:10px;padding:1.1rem;border:2px dashed var(--border);margin-top:.5rem;">
+          <p class="form-label" style="margin-bottom:.8rem;color:var(--brown);"><i class="fas fa-plus-circle"></i> Add New Shipping Rule</p>
+          <div class="form-grid cols-3" style="margin-bottom:.8rem;">
+            <div class="form-group">
+              <label class="form-label">Pincode(s) <span>*</span></label>
+              <input type="text" class="form-input" id="ship-rule-pincodes" placeholder="243201 or 243201,243202" style="font-family:monospace;"/>
+              <span class="form-hint">Single or comma-separated. Use * for all pincodes.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pack Size / Weight <span>*</span></label>
+              <input type="text" class="form-input" id="ship-rule-size" placeholder="e.g. 400g or 1kg or *"/>
+              <span class="form-hint">Single size, or * to match any size.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Shipping Charge (₹) <span>*</span></label>
+              <input type="number" class="form-input" id="ship-rule-charge" placeholder="e.g. 60" min="0"/>
+              <span class="form-hint">Enter 0 for free shipping.</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="btn btn-brown" onclick="addShippingRule()">
+              <i class="fas fa-plus"></i> Add Rule
+            </button>
+          </div>
+        </div>
+        <span class="form-hint" style="margin-top:.7rem;display:block;">
+          <i class="fas fa-info-circle" style="color:var(--orange)"></i>
+          Rules are matched in order — first match wins. More specific rules (exact pincode + exact size) should come before wildcard (*) rules.
+        </span>
+      </div>
+
       <div style="display:flex;justify-content:flex-end;">
         <button class="btn btn-orange" onclick="saveOffers()">
           <i class="fas fa-save"></i> Save Offer Settings
@@ -942,17 +986,21 @@
         <label class="form-label" style="color: var(--orange); font-size: 0.85rem;"><i class="fas fa-coins"></i> Dynamic Advanced Pricing Engine combinations</label>
         <p class="form-hint" style="margin-bottom: 0.5rem;">Input base pricing parameters for each active combination. Price and strike MRP calculate automatically!</p>
         
+        <p class="form-hint" style="margin-bottom:0.6rem; color: var(--brown);">
+          <i class="fas fa-info-circle"></i>
+          <strong>How it works:</strong> Set Base Price + GST% → gives <em>Selling Price</em> (incl. GST).
+          Then set Discount% → MRP is back-calculated so that <em>Discount% of MRP = discount amount</em>, meaning <em>MRP − discount = Selling Price</em>.
+        </p>
         <div style="overflow-x: auto; max-width: 100%;">
           <table class="pricing-combo-table">
             <thead>
               <tr>
                 <th>Combo Option</th>
-                <th>Base Cost (₹)</th>
-                <th>Profit (%)</th>
-                <th>Discount (%)</th>
+                <th>Base Price (₹)</th>
                 <th>GST (%)</th>
-                <th>Calculated Price</th>
-                <th>Calculated MRP</th>
+                <th>Discount (%)</th>
+                <th>Selling Price</th>
+                <th>MRP (strike)</th>
               </tr>
             </thead>
             <tbody id="pricing-combos-body">
@@ -1281,24 +1329,21 @@ function regeneratePricingCombinationsGrid() {
     activeSizes.forEach(sz => {
       const comboKey = `${tx}_${sz}`;
       
-      // Attempt to load existing priced values, or initialize standard presets
-      const existing = currentProductPricingMapRef[comboKey] || {
-        basePrice: 100,
-        profit: 20,
-        discount: 10,
-        gst: 18
-      };
+      // Support both old format (basePrice/profit/discount/gst) and new format (basePrice/gst/discount)
+      const existing = currentProductPricingMapRef[comboKey] || {};
+      const defBase  = existing.basePrice || 100;
+      const defGst   = existing.gst != null ? existing.gst : 18;
+      const defDisc  = existing.discount != null ? existing.discount : 10;
 
       const tr = document.createElement('tr');
       tr.dataset.combo = comboKey;
       tr.innerHTML = `
-        <td style="font-weight: 700; color: var(--brown);">${tx} — ${sz}</td>
-        <td><input type="number" class="pricing-input combo-base" val-type="base" value="${existing.basePrice}" oninput="recalculateComboRow(this)"/></td>
-        <td><input type="number" class="pricing-input combo-profit" val-type="profit" value="${existing.profit}" oninput="recalculateComboRow(this)"/></td>
-        <td><input type="number" class="pricing-input combo-discount" val-type="discount" value="${existing.discount}" oninput="recalculateComboRow(this)"/></td>
-        <td><input type="number" class="pricing-input combo-gst" val-type="gst" value="${existing.gst}" oninput="recalculateComboRow(this)"/></td>
-        <td class="combo-calculated-price font-bold" style="color: black; font-weight:700;">₹0</td>
-        <td class="combo-calculated-mrp" style="text-decoration: line-through; color: #dc3545;">₹0</td>
+        <td style="font-weight:700;color:var(--brown);">${tx} — ${sz}</td>
+        <td><input type="number" class="pricing-input combo-base"     value="${defBase}" min="0" oninput="recalculateComboRow(this)"/></td>
+        <td><input type="number" class="pricing-input combo-gst"      value="${defGst}"  min="0" max="100" step="0.5" oninput="recalculateComboRow(this)"/></td>
+        <td><input type="number" class="pricing-input combo-discount" value="${defDisc}" min="0" max="99"  step="0.5" oninput="recalculateComboRow(this)"/></td>
+        <td class="combo-calculated-price" style="font-weight:700;color:#1a6e2e;">₹0</td>
+        <td class="combo-calculated-mrp"   style="font-weight:700;color:#dc3545;text-decoration:line-through;">₹0</td>
       `;
 
       container.appendChild(tr);
@@ -1308,34 +1353,32 @@ function regeneratePricingCombinationsGrid() {
 }
 
 window.recalculateComboRow = function(inputEl) {
-  const tr = inputEl.closest('tr');
-  const base = parseFloat(tr.querySelector('.combo-base').value) || 0;
-  const profit = parseFloat(tr.querySelector('.combo-profit').value) || 0;
+  const tr       = inputEl.closest('tr');
+  const base     = parseFloat(tr.querySelector('.combo-base').value)     || 0;
+  const gst      = parseFloat(tr.querySelector('.combo-gst').value)      || 0;
   const discount = parseFloat(tr.querySelector('.combo-discount').value) || 0;
-  const gst = parseFloat(tr.querySelector('.combo-gst').value) || 0;
 
-  // Formula:
-  // Subtotal before direct discount = base * (1 + profit / 100)
-  // Selling price before GST = Subtotal * (1 - directDiscount / 100)
-  // Sales Price = selling price before GST * (1 + gst / 100)
-  // MRP = Subtotal before direct discount * (1 + gst / 100)
+  // Selling Price = Base Price + GST on Base Price
+  const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
 
-  const subtotalBase = base * (1 + profit / 100);
-  const discountedSubtotal = subtotalBase * (1 - discount / 100);
+  // MRP is back-calculated so that: MRP × (discount/100) = discount amount
+  // and MRP − discount_amount = Selling Price
+  // → MRP × (1 − discount/100) = Selling Price
+  // → MRP = Selling Price / (1 − discount/100)
+  const mrp = discount < 100
+    ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
+    : 0;
 
-  const calculatedSales = parseFloat((discountedSubtotal * (1 + gst / 100)).toFixed(2));
-  const calculatedMrp = parseFloat((subtotalBase * (1 + gst / 100)).toFixed(2));
+  tr.querySelector('.combo-calculated-price').textContent = `₹${sellingPrice.toFixed(2)}`;
+  tr.querySelector('.combo-calculated-mrp').textContent   = `₹${mrp.toFixed(2)}`;
 
-  tr.querySelector('.combo-calculated-price').textContent = `₹${calculatedSales.toFixed(2)}`;
-  tr.querySelector('.combo-calculated-mrp').textContent = `₹${calculatedMrp.toFixed(2)}`;
-
-  // Keep internal dictionary sync updated immediately
+  // Sync internal reference (keep profit=0 for backward compat with google_appscript.js)
   const comboKey = tr.dataset.combo;
   currentProductPricingMapRef[comboKey] = {
     basePrice: base,
-    profit: profit,
-    discount: discount,
-    gst: gst
+    profit:    0,
+    discount:  discount,
+    gst:       gst
   };
 };
 
@@ -1777,6 +1820,7 @@ function loadOffersForm() {
   document.getElementById('ship-charge').value          = h.shippingCharge    || 60;
   const pincodes = adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
+  renderShippingMatrix();
 }
 
 function saveOffers() {
@@ -1798,6 +1842,8 @@ function saveOffers() {
   adminData.shipping = {
     freeShippingAbove: parseFloat(document.getElementById('ship-free-above').value)||499,
     shippingCharge:    parseFloat(document.getElementById('ship-charge').value)||60,
+    shippingMatrix:    adminData.shipping && adminData.shipping.shippingMatrix
+                         ? adminData.shipping.shippingMatrix : [],
   };
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
   adminData.serviceablePincodes = rawPincodes
@@ -1904,6 +1950,91 @@ function downloadExport() {
   a.click();
   URL.revokeObjectURL(url);
   toast('products.js file downloaded successfully!', 'success');
+}
+
+/* ==============================================================
+   SHIPPING MATRIX — Pincode × Pack Size rules
+============================================================== */
+function getShippingMatrix() {
+  if (!adminData.shipping) adminData.shipping = {};
+  if (!Array.isArray(adminData.shipping.shippingMatrix)) adminData.shipping.shippingMatrix = [];
+  return adminData.shipping.shippingMatrix;
+}
+
+function renderShippingMatrix() {
+  const list  = document.getElementById('ship-matrix-list');
+  if (!list) return;
+  const rules = getShippingMatrix();
+
+  if (rules.length === 0) {
+    list.innerHTML = `<p style="color:var(--gray);font-size:.88rem;font-style:italic;">No custom rules yet. Add rules below, or leave empty to use the global default charge.</p>`;
+    return;
+  }
+
+  list.innerHTML = rules.map((r, i) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 36px;align-items:center;gap:.6rem;
+                background:var(--off-white);border-radius:10px;padding:.75rem 1rem;
+                border:2px solid transparent;transition:.2s;"
+         onmouseenter="this.style.borderColor='var(--orange-lt)'"
+         onmouseleave="this.style.borderColor='transparent'">
+      <div>
+        <div style="font-size:.7rem;font-family:var(--font-h);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:2px;">Pincode(s)</div>
+        <div style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--dark);">${r.pincodes}</div>
+      </div>
+      <div>
+        <div style="font-size:.7rem;font-family:var(--font-h);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:2px;">Pack Size</div>
+        <div style="font-family:var(--font-h);font-size:.88rem;font-weight:700;color:var(--brown);">${r.packSize}</div>
+      </div>
+      <div>
+        <div style="font-size:.7rem;font-family:var(--font-h);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:2px;">Charge</div>
+        <div style="font-family:var(--font-h);font-size:.95rem;font-weight:800;color:${r.charge===0?'var(--success)':'var(--orange)'};">
+          ${r.charge === 0 ? 'FREE' : '₹' + r.charge}
+        </div>
+      </div>
+      <button onclick="deleteShippingRule(${i})"
+              style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:.9rem;
+                     min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;
+                     border-radius:6px;transition:.2s;"
+              onmouseenter="this.style.background='rgba(220,53,69,.1)'"
+              onmouseleave="this.style.background='none'"
+              title="Delete rule">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>`).join('');
+}
+
+function addShippingRule() {
+  const pincodesRaw = document.getElementById('ship-rule-pincodes').value.trim();
+  const packSize    = document.getElementById('ship-rule-size').value.trim();
+  const chargeVal   = document.getElementById('ship-rule-charge').value;
+
+  if (!pincodesRaw) { toast('Please enter pincode(s) or * for all.', 'error'); return; }
+  if (!packSize)    { toast('Please enter pack size or * for all.', 'error'); return; }
+  if (chargeVal === '' || isNaN(parseFloat(chargeVal))) { toast('Please enter a valid shipping charge.', 'error'); return; }
+
+  const matrix = getShippingMatrix();
+  matrix.push({
+    pincodes: pincodesRaw,
+    packSize,
+    charge:   parseFloat(chargeVal)
+  });
+
+  // Clear inputs
+  document.getElementById('ship-rule-pincodes').value = '';
+  document.getElementById('ship-rule-size').value     = '';
+  document.getElementById('ship-rule-charge').value   = '';
+
+  renderShippingMatrix();
+  markUnsaved();
+  toast('Shipping rule added!', 'success');
+}
+
+function deleteShippingRule(idx) {
+  if (!confirm('Delete this shipping rule?')) return;
+  getShippingMatrix().splice(idx, 1);
+  renderShippingMatrix();
+  markUnsaved();
+  toast('Shipping rule removed.', 'info');
 }
 
 function toast(msg, type = 'success') {
