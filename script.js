@@ -239,7 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bestMatch !== null) return parseFloat(bestMatch.charge) || 0;
 
     // No sheet rule matched → honour free-shipping threshold
-    return orderTotal >= freeAbove ? 0 : 0; // default FREE when no rule found
+    const defaultCharge = parseFloat((D.shipping || {}).shippingCharge) || 0;
+    return orderTotal >= freeAbove ? 0 : defaultCharge;
   }
 
   /* ----------------------------------------------------------
