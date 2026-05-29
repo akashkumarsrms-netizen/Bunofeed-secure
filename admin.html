@@ -783,11 +783,10 @@
 
       <div class="card">
         <div class="card-title"><i class="fas fa-shipping-fast"></i> Shipping Settings</div>
-        <div class="form-grid cols-1">
+        <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Free Shipping Above (₹)</label>
-            <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499" style="max-width:280px;"/>
-            <span class="form-hint">Orders at or above this amount qualify for free shipping (when no matrix rule matches).</span>
+            <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
           </div>
         </div>
       </div>
@@ -801,49 +800,6 @@
         </div>
       </div>
 
-      <!-- ── PINCODE × PACK SIZE SHIPPING MATRIX ── -->
-      <div class="card" style="margin-top:1.5rem;">
-        <div class="card-title"><i class="fas fa-truck"></i> Shipping Rates by Pincode &amp; Pack Size</div>
-        <p style="color:var(--gray);font-size:.9rem;line-height:1.7;margin-bottom:1.2rem;">
-          Set custom shipping charges for specific pincode groups and pack size/weight combinations.
-          When a customer checks out, the system matches their pincode + selected pack size to find the exact charge.
-          If no specific rule is found, the global default charge above is applied.
-        </p>
-
-        <!-- Existing rules list -->
-        <div id="ship-matrix-list" style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;"></div>
-
-        <!-- Add new rule -->
-        <div style="background:var(--off-white);border-radius:10px;padding:1.1rem;border:2px dashed var(--border);margin-top:.5rem;">
-          <p class="form-label" style="margin-bottom:.8rem;color:var(--brown);"><i class="fas fa-plus-circle"></i> Add New Shipping Rule</p>
-          <div class="form-grid cols-3" style="margin-bottom:.8rem;">
-            <div class="form-group">
-              <label class="form-label">Pincode(s) <span>*</span></label>
-              <input type="text" class="form-input" id="ship-rule-pincodes" placeholder="243201 or 243201,243202" style="font-family:monospace;"/>
-              <span class="form-hint">Single or comma-separated. Use * or ALL for all pincodes.</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Pack Size / Weight <span>*</span></label>
-              <input type="text" class="form-input" id="ship-rule-size" placeholder="e.g. 400g or 1kg or ALL"/>
-              <span class="form-hint">Single size, or * / ALL to match any size.</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Shipping Charge (₹) <span>*</span></label>
-              <input type="number" class="form-input" id="ship-rule-charge" placeholder="e.g. 60" min="0"/>
-              <span class="form-hint">Enter 0 for free shipping.</span>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;">
-            <button class="btn btn-brown" onclick="addShippingRule()">
-              <i class="fas fa-plus"></i> Add Rule
-            </button>
-          </div>
-        </div>
-        <span class="form-hint" style="margin-top:.7rem;display:block;">
-          <i class="fas fa-info-circle" style="color:var(--orange)"></i>
-          Rules are matched in order — first match wins. More specific rules (exact pincode + exact size) should come before wildcard (*) rules.
-        </span>
-      </div>
 
       <div style="display:flex;justify-content:flex-end;">
         <button class="btn btn-orange" onclick="saveOffers()">
@@ -1815,7 +1771,6 @@ function loadOffersForm() {
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
   const pincodes = adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
-  renderShippingMatrix();
 }
 
 function saveOffers(silent = false) {
@@ -1837,9 +1792,9 @@ function saveOffers(silent = false) {
   };
   const _freeAbove  = document.getElementById('ship-free-above').value;
   adminData.shipping = {
-    freeShippingAbove: _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
-    shippingMatrix:    adminData.shipping && adminData.shipping.shippingMatrix
-                         ? adminData.shipping.shippingMatrix : [],
+    freeShippingAbove: _freeAbove  !== '' ? parseFloat(_freeAbove)  : 499,
+    shippingCharge:    0,
+    shippingMatrix:    [],
   };
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
   adminData.serviceablePincodes = rawPincodes

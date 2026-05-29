@@ -160,40 +160,86 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
-     SHIPPING CHARGE RESOLVER
-     Matches pincode + packSize against shippingMatrix rules.
-     Falls back to global freeShippingAbove / shippingCharge.
+     SHIPPING RULES — fetched from Google Sheets on page load
+     Sheet: "Pin code and Shipping Charges"
+     Columns: A=Pin Code | B=Weight/Pack size | C=Shipping charges
+     Rules are cached after the first fetch and used synchronously
+     so the UI stays responsive even while the sheet fetch is in flight.
+  ---------------------------------------------------------- */
+  let _shippingRules        = null;   // null = not yet fetched
+  let _shippingFetchDone    = false;
+  let _shippingFetchPromise = null;   // prevents duplicate parallel fetches
+
+  async function fetchShippingRules() {
+    if (_shippingFetchDone) return _shippingRules;
+    if (_shippingFetchPromise) return _shippingFetchPromise;
+
+    _shippingFetchPromise = (async () => {
+      try {
+        const result = await window.BUNOFEED_API.get('lookupShipping', {});
+        if (result && result.status === 'success' && Array.isArray(result.rules)) {
+          _shippingRules = result.rules;
+        } else {
+          console.warn('[Bunofeed] Shipping sheet returned no rules:', result);
+          _shippingRules = [];
+        }
+      } catch (err) {
+        console.warn('[Bunofeed] Shipping sheet fetch failed, using fallback:', err);
+        _shippingRules = [];
+      }
+      _shippingFetchDone = true;
+      // Once rules arrive, refresh summary if checkout modal is open
+      if (document.getElementById('order-summary-box') && currentProduct) {
+        injectOrUpdateOrderSummary();
+        refreshCheckoutCalculation();
+      }
+      return _shippingRules;
+    })();
+
+    return _shippingFetchPromise;
+  }
+
+  // Kick off immediately so rules are ready before the customer opens checkout
+  fetchShippingRules();
+
+  /* ----------------------------------------------------------
+     SHIPPING CHARGE RESOLVER  (synchronous — uses cached sheet rules)
+     Priority: exact pin + exact size > wildcard pin + exact size >
+               exact pin + wildcard size > full wildcard > free fallback.
+     packSize is normalised (lowercase, spaces stripped) so
+     "400 g", "400G", and "400g" all match each other.
   ---------------------------------------------------------- */
   function resolveShippingCharge(pincode, packSize, orderTotal) {
-    const shipping = D.shipping || {};
-    const matrix   = shipping.shippingMatrix || [];
-    const pinStr   = String(pincode || '').trim();
-    const sizeStr  = String(packSize || '').trim().toLowerCase();
+    const freeAbove = parseFloat((D.shipping || {}).freeShippingAbove) || 499;
+    const pinStr    = String(pincode  || '').trim();
+    const sizeStr   = String(packSize || '').trim().toLowerCase().replace(/\s+/g, '');
 
-    // Walk rules in order — first match wins
-    for (const rule of matrix) {
-      const rulePin  = String(rule.pincodes || '').trim();
-      const ruleSize = String(rule.packSize  || '').trim().toLowerCase();
+    const rules = _shippingRules || [];
+    let bestMatch = null;
+    let bestScore = -1;
 
-      // Wildcard helpers — accept both * and ALL (case-insensitive)
-      const isPinWildcard  = rulePin  === '*' || rulePin.toLowerCase()  === 'all';
-      const isSizeWildcard = ruleSize === '*' || ruleSize === 'all';
+    for (const rule of rules) {
+      const rPin  = String(rule.pincode  || '').trim();
+      const rSize = String(rule.packSize || '').trim().toLowerCase().replace(/\s+/g, '');
 
-      // Pincode match: wildcard OR exact OR comma-list contains
-      const pinMatch = isPinWildcard ||
-        rulePin.split(',').map(p => p.trim()).includes(pinStr);
+      const pinWild  = rPin  === '*' || rPin.toLowerCase()  === 'all';
+      const sizeWild = rSize === '*' || rSize === 'all';
 
-      // Size match: wildcard OR exact (case-insensitive)
-      const sizeMatch = isSizeWildcard || ruleSize === sizeStr;
+      // Pincode cell can hold a comma-separated list
+      const pinMatch  = pinWild  || rPin.split(',').map(p => p.trim()).includes(pinStr);
+      const sizeMatch = sizeWild || rSize === sizeStr;
 
-      if (pinMatch && sizeMatch) {
-        return parseFloat(rule.charge) || 0;
-      }
+      if (!pinMatch || !sizeMatch) continue;
+
+      // Score: 2 points for exact match, 1 for wildcard on each axis (max 4)
+      const score = (!pinWild ? 2 : 1) + (!sizeWild ? 2 : 1);
+      if (score > bestScore) { bestScore = score; bestMatch = rule; }
     }
 
-    // No matrix rule matched → use global free-shipping threshold only
-    const freeAbove = parseFloat(shipping.freeShippingAbove) || 499;
-    return orderTotal >= freeAbove ? 0 : 0; // no flat charge — matrix rules cover all paid cases
+    if (bestMatch !== null) return parseFloat(bestMatch.charge) || 0;
+
+    // No sheet rule matched → honour free-shipping threshold
+    return orderTotal >= freeAbove ? 0 : 0; // default FREE when no rule found
   }
 
   /* ----------------------------------------------------------
@@ -547,7 +593,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (existing) {
       existing.outerHTML = html;
     } else {
-      form.insertAdjacentHTML('afterbegin', html);
+      // Place summary just above the "Proceed to Pay" button
+      const payBtn = document.getElementById('proceed-pay-btn');
+      if (payBtn) {
+        payBtn.insertAdjacentHTML('beforebegin', html);
+      } else {
+        form.insertAdjacentHTML('beforeend', html);
+      }
     }
   }
 
@@ -568,11 +620,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
 
-  // Live-refresh shipping when pincode changes
+  // Live-refresh shipping when pincode changes.
+  // If the sheet rules haven't loaded yet, fetchShippingRules() will
+  // resolve and then auto-refresh the summary via its own callback.
   const pincodeEl = document.getElementById('cust-pincode');
   if (pincodeEl) {
     pincodeEl.addEventListener('input', () => {
-      if (currentProduct) refreshCheckoutCalculation();
+      if (!currentProduct) return;
+      if (!_shippingFetchDone) {
+        // Rules still loading — trigger fetch (no-op if already in flight)
+        // The fetch callback will refresh the UI once done
+        fetchShippingRules();
+      }
+      refreshCheckoutCalculation();
     });
   }
 
@@ -618,10 +678,14 @@ document.addEventListener('DOMContentLoaded', () => {
       proceedBtn.disabled = true;
       proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing Gateway...';
 
+      // Ensure sheet shipping rules are loaded before computing final total.
+      // fetchShippingRules() is a no-op if already fetched (returns cached rules).
+      await fetchShippingRules();
+
       // Computations
       const baseVal = selectedUnitPrice !== null ? selectedUnitPrice : currentProduct.price;
       const subtotalVal = baseVal * qty;
-      
+
       let promotionalDiscountValue = 0;
       if (activeCoupon) {
         if (activeCoupon.discountType === 'percent') {
@@ -632,11 +696,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const discountedTotal = subtotalVal - promotionalDiscountValue;
-      // Resolve shipping using entered pincode + selected pack size
+      // Resolve shipping using entered pincode + selected pack size from sheet rules
       const packSizeParts2 = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
       const packSize2      = packSizeParts2.length > 0 ? packSizeParts2[packSizeParts2.length - 1] : '';
       const shippingAmt    = resolveShippingCharge(pincode, packSize2, discountedTotal);
-      const grandTotalCombined = discountedTotal + shippingAmt;
+      const grandTotalCombined = parseFloat((discountedTotal + shippingAmt).toFixed(2));
 
       const orderId = generateOrderId();
       const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
