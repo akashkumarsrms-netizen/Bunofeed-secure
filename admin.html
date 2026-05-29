@@ -783,14 +783,11 @@
 
       <div class="card">
         <div class="card-title"><i class="fas fa-shipping-fast"></i> Shipping Settings</div>
-        <div class="form-grid">
+        <div class="form-grid cols-1">
           <div class="form-group">
             <label class="form-label">Free Shipping Above (₹)</label>
-            <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Shipping Charge (₹)</label>
-            <input type="number" class="form-input" id="ship-charge" placeholder="e.g. 60"/>
+            <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499" style="max-width:280px;"/>
+            <span class="form-hint">Orders at or above this amount qualify for free shipping (when no matrix rule matches).</span>
           </div>
         </div>
       </div>
@@ -1816,7 +1813,6 @@ function loadOffersForm() {
   document.getElementById('sale-label').value           = s.label   || 'SALE';
   document.getElementById('sale-end').value             = s.endDate || '';
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
-  document.getElementById('ship-charge').value          = h.shippingCharge    || 60;
   const pincodes = adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
   renderShippingMatrix();
@@ -1840,10 +1836,8 @@ function saveOffers(silent = false) {
     endDate:        document.getElementById('sale-end').value,
   };
   const _freeAbove  = document.getElementById('ship-free-above').value;
-  const _shipCharge = document.getElementById('ship-charge').value;
   adminData.shipping = {
-    freeShippingAbove: _freeAbove  !== '' ? parseFloat(_freeAbove)  : 499,
-    shippingCharge:    _shipCharge !== '' ? parseFloat(_shipCharge) : 60,
+    freeShippingAbove: _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
     shippingMatrix:    adminData.shipping && adminData.shipping.shippingMatrix
                          ? adminData.shipping.shippingMatrix : [],
   };

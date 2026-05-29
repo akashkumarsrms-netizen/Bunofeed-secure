@@ -191,10 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // No matrix rule matched → use global threshold logic
+    // No matrix rule matched → use global free-shipping threshold only
     const freeAbove = parseFloat(shipping.freeShippingAbove) || 499;
-    const charge    = parseFloat(shipping.shippingCharge)    || 60;
-    return orderTotal >= freeAbove ? 0 : charge;
+    return orderTotal >= freeAbove ? 0 : 0; // no flat charge — matrix rules cover all paid cases
   }
 
   /* ----------------------------------------------------------
