@@ -499,20 +499,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const discountedTotal = itemsSubtotal - promotionalDiscountValue;
 
-    // Resolve shipping using pincode + pack size if entered, else fall back to global
-    const pincodeInput = document.getElementById('cust-pincode');
+    // Only resolve shipping when pincode is a complete 6-digit value AND rules are loaded.
+    // Partial pincode → no match → would incorrectly show FREE.
+    const pincodeInput   = document.getElementById('cust-pincode');
     const enteredPincode = pincodeInput ? pincodeInput.value.trim() : '';
-    // Extract pack size from selectedVariantLabel (last word, e.g. "Smooth 400g" → "400g")
-    const packSizeParts = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
-    const packSize = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
-    const shippingAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
+    const pinComplete    = /^\d{6}$/.test(enteredPincode);
+    const packSizeParts  = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
+    const packSize       = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
+
+    let shippingAmt  = 0;
+    let shipPending  = !pinComplete || !_shippingFetchDone;
+    if (!shipPending) {
+      shippingAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
+    }
     const grandTotalValue = discountedTotal + shippingAmt;
 
     injectOrUpdateOrderSummary();
     const proceedBtn = document.getElementById('proceed-pay-btn');
     if (proceedBtn) {
       const discountLabel = promotionalDiscountValue > 0 ? ` (₹${promotionalDiscountValue.toFixed(2)} discount applied)` : '';
-      const shippingLabel = shippingAmt > 0 ? ` (+₹${shippingAmt.toFixed(2)} shipping)` : ' (Free Shipping)';
+      let shippingLabel;
+      if (shipPending) {
+        shippingLabel = ' (+ shipping)';
+      } else if (shippingAmt > 0) {
+        shippingLabel = ` (+₹${shippingAmt.toFixed(2)} shipping)`;
+      } else {
+        shippingLabel = ' (Free Shipping)';
+      }
       proceedBtn.textContent = `Pay ₹${grandTotalValue.toFixed(2)}${discountLabel}${shippingLabel}`;
     }
   }
@@ -540,15 +553,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const discountedTotal = parseFloat((subtotalVal - promoDiscount).toFixed(2));
 
-    // Resolve shipping: use pincode + pack size if available
+    // Resolve shipping: only run resolver on a complete 6-digit pincode.
+    // A partial pincode would produce no match → incorrectly show FREE.
     const pincodeInput   = document.getElementById('cust-pincode');
     const enteredPincode = pincodeInput ? pincodeInput.value.trim() : '';
+    const pinComplete    = /^\d{6}$/.test(enteredPincode);
     const packSizeParts  = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
     const packSize       = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
-    const shipAmt        = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
-    const freeShip       = shipAmt === 0;
-    const grand          = parseFloat((discountedTotal + shipAmt).toFixed(2));
-    const varLabel       = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
+
+    // Only resolve if pincode is complete AND rules have loaded
+    let shipAmt = 0;
+    let shipPending = false;
+    if (!pinComplete) {
+      shipPending = true; // Waiting for customer to finish entering pincode
+    } else if (!_shippingFetchDone) {
+      shipPending = true; // Rules still loading from sheet
+    } else {
+      shipAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
+    }
+
+    const freeShip = !shipPending && shipAmt === 0;
+    const grand    = parseFloat((discountedTotal + (shipPending ? 0 : shipAmt)).toFixed(2));
+    const varLabel = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
 
     // GST breakdown
     let gstRate = 0, gstAmountTotal = 0;
@@ -575,12 +601,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
       rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') <span class="os-tag">' + dLabel + '</span></span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
     }
-    rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
-    if (freeShip && discountedTotal < freeAbove && !enteredPincode) {
-      // Show note only when free shipping comes from global threshold, not a matrix rule
-      rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeAbove + '</span><span></span></div>';
+    if (shipPending) {
+      rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span style="color:#999;font-style:italic;">Enter pincode</span></div>';
+    } else {
+      rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
+      if (freeShip && discountedTotal < freeAbove) {
+        rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeAbove + '</span><span></span></div>';
+      }
     }
-    rows += '<div class="os-row os-total"><span>Total Payable</span><span>₹' + grand.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row os-total"><span>Total Payable</span><span>₹' + grand.toFixed(2) + (shipPending ? ' + shipping' : '') + '</span></div>';
 
     return '<div class="order-summary-box" id="order-summary-box"><div class="os-header"><i class="fas fa-receipt" aria-hidden="true"></i> Order Summary</div>' + rows + '</div>';
   }
@@ -622,16 +651,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
 
   // Live-refresh shipping when pincode changes.
-  // If the sheet rules haven't loaded yet, fetchShippingRules() will
-  // resolve and then auto-refresh the summary via its own callback.
+  // Only recalculate once a full 6-digit pincode is entered so partial
+  // typing never triggers a no-match that incorrectly shows free shipping.
   const pincodeEl = document.getElementById('cust-pincode');
   if (pincodeEl) {
-    pincodeEl.addEventListener('input', () => {
+    pincodeEl.addEventListener('input', async () => {
       if (!currentProduct) return;
+      const val = pincodeEl.value.trim();
+      // Partial entry — re-render summary but do not run shipping resolver yet
+      if (val.length !== 6 || !/^\d{6}$/.test(val)) {
+        injectOrUpdateOrderSummary();
+        return;
+      }
+      // Full pincode typed — wait for sheet rules if still loading, then refresh
       if (!_shippingFetchDone) {
-        // Rules still loading — trigger fetch (no-op if already in flight)
-        // The fetch callback will refresh the UI once done
-        fetchShippingRules();
+        await fetchShippingRules();
       }
       refreshCheckoutCalculation();
     });
