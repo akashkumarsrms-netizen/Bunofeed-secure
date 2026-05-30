@@ -54,29 +54,8 @@ window.BUNOFEED_DATA = {
     "endDate": "2026-05-31"
   },
   "shipping": {
-    "freeShippingAbove": 499,
-    "flatShippingCharge": 49,
-    /*
-     * ── SHIPPING MATRIX ─────────────────────────────────────
-     * Add / edit rules here (or via the admin panel).
-     * Rules are matched top-to-bottom; first match wins.
-     *
-     * Current setup: free shipping to serviceable pincodes,
-     * ₹49 flat for all other valid pincodes.
-     * ─────────────────────────────────────────────────────── */
-    "shippingMatrix": [
-      {
-        "pincodes": "",
-        "packSize": "*",
-        "charge": 0
-      },
-      {
-        "pincodes": "*",
-        "packSize": "*",
-        "charge": 49
-      }
-    ]
-  },
+  "source": "google-sheet"
+},  
   "serviceablePincodes": [
     "243201",
     "243202"
