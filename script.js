@@ -179,13 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await window.BUNOFEED_API.get('lookupShipping', {});
         if (result && result.status === 'success' && Array.isArray(result.rules)) {
           _shippingRules = result.rules;
-          console.log('[Bunofeed] Shipping rules loaded from sheet:', JSON.stringify(_shippingRules));
         } else {
-          console.warn('[Bunofeed] Shipping sheet returned no rules:', result);
           _shippingRules = [];
         }
       } catch (err) {
-        console.warn('[Bunofeed] Shipping sheet fetch failed, using fallback:', err);
         _shippingRules = [];
       }
       _shippingFetchDone = true;
@@ -213,13 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function resolveShippingCharge(pincode, packSize, orderTotal) {
 
   const freeAbove = Number((D.shipping && D.shipping.freeShippingAbove) || 499);
-  if (orderTotal >= freeAbove) {
-    console.log('[Bunofeed] Shipping: FREE (order ₹' + orderTotal + ' >= threshold ₹' + freeAbove + ')');
-    return 0;
-  }
+  if (orderTotal >= freeAbove) return 0;
 
   const rules = _shippingRules || [];
 
+  // Normalise size: lowercase, no spaces, unify unit suffixes, then ALSO
+  // strip the unit entirely so "400g" matches a sheet entry of just "400"
   function normSize(s) {
     return String(s || '')
       .trim()
@@ -228,46 +224,41 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       .replace(/grams?$/, 'g')
       .replace(/gm$/, 'g');
   }
+  // Extract just the numeric part (e.g. "400g" → "400", "400" → "400")
+  function numericPart(s) {
+    return s.replace(/[a-z]+$/, '');
+  }
 
-  const pinStr  = String(pincode  || '').trim();
-  const sizeStr = normSize(packSize);
-
-  console.log('[Bunofeed] resolveShipping → pincode:', JSON.stringify(pinStr), '| packSize raw:', JSON.stringify(packSize), '| normalised:', JSON.stringify(sizeStr), '| orderTotal:', orderTotal);
-  console.log('[Bunofeed] Rules available:', rules.length, '| Rules:', JSON.stringify(rules));
+  const pinStr  = String(pincode || '').trim();
+  const sizeNorm = normSize(packSize);           // e.g. "400g"
+  const sizeNum  = numericPart(sizeNorm);        // e.g. "400"
 
   let bestMatch = null;
   let bestScore = -1;
 
   for (const rule of rules) {
-    const rPin  = String(rule.pincode  || '').trim();
-    const rSize = normSize(rule.packSize);
+    const rPin  = String(rule.pincode || '').trim();
+    const rSizeNorm = normSize(rule.packSize);   // e.g. "400" or "500g"
+    const rSizeNum  = numericPart(rSizeNorm);    // e.g. "400" or "500"
 
-    const pinWild  = rPin  === '*' || rPin.toLowerCase()  === 'all';
-    const sizeWild = rSize === '*' || rSize === 'all';
+    const pinWild  = rPin === '*' || rPin.toLowerCase() === 'all';
+    const sizeWild = rSizeNorm === '*' || rSizeNorm === 'all';
 
-    const pinMatch  = pinWild  || rPin.split(',').map(x => x.trim()).includes(pinStr);
-    const sizeMatch = sizeWild || rSize === sizeStr;
-
-    console.log('[Bunofeed] Rule check → rPin:', JSON.stringify(rPin), '| rSize normalised:', JSON.stringify(rSize), '| pinMatch:', pinMatch, '| sizeMatch:', sizeMatch);
+    const pinMatch  = pinWild || rPin.split(',').map(x => x.trim()).includes(pinStr);
+    // Match if full normalised strings equal, OR if numeric parts equal
+    const sizeMatch = sizeWild || rSizeNorm === sizeNorm || rSizeNum === sizeNum;
 
     if (!pinMatch || !sizeMatch) continue;
 
+    // Higher score for more specific matches
     const score = (!pinWild ? 2 : 0) + (!sizeWild ? 2 : 0);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = rule;
-    }
+    if (score > bestScore) { bestScore = score; bestMatch = rule; }
   }
 
-  if (bestMatch) {
-    console.log('[Bunofeed] Shipping matched rule:', JSON.stringify(bestMatch), '→ charge: ₹' + bestMatch.charge);
-    return Number(bestMatch.charge) || 0;
-  }
+  if (bestMatch) return Number(bestMatch.charge) || 0;
 
   const flatFallback = (D.shipping && D.shipping.flatShippingCharge);
-  const charge = typeof flatFallback === 'number' ? flatFallback : 49;
-  console.warn('[Bunofeed] No shipping rule matched for pincode:', pinStr, '| packSize:', sizeStr, '→ using fallback ₹' + charge);
-  return charge;
+  return typeof flatFallback === 'number' ? flatFallback : 49;
 }
 
   
