@@ -219,40 +219,36 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
 
   const rules = _shippingRules || [];
 
+  // Normalise size string: lowercase, strip spaces, unify unit suffixes
+  // so "400gm", "400 gm", "400gram", "400grams", "400g" all match each other
+  function normSize(s) {
+    return String(s || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .replace(/grams?$/, 'g')
+      .replace(/gm$/, 'g');
+  }
+
+  const pinStr  = String(pincode  || '').trim();
+  const sizeStr = normSize(packSize);
+
   let bestMatch = null;
   let bestScore = -1;
 
   for (const rule of rules) {
+    const rPin  = String(rule.pincode  || '').trim();
+    const rSize = normSize(rule.packSize);
 
-    const rPin  = String(rule.pincode || '').trim();
-    const rSize = String(rule.packSize || '')
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '');
-
-    const pinStr = String(pincode || '').trim();
-    const sizeStr = String(packSize || '')
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '');
-
-    const pinWild  = rPin === '*' || rPin.toLowerCase() === 'all';
+    const pinWild  = rPin  === '*' || rPin.toLowerCase()  === 'all';
     const sizeWild = rSize === '*' || rSize === 'all';
 
-    const pinMatch =
-      pinWild ||
-      rPin.split(',').map(x => x.trim()).includes(pinStr);
-
-    const sizeMatch =
-      sizeWild ||
-      rSize === sizeStr;
+    const pinMatch  = pinWild  || rPin.split(',').map(x => x.trim()).includes(pinStr);
+    const sizeMatch = sizeWild || rSize === sizeStr;
 
     if (!pinMatch || !sizeMatch) continue;
 
-    const score =
-      (!pinWild ? 2 : 1) +
-      (!sizeWild ? 2 : 1);
-
+    const score = (!pinWild ? 2 : 0) + (!sizeWild ? 2 : 0);
     if (score > bestScore) {
       bestScore = score;
       bestMatch = rule;
@@ -263,7 +259,9 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     return Number(bestMatch.charge) || 0;
   }
 
-  return 0;
+  // No rule matched — use flat fallback charge (not silently free)
+  const flatFallback = (D.shipping && D.shipping.flatShippingCharge);
+  return typeof flatFallback === 'number' ? flatFallback : 49;
 }
 
   
@@ -613,7 +611,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     }
 
     // Shipping note for the user
-    const freeAbove = Number((D.shipping && D.shipping.freeShippingAbove) || 499);
+    const freeAbove = (D.shipping && D.shipping.freeShippingAbove) || 499;
 
     let rows = '';
     rows += '<div class="os-row"><span>Product' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
@@ -723,7 +721,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       if (!/^\d{6}$/.test(pincode)) { document.getElementById('pincode-error').style.display = 'block'; isValid = false; }
 
       // Pincode serviceable list validator
-      const pincodes = (D.shipping && D.shipping.serviceablePincodes) || D.serviceablePincodes || [];
+      const pincodes = D.serviceablePincodes || [];
       if (isValid && pincodes.length > 0 && !pincodes.includes(pincode)) {
         const errorElement = document.getElementById('pincode-error');
         errorElement.textContent = 'Sorry, we do not deliver to this pincode yet. Accepted: ' + pincodes.join(', ');
