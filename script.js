@@ -211,8 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ---------------------------------------------------------- */
 function resolveShippingCharge(pincode, packSize, orderTotal) {
 
-  // Free shipping threshold
-  if (orderTotal >= 499) {
+  // Free shipping threshold — read from products.js data, fallback to 499
+  const freeAbove = Number((D.shipping && D.shipping.freeShippingAbove) || 499);
+  if (orderTotal >= freeAbove) {
     return 0;
   }
 
@@ -612,7 +613,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     }
 
     // Shipping note for the user
-    const freeAbove = (D.shipping && D.shipping.freeShippingAbove) || 499;
+    const freeAbove = Number((D.shipping && D.shipping.freeShippingAbove) || 499);
 
     let rows = '';
     rows += '<div class="os-row"><span>Product' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
@@ -722,7 +723,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       if (!/^\d{6}$/.test(pincode)) { document.getElementById('pincode-error').style.display = 'block'; isValid = false; }
 
       // Pincode serviceable list validator
-      const pincodes = D.serviceablePincodes || [];
+      const pincodes = (D.shipping && D.shipping.serviceablePincodes) || D.serviceablePincodes || [];
       if (isValid && pincodes.length > 0 && !pincodes.includes(pincode)) {
         const errorElement = document.getElementById('pincode-error');
         errorElement.textContent = 'Sorry, we do not deliver to this pincode yet. Accepted: ' + pincodes.join(', ');

@@ -54,19 +54,13 @@ window.BUNOFEED_DATA = {
     "endDate": "2026-05-31"
   },
   "shipping": {
-  "source": "google-sheet"
-   "freeShippingAbove": 499
-   const freeAbove =
-  Number(D.shipping?.freeShippingAbove) || 499;
-
-if (orderTotal >= freeAbove) {
-  return 0;
-
-},  
-  "serviceablePincodes": [
-    "243201",
-    "243202"
-  ],
+    "source": "google-sheet",
+    "freeShippingAbove": 499,
+    "serviceablePincodes": [
+      "243201",
+      "243202"
+    ]
+  },
   "coupons": [
     {
       "code": "BUNO10",
