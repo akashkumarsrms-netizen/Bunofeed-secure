@@ -1769,7 +1769,7 @@ function loadOffersForm() {
   document.getElementById('sale-label').value           = s.label   || 'SALE';
   document.getElementById('sale-end').value             = s.endDate || '';
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
-  const pincodes = adminData.serviceablePincodes || [];
+  const pincodes = (adminData.shipping && adminData.shipping.serviceablePincodes) || adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
 }
 
@@ -1791,16 +1791,13 @@ function saveOffers(silent = false) {
     endDate:        document.getElementById('sale-end').value,
   };
   const _freeAbove  = document.getElementById('ship-free-above').value;
-  adminData.shipping = {
-    freeShippingAbove: _freeAbove  !== '' ? parseFloat(_freeAbove)  : 499,
-    shippingCharge:    0,
-    shippingMatrix:    [],
-  };
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
-  adminData.serviceablePincodes = rawPincodes
-    .split('\n')
-    .map(p => p.trim())
-    .filter(p => /^\d{6}$/.test(p));
+  adminData.shipping = {
+    freeShippingAbove:    _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
+    serviceablePincodes:  rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p)),
+  };
+  // Remove stale top-level key if it exists from old admin versions
+  delete adminData.serviceablePincodes;
   renderDashboard();
   if (!silent) { markUnsaved(); toast('Offer settings updated!', 'success'); }
 }
@@ -1869,7 +1866,75 @@ function saveAll() {
   toast('✅ All changes saved! Go to Export panel to download products.js.', 'success');
 }
 
+function buildCleanExportData() {
+  const d = adminData;
+
+  // ── Products: only keep pricing combos that match allowedTextures × allowedSizes ──
+  const cleanProducts = (d.products || []).map(p => {
+    const textures = (p.allowedTextures && p.allowedTextures.length > 0) ? p.allowedTextures : ['Default'];
+    const sizes    = (p.allowedSizes    && p.allowedSizes.length    > 0) ? p.allowedSizes    : [p.weight || '500g'];
+
+    const cleanPricing = {};
+    textures.forEach(tx => {
+      sizes.forEach(sz => {
+        const key = `${tx}_${sz}`;
+        if (p.pricing && p.pricing[key] != null) {
+          cleanPricing[key] = p.pricing[key];
+        }
+      });
+    });
+
+    return {
+      id:              p.id,
+      name:            p.name,
+      tagline:         p.tagline         || '',
+      description:     p.description     || '',
+      price:           p.price,
+      mrp:             p.mrp             || null,
+      weight:          p.weight          || sizes[0],
+      allowedSizes:    sizes,
+      allowedTextures: textures,
+      pricing:         cleanPricing,
+      image:           p.image           || '',
+      images:          p.images          || [],
+      emoji:           p.emoji           || '🥜',
+      badge:           p.badge           || null,
+      badgeType:       p.badgeType       || null,
+      bgClass:         p.bgClass         || 'peanut-bg',
+      category:        p.category        || '',
+      features:        p.features        || [],
+      ingredients:     p.ingredients     || '',
+      keyBenefits:     p.keyBenefits     || '',
+      storageInfo:     p.storageInfo     || '',
+      allergenInfo:    p.allergenInfo    || '',
+      hsnCode:         p.hsnCode         || '',
+      visible:         p.visible !== false,
+      bestSeller:      p.bestSeller      === true,
+    };
+  });
+
+  // ── Shipping: clean object only (no source, shippingCharge, shippingMatrix) ──
+  const sh = d.shipping || {};
+  const cleanShipping = {
+    freeShippingAbove:   sh.freeShippingAbove || 499,
+    serviceablePincodes: sh.serviceablePincodes || d.serviceablePincodes || [],
+  };
+
+  return {
+    payment:    d.payment    || {},
+    campaign:   d.campaign   || {},
+    sale:       d.sale       || {},
+    shipping:   cleanShipping,
+    coupons:    d.coupons    || [],
+    products:   cleanProducts,
+    hero:       d.hero       || {},
+    brand:      d.brand      || {},
+    categories: d.categories || [],
+  };
+}
+
 function generateExport() {
+  const cleanData = buildCleanExportData();
   const code = `/**
  * ============================================================
  *  BUNOFEED — Products & Campaign Data  (products.js)
@@ -1878,7 +1943,7 @@ function generateExport() {
  * ============================================================
  */
 
-window.BUNOFEED_DATA = ${JSON.stringify(adminData, null, 2)};
+window.BUNOFEED_DATA = ${JSON.stringify(cleanData, null, 2)};
 `;
   document.getElementById('export-preview').value = code;
   return code;
