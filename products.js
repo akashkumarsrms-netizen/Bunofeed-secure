@@ -91,7 +91,7 @@ window.BUNOFEED_DATA = {
         "https://bunofeed.in/images/Classic Smooth/4_classic_smooth.png",
         "https://bunofeed.in/images/Classic Smooth/5_classic_smooth.png",
         "https://bunofeed.in/images/Classic Smooth/6_classic_smooth.png",
-        "https://bunofeed.in/images/Classic Smooth/7.png"
+        "https://bunofeed.in/images/Classic Smooth/7_classic_smooth.png"
       ],
       "emoji": "🥜",
       "badge": "Limited Stock",
