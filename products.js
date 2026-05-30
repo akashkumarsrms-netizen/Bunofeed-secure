@@ -66,7 +66,7 @@ window.BUNOFEED_DATA = {
      * ─────────────────────────────────────────────────────── */
     "shippingMatrix": [
       {
-        "pincodes": "243201,243202",
+        "pincodes": "",
         "packSize": "*",
         "charge": 0
       },
