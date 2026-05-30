@@ -55,6 +55,7 @@ window.BUNOFEED_DATA = {
   },
   "shipping": {
   "source": "google-sheet"
+   "freeShippingAbove": 499
 },  
   "serviceablePincodes": [
     "243201",
