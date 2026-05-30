@@ -717,7 +717,8 @@
       // GST row
       if (gst > 0) {
         // Back-calculate rate from subtotal
-        const gstRate = sub > 0 ? Math.round((gst / sub) * 100 * 105) : 0;
+        const gstRate = (sub - gst) > 0 ? Math.round((gst / (sub - gst)) * 100) : 0;
+        document.getElementById('pb-gst-label').textContent   = 'GST (' + gstRate + '%) included above';
         document.getElementById('pb-gst-row').style.display   = 'flex';
         document.getElementById('pb-gst-label').textContent   = 'GST (' + (inv.gstRate || gstRate) + '%) included above';
         document.getElementById('pb-gst-val').textContent     = '₹' + gst.toFixed(2);
