@@ -209,39 +209,63 @@ document.addEventListener('DOMContentLoaded', () => {
      packSize is normalised (lowercase, spaces stripped) so
      "400 g", "400G", and "400g" all match each other.
   ---------------------------------------------------------- */
-  function resolveShippingCharge(pincode, packSize, orderTotal) {
-    const freeAbove = parseFloat((D.shipping || {}).freeShippingAbove) || 499;
-    const pinStr    = String(pincode  || '').trim();
-    const sizeStr   = String(packSize || '').trim().toLowerCase().replace(/\s+/g, '');
+function resolveShippingCharge(pincode, packSize, orderTotal) {
 
-    const rules = _shippingRules || [];
-    let bestMatch = null;
-    let bestScore = -1;
-
-    for (const rule of rules) {
-      const rPin  = String(rule.pincode  || '').trim();
-      const rSize = String(rule.packSize || '').trim().toLowerCase().replace(/\s+/g, '');
-
-      const pinWild  = rPin  === '*' || rPin.toLowerCase()  === 'all';
-      const sizeWild = rSize === '*' || rSize === 'all';
-
-      // Pincode cell can hold a comma-separated list
-      const pinMatch  = pinWild  || rPin.split(',').map(p => p.trim()).includes(pinStr);
-      const sizeMatch = sizeWild || rSize === sizeStr;
-
-      if (!pinMatch || !sizeMatch) continue;
-
-      // Score: 2 points for exact match, 1 for wildcard on each axis (max 4)
-      const score = (!pinWild ? 2 : 1) + (!sizeWild ? 2 : 1);
-      if (score > bestScore) { bestScore = score; bestMatch = rule; }
-    }
-
-    if (bestMatch !== null) return parseFloat(bestMatch.charge) || 0;
-
-    // No sheet rule matched → honour free-shipping threshold
-    const defaultCharge = parseFloat((D.shipping || {}).shippingCharge) || 0;
-    return orderTotal >= freeAbove ? 0 : defaultCharge;
+  // Free shipping threshold
+  if (orderTotal >= 499) {
+    return 0;
   }
+
+  const rules = _shippingRules || [];
+
+  let bestMatch = null;
+  let bestScore = -1;
+
+  for (const rule of rules) {
+
+    const rPin  = String(rule.pincode || '').trim();
+    const rSize = String(rule.packSize || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '');
+
+    const pinStr = String(pincode || '').trim();
+    const sizeStr = String(packSize || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '');
+
+    const pinWild  = rPin === '*' || rPin.toLowerCase() === 'all';
+    const sizeWild = rSize === '*' || rSize === 'all';
+
+    const pinMatch =
+      pinWild ||
+      rPin.split(',').map(x => x.trim()).includes(pinStr);
+
+    const sizeMatch =
+      sizeWild ||
+      rSize === sizeStr;
+
+    if (!pinMatch || !sizeMatch) continue;
+
+    const score =
+      (!pinWild ? 2 : 1) +
+      (!sizeWild ? 2 : 1);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = rule;
+    }
+  }
+
+  if (bestMatch) {
+    return Number(bestMatch.charge) || 0;
+  }
+
+  return 0;
+}
+
+  
 
   /* ----------------------------------------------------------
      PRICE HTML GENERATOR
