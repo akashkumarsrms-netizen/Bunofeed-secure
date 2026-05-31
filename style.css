@@ -537,7 +537,7 @@ ul { list-style: none; }
   gap: 0;
   overflow: hidden;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 .product-info h3 {
   font-family: var(--font-head);
