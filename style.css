@@ -494,8 +494,8 @@ ul { list-style: none; }
 
 /* Product image area */
 .product-img {
-  height: 320px;
-  padding: 16px;
+  height: 360px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -527,30 +527,30 @@ ul { list-style: none; }
 .choco-bg   { background: linear-gradient(135deg, #473229, #7c584c); }
 
 .product-info {
-  padding: 1.5rem;
+  padding: 1rem 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.4rem;
   flex: 1;
 }
 .product-info h3 {
   font-family: var(--font-head);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--dark);
   line-height: 1.3;
 }
 .product-info p {
   color: var(--gray);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.82rem;
+  line-height: 1.5;
   flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: calc(1.6em * 3);
+  max-height: calc(1.5em * 2);
 }
 
 /* Real-Time Variant Selector Dropdowns on Card */
@@ -585,18 +585,18 @@ ul { list-style: none; }
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 0.75rem;
-  gap: 0.6rem;
+  padding-top: 0.5rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 .product-card-btns {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 .btn-view-detail {
-  padding: 10px 16px;
-  font-size: 0.82rem;
+  padding: 7px 13px;
+  font-size: 0.76rem;
   border-radius: 50px;
   background: transparent;
   color: var(--brown);
@@ -608,7 +608,7 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
-  min-height: 40px;
+  min-height: 36px;
 }
 .btn-view-detail:hover {
   background: var(--brown);
@@ -659,8 +659,8 @@ ul { list-style: none; }
   font-weight: 600;
 }
 .btn-buy {
-  padding: 10px 20px;
-  font-size: 0.82rem;
+  padding: 7px 16px;
+  font-size: 0.76rem;
   border-radius: 50px;
   background: var(--brown);
   color: var(--white);
@@ -672,7 +672,7 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
-  min-height: 40px;
+  min-height: 36px;
 }
 .btn-buy:hover {
   background: var(--orange);
@@ -1051,18 +1051,18 @@ ul { list-style: none; }
 
   /* Products */
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .product-img { height: 180px; padding: 12px; }
+  .product-img { height: 220px; padding: 10px; }
   .product-emoji { font-size: 3.5rem; }
-  .product-info { padding: 0.85rem; gap: 0.4rem; }
-  .product-info h3 { font-size: 1rem; }
+  .product-info { padding: 0.75rem; gap: 0.35rem; }
+  .product-info h3 { font-size: 0.9rem; }
   .product-footer { flex-direction: column; align-items: stretch; gap: 0.5rem; padding-top: 0.5rem; }
   .product-card-btns { width: 100%; gap: 0.4rem; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
     flex: 1;
     padding: 6px 10px;
-    font-size: 0.75rem;
-    min-height: 36px;
+    font-size: 0.72rem;
+    min-height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1086,11 +1086,11 @@ ul { list-style: none; }
    ============================================================ */
 @media (max-width: 480px) {
   .products-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .product-img { height: 130px; padding: 10px; }
+  .product-img { height: 170px; padding: 8px; }
   .product-emoji { font-size: 2.8rem; }
-  .product-info { padding: 0.6rem; gap: 0.3rem; }
-  .product-info h3 { font-size: 0.82rem; line-height: 1.2; }
-  .product-info p { font-size: 0.75rem; line-height: 1.4; -webkit-line-clamp: 2; max-height: calc(1.4em * 2); }
+  .product-info { padding: 0.55rem; gap: 0.25rem; }
+  .product-info h3 { font-size: 0.78rem; line-height: 1.2; }
+  .product-info p { font-size: 0.72rem; line-height: 1.4; -webkit-line-clamp: 2; max-height: calc(1.4em * 2); }
   .product-footer { padding-top: 0.3rem; gap: 0.3rem; }
   .price-original,
   .price-sale .price-current { font-size: 0.95rem; }

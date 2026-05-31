@@ -514,7 +514,7 @@
         transform: translateY(100%);
         border-radius: 24px 24px 0 0;
         height: 100%;
-        max-height: 92dvh;
+        max-height: 95dvh;
         margin-top: auto;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -528,9 +528,12 @@
       #buno-modal-img-col {
         width: 100%;
         flex-shrink: 0;
-        height: 380px;
-        min-height: unset;
+        height: 70vw;
+        min-height: 320px;
+        max-height: 480px;
         border-radius: 24px 24px 0 0;
+        /* sticky so it scrolls away naturally */
+        position: relative;
       }
       #buno-modal-img-col.peanut-bg  { background: linear-gradient(135deg, #fdf1e1, #f7d6a5); }
       #buno-modal-img-col.oat-bg     { background: linear-gradient(135deg, #f0faf1, #d3ebd5); }
@@ -553,6 +556,8 @@
       }
       #buno-modal-body {
         padding: 1.8rem 1.5rem 2.2rem;
+        /* on mobile, body does NOT scroll independently — the outer #buno-modal scrolls */
+        overflow-y: visible;
       }
       #buno-modal-name { font-size: 1.45rem; }
       #buno-modal-price { font-size: 1.7rem; }
@@ -560,11 +565,13 @@
 
     @media (max-width: 480px) {
       #buno-modal {
-        max-height: 94dvh;
+        max-height: 96dvh;
         overflow-y: auto;
       }
       #buno-modal-img-col {
-        height: 350px;
+        height: 78vw;
+        min-height: 280px;
+        max-height: 420px;
       }
       .buno-actions { flex-direction: column; gap: 0.75rem; }
       .buno-actions .btn { flex: unset; width: 100%; }
