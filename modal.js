@@ -513,14 +513,18 @@
         flex-direction: column;
         transform: translateY(100%);
         border-radius: 24px 24px 0 0;
-        height: 100%;
-        max-height: 95dvh;
+        height: auto;           /* let content dictate total height */
+        min-height: 100%;
+        max-height: none;       /* no cap — the overlay is fixed, modal can be taller */
         margin-top: auto;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        scroll-snap-type: none;
       }
       #buno-modal-overlay.open {
         align-items: flex-end;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       #buno-modal-overlay.visible #buno-modal {
         transform: translateY(0);
@@ -528,18 +532,19 @@
       #buno-modal-img-col {
         width: 100%;
         flex-shrink: 0;
-        height: 70vw;
-        min-height: 320px;
-        max-height: 480px;
+        /* Fill nearly full viewport height so badge+name+tagline just peek below */
+        height: calc(95dvh - 130px);
+        min-height: 300px;
+        max-height: none;       /* allow it to grow on large tablets */
         border-radius: 24px 24px 0 0;
-        /* sticky so it scrolls away naturally */
         position: relative;
+        /* thumbnail strip and dots sit at bottom of image col naturally */
       }
       #buno-modal-img-col.peanut-bg  { background: linear-gradient(135deg, #fdf1e1, #f7d6a5); }
       #buno-modal-img-col.oat-bg     { background: linear-gradient(135deg, #f0faf1, #d3ebd5); }
       #buno-modal-img-col.muesli-bg  { background: linear-gradient(135deg, #fffbf2, #fbe8cc); }
       #buno-modal-img-col.choco-bg   { background: linear-gradient(135deg, #473229, #7c584c); }
-      
+
       #buno-modal-main-img img {
         width: 100%;
         height: 100%;
@@ -555,23 +560,21 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       }
       #buno-modal-body {
-        padding: 1.8rem 1.5rem 2.2rem;
-        /* on mobile, body does NOT scroll independently — the outer #buno-modal scrolls */
+        padding: 1.4rem 1.5rem 3rem;
+        /* body does NOT scroll independently — outer #buno-modal-overlay scrolls */
         overflow-y: visible;
+        /* subtle scroll-hint shadow at the top edge */
+        box-shadow: inset 0 6px 16px rgba(107,45,14,0.05);
       }
       #buno-modal-name { font-size: 1.45rem; }
       #buno-modal-price { font-size: 1.7rem; }
     }
 
     @media (max-width: 480px) {
-      #buno-modal {
-        max-height: 96dvh;
-        overflow-y: auto;
-      }
       #buno-modal-img-col {
-        height: 78vw;
-        min-height: 280px;
-        max-height: 420px;
+        /* On small phones same principle — image fills viewport minus ~110px for name peek */
+        height: calc(95dvh - 110px);
+        min-height: 260px;
       }
       .buno-actions { flex-direction: column; gap: 0.75rem; }
       .buno-actions .btn { flex: unset; width: 100%; }
