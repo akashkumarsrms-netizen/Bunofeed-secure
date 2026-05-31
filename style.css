@@ -546,26 +546,25 @@ ul { list-style: none; }
 }
 .product-info h3 {
   font-family: var(--font-head);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--dark);
-  line-height: 1.25;
-  margin: 0 0 0.15rem 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.3;
+  margin: 0 0 0.18rem 0;
+  white-space: normal;
+  overflow: visible;
+  display: block;
 }
 .card-tagline {
-  font-size: 0.72rem;
-  color: var(--gray);
-  line-height: 1.3;
+  font-size: 0.71rem;
+  color: var(--brown-dark, #4a1a05);
+  font-weight: 600;
+  line-height: 1.35;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-style: italic;
+  font-style: normal;
+  white-space: normal;
+  overflow: visible;
+  display: block;
 }
 .product-info > p { display: none; }
 
@@ -1082,8 +1081,8 @@ ul { list-style: none; }
   .product-card { height: 400px; }
   .product-emoji { font-size: 3.2rem; }
   .product-info { padding: 0.6rem 0.7rem; }
-  .product-info h3 { font-size: 0.82rem; }
-  .card-tagline { font-size: 0.66rem; }
+  .product-info h3 { font-size: 0.8rem; }
+  .card-tagline { font-size: 0.65rem; font-weight: 600; color: var(--brown-dark, #4a1a05); }
   .card-select { height: 24px; font-size: 0.68rem; }
   .product-card-btns { gap: 0.3rem; }
   .product-card-btns .btn-view-detail,
@@ -1112,8 +1111,8 @@ ul { list-style: none; }
   .product-card { height: 340px; }
   .product-emoji { font-size: 2.6rem; }
   .product-info { padding: 0.45rem 0.55rem; }
-  .product-info h3 { font-size: 0.68rem; line-height: 1.2; }
-  .card-tagline { font-size: 0.6rem; -webkit-line-clamp: 1; }
+  .product-info h3 { font-size: 0.66rem; line-height: 1.25; }
+  .card-tagline { font-size: 0.58rem; font-weight: 600; color: var(--brown-dark, #4a1a05); }
   .price-original,
   .price-sale .price-current { font-size: 0.82rem; }
   .price-sale .price-old { font-size: 0.62rem; }
