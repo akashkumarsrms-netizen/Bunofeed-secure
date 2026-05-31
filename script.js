@@ -317,7 +317,10 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         ${imgHTML}
       </div>
       <div class="product-info">
-        <h3>${product.name}</h3>
+        <div class="card-name-block">
+          <h3>${product.name}</h3>
+          ${product.tagline ? `<p class="card-tagline">${product.tagline}</p>` : ''}
+        </div>
 
         <!-- Real-Time Selectors Grid directly on card -->
         <div class="card-selectors-row">
@@ -329,17 +332,16 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
           </select>
         </div>
 
-        <div class="product-footer">
-          <div class="product-price">
-            <div class="product-weight card-computed-weight">${hasTextures ? firstTexture + ' ' : ''}${firstSize || product.weight || ''}</div>
-            <div class="price-sale card-computed-pricing">
-              ${getPriceMarkup(initialPricing.price, initialPricing.mrp)}
-            </div>
+        <div class="card-price-row">
+          <div class="product-weight card-computed-weight">${hasTextures ? firstTexture + ' ' : ''}${firstSize || product.weight || ''}</div>
+          <div class="price-sale card-computed-pricing">
+            ${getPriceMarkup(initialPricing.price, initialPricing.mrp)}
           </div>
-          <div class="product-card-btns">
-            <button class="btn-view-detail c-view-btn" data-id="${product.id}">View Details</button>
-            <button class="btn-buy c-buy-btn" data-id="${product.id}">Buy Now</button>
-          </div>
+        </div>
+
+        <div class="product-card-btns">
+          <button class="btn-view-detail c-view-btn" data-id="${product.id}">View Details</button>
+          <button class="btn-buy c-buy-btn" data-id="${product.id}">Buy Now</button>
         </div>
       </div>`;
 

@@ -218,7 +218,7 @@ ul { list-style: none; }
   height: var(--nav-height);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
 }
 .logo { display: flex; align-items: center; min-height: 44px; }
 .logo-img {
@@ -452,8 +452,7 @@ ul { list-style: none; }
   flex-direction: column;
   position: relative;
   border: 1px solid rgba(107,45,14,0.04);
-  min-height: 480px;
-  height: auto;
+  height: 480px;
 }
 .product-card:hover {
   transform: translateY(-8px);
@@ -496,8 +495,8 @@ ul { list-style: none; }
 
 /* Product image area — exactly 50% of fixed card height */
 .product-img {
-  height: 240px;
-  flex-shrink: 0;
+  flex: 0 0 50%;
+  height: 50%;
   padding: 12px;
   display: flex;
   align-items: center;
@@ -532,47 +531,58 @@ ul { list-style: none; }
 .product-info {
   flex: 0 0 50%;
   height: 50%;
-  padding: 0.75rem 1rem 0.75rem;
+  padding: 0.7rem 0.9rem 0.7rem;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 0;
   overflow: hidden;
   box-sizing: border-box;
-  justify-content: space-between;
+}
+
+/* Name + tagline block */
+.card-name-block {
+  flex-shrink: 0;
 }
 .product-info h3 {
   font-family: var(--font-head);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--dark);
   line-height: 1.25;
-  margin: 0 0 0.3rem 0;
-  flex-shrink: 0;
+  margin: 0 0 0.15rem 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  min-height: 3.8em;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.product-info p {
-  display: none;
+.card-tagline {
+  font-size: 0.72rem;
+  color: var(--gray);
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-style: italic;
 }
+.product-info > p { display: none; }
 
 /* Real-Time Variant Selector Dropdowns on Card */
 .card-selectors-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.35rem;
-  margin: 0 0 0.3rem 0;
+  gap: 0.3rem;
   flex-shrink: 0;
 }
 .card-select {
-  padding: 0 10px;
-  height: 28px;
+  padding: 0 8px;
+  height: 26px;
   border: 1.5px solid #e2d7cf;
   border-radius: 8px;
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--dark);
   outline: none;
@@ -586,29 +596,67 @@ ul { list-style: none; }
   box-shadow: 0 0 4px rgba(255,107,0,0.15);
 }
 
-.product-footer {
-  margin-top: auto;
+/* Price row — weight + price stacked */
+.card-price-row {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  gap: 0.4rem;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
+  gap: 1px;
 }
-.product-card-btns {
+.product-weight {
+  font-size: 0.68rem;
+  color: var(--gray);
+  font-weight: 600;
+}
+.product-price {
   display: flex;
-  gap: 0.5rem;
-  width: 100%;
+  flex-direction: column;
+  gap: 2px;
+}
+.price-original {
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #000000;
+}
+.price-sale {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.price-sale .price-current {
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #000000;
+}
+.price-sale .price-old {
+  font-size: 0.72rem;
+  color: #d32f2f;
+  text-decoration: line-through;
+}
+.price-save-tag {
+  font-size: 0.65rem;
+  background: #eafbe1;
+  color: #2e7d32;
+  font-family: var(--font-head);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 50px;
 }
 
-.product-card-btns button {
-  flex: 1;
+/* Buttons — full width row at very bottom */
+.product-card-btns {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
 }
 .btn-view-detail {
-  padding: 6px 12px;
-  font-size: 0.74rem;
+  flex: 1;
+  padding: 0;
+  height: 32px;
+  font-size: 0.72rem;
   border-radius: 50px;
   background: transparent;
   color: var(--brown);
@@ -620,8 +668,9 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
-  min-height: 32px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-view-detail:hover {
   background: var(--brown);
@@ -630,50 +679,11 @@ ul { list-style: none; }
 }
 .btn-view-detail:active { transform: translateY(0); }
 
-.product-price {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.price-original {
-  font-family: var(--font-head);
-  font-size: 1rem;
-  font-weight: 800;
-  color: #000000;
-}
-.price-sale {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.price-sale .price-current {
-  font-family: var(--font-head);
-  font-size: 1rem;
-  font-weight: 800;
-  color: #000000;
-}
-.price-sale .price-old {
-  font-size: 0.75rem;
-  color: #d32f2f;
-  text-decoration: line-through;
-}
-.price-save-tag {
-  font-size: 0.72rem;
-  background: #eafbe1;
-  color: #2e7d32;
-  font-family: var(--font-head);
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 50px;
-}
-.product-weight {
-  font-size: 0.72rem;
-  color: var(--gray);
-  font-weight: 600;
-}
 .btn-buy {
-  padding: 6px 14px;
-  font-size: 0.74rem;
+  flex: 1;
+  padding: 0;
+  height: 32px;
+  font-size: 0.72rem;
   border-radius: 50px;
   background: var(--brown);
   color: var(--white);
@@ -685,8 +695,9 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
-  min-height: 32px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-buy:hover {
   background: var(--orange);
@@ -694,6 +705,9 @@ ul { list-style: none; }
   transform: translateY(-2px);
 }
 .btn-buy:active { transform: translateY(0); }
+
+/* Remove old product-footer — layout now handled by flex column on product-info */
+.product-footer { display: contents; }
 
 /* ============================================================
    WHY US SECTION
@@ -1065,27 +1079,17 @@ ul { list-style: none; }
 
   /* Products */
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .product-card {
-    min-height: 380px;
-    height: auto;
-  }
-
-  .product-img {
-    height: 180px;
-  }
+  .product-card { height: 400px; }
   .product-emoji { font-size: 3.2rem; }
-  .product-info { padding: 0.65rem 0.75rem; }
-  .product-info h3 { font-size: 0.85rem; }
-  .product-footer { gap: 0.35rem; }
+  .product-info { padding: 0.6rem 0.7rem; }
+  .product-info h3 { font-size: 0.82rem; }
+  .card-tagline { font-size: 0.66rem; }
+  .card-select { height: 24px; font-size: 0.68rem; }
   .product-card-btns { gap: 0.3rem; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
-    padding: 5px 9px;
-    font-size: 0.68rem;
-    min-height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 28px;
+    font-size: 0.66rem;
   }
 
   /* Why / About */
@@ -1105,31 +1109,23 @@ ul { list-style: none; }
    ============================================================ */
 @media (max-width: 480px) {
   .products-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .product-card {
-    min-height: 320px;
-    height: auto;
-  }
-
-  .product-img {
-    height: 140px;
-  }
+  .product-card { height: 340px; }
   .product-emoji { font-size: 2.6rem; }
-  .product-info { padding: 0.5rem 0.6rem; }
-  .product-info h3 { font-size: 0.72rem; line-height: 1.2; }
-  .product-footer { gap: 0.25rem; }
+  .product-info { padding: 0.45rem 0.55rem; }
+  .product-info h3 { font-size: 0.68rem; line-height: 1.2; }
+  .card-tagline { font-size: 0.6rem; -webkit-line-clamp: 1; }
   .price-original,
-  .price-sale .price-current { font-size: 0.85rem; }
-  .price-sale .price-old { font-size: 0.65rem; }
-  .price-save-tag { font-size: 0.54rem; padding: 1px 4px; }
-  .product-weight { font-size: 0.62rem; }
-  .card-select { height: 24px; font-size: 0.65rem; padding: 0 7px; }
+  .price-sale .price-current { font-size: 0.82rem; }
+  .price-sale .price-old { font-size: 0.62rem; }
+  .price-save-tag { font-size: 0.52rem; padding: 1px 4px; }
+  .product-weight { font-size: 0.6rem; }
+  .card-select { height: 22px; font-size: 0.62rem; padding: 0 6px; }
   .product-badge { top: 7px; left: 7px; font-size: 0.55rem; padding: 3px 7px; }
   .sale-ribbon { top: 7px; right: 7px; font-size: 0.55rem; padding: 3px 7px; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
+    height: 26px;
     font-size: 0.6rem;
-    min-height: 24px;
-    padding: 3px 6px;
     border-width: 1.5px;
   }
   .why-visual       { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
