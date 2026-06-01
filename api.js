@@ -14,16 +14,19 @@
 window.BUNOFEED_API = {
 
   // ── Replace this with your Cloudflare Worker URL after deploying ──
-  // Example: "https://bunofeed-api.YOUR-USERNAME.workers.dev"
   BASE_URL: 'https://bunofeed-api.bunofeedbaheri.workers.dev',
 
   // ── API Endpoints ──
   endpoints: {
-    createOrder:     '/api/order/create',    // POST — save new order
-    lookupOrder:     '/api/order/lookup',    // GET  — fetch order by ID + phone
-    updateOrder:     '/api/order/update',    // POST — update return/cancel status
-    lookupInvoice:   '/api/invoice/lookup',  // GET  — fetch invoice/payment breakdown by order ID
-    lookupShipping:  '/api/shipping/lookup', // GET  — fetch all pincode×packsize shipping rules from sheet
+    createOrder:      '/api/order/create',       // POST — save new order
+    lookupOrder:      '/api/order/lookup',        // GET  — fetch order by ID + phone
+    updateOrder:      '/api/order/update',        // POST — update return/cancel status
+    lookupInvoice:    '/api/invoice/lookup',      // GET  — fetch invoice by order ID
+    lookupShipping:   '/api/shipping/lookup',     // GET  — fetch pincode×packsize shipping rules
+    // ── Blog ──
+    blogPosts:        '/api/blog/posts',          // GET  — list published posts (?category=&limit=)
+    blogPost:         '/api/blog/post',           // GET  — single post content (?slug= or ?blogId=)
+    blogCategories:   '/api/blog/categories',     // GET  — unique categories
   },
 
   // ── Helper: full URL builder ──
