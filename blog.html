@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Health & Nutrition Blog | Bunofeed</title>
+  <meta name="description" content="Read Bunofeed's expert nutrition, fitness and healthy eating articles. Science-backed guides for a stronger, healthier life."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    /* ── Blog Page Specific ── */
+    .blog-hero {
+      background: var(--brown);
+      padding: 4.5rem 1.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .blog-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(255,107,0,0.18) 0%, transparent 70%),
+                  radial-gradient(ellipse at 20% 80%, rgba(139,69,19,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .blog-hero-inner { position: relative; z-index: 1; }
+    .blog-hero .section-tag { background: rgba(255,255,255,0.15); color: #fff; margin-bottom: 1rem; }
+    .blog-hero h1 {
+      font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800; color: #fff; margin-bottom: 0.6rem;
+    }
+    .blog-hero p { color: rgba(255,255,255,0.72); font-size: 1rem; max-width: 520px; margin: 0 auto; }
+
+    /* ── Search bar ── */
+    .blog-search-wrap {
+      max-width: 500px;
+      margin: 2rem auto 0;
+      position: relative;
+    }
+    .blog-search-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 50px 14px 20px;
+      border: none;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--dark);
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+    .blog-search-input:focus { box-shadow: 0 8px 32px rgba(255,107,0,0.25); }
+    .blog-search-icon {
+      position: absolute; right: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--brown); font-size: 1rem; pointer-events: none;
+    }
+
+    /* ── Blog main layout ── */
+    .blog-view {
+      background: var(--off-white);
+      min-height: 80vh;
+      padding: 3.5rem 1.5rem 5rem;
+    }
+    .blog-container { max-width: 1200px; margin: 0 auto; }
+
+    /* ── Filter bar ── */
+    .blog-filter-bar {
+      display: flex; gap: 0.7rem; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 3rem;
+    }
+    .blog-filter-btn {
+      padding: 9px 22px;
+      border: 2px solid #e0d4cc;
+      background: var(--white);
+      border-radius: 50px;
+      font-family: var(--font-head);
+      font-weight: 700; font-size: 0.82rem;
+      color: var(--gray); cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.2s cubic-bezier(0.165,0.84,0.44,1);
+    }
+    .blog-filter-btn:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-1px); }
+    .blog-filter-btn.active {
+      background: var(--orange); border-color: var(--orange); color: #fff; transform: translateY(-2px);
+    }
+
+    /* ── Blog Grid ── */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    @media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .blog-grid { grid-template-columns: 1fr; gap: 1.4rem; } }
+
+    /* ── Blog Card ── */
+    .blog-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(107,45,14,0.08);
+      border: 1px solid rgba(139,69,19,0.06);
+      transition: transform 0.25s cubic-bezier(0.165,0.84,0.44,1), box-shadow 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .blog-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(107,45,14,0.14);
+    }
+    .blog-card-image {
+      width: 100%; height: 200px;
+      object-fit: cover;
+      display: block;
+      background: #f2e9e2;
+    }
+    .blog-card-image-placeholder {
+      width: 100%; height: 200px;
+      background: linear-gradient(135deg, #f2e9e2 0%, #e0d4cc 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; color: #c0a898;
+    }
+    .blog-card-body {
+      padding: 1.4rem 1.5rem 1.6rem;
+      display: flex; flex-direction: column; flex: 1;
+    }
+    .blog-card-meta {
+      display: flex; align-items: center; gap: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .blog-card-category {
+      font-family: var(--font-head);
+      font-size: 0.7rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      background: rgba(255,107,0,0.1); color: var(--orange);
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .blog-card-date {
+      font-size: 0.75rem; color: var(--gray);
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .blog-card-title {
+      font-family: var(--font-head);
+      font-size: 1.08rem; font-weight: 800;
+      color: var(--dark); margin-bottom: 0.65rem;
+      line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .blog-card-excerpt {
+      font-size: 0.87rem; color: var(--gray); line-height: 1.65;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: 1.2rem; flex: 1;
+    }
+    .blog-read-more {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--font-head); font-weight: 700; font-size: 0.82rem;
+      color: var(--orange);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .blog-read-more:hover { gap: 0.85rem; }
+    .blog-read-more i { transition: transform 0.2s; }
+    .blog-read-more:hover i { transform: translateX(3px); }
+
+    /* ── States ── */
+    .blog-loading, .blog-empty, .blog-error {
+      text-align: center; padding: 4.5rem 1rem; display: none;
+    }
+    .blog-loading.visible, .blog-empty.visible, .blog-error.visible { display: block; }
+    .blog-loading .spin {
+      display: inline-block; width: 44px; height: 44px;
+      border: 4px solid #e0d4cc; border-top-color: var(--orange);
+      border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .blog-empty i, .blog-error i { font-size: 3rem; color: #e0d4cc; margin-bottom: 1rem; }
+    .blog-empty h3, .blog-error h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--brown-dark); margin-bottom: 0.4rem; }
+    .blog-empty p, .blog-error p { color: var(--gray); font-size: 0.95rem; }
+
+    /* ── Results count ── */
+    .blog-results-count {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--gray);
+      margin-bottom: 1.8rem;
+      font-family: var(--font-head);
+      font-weight: 600;
+    }
+
+    /* ── Pagination (simple load more) ── */
+    .blog-load-more-wrap {
+      text-align: center; margin-top: 3rem; display: none;
+    }
+    .blog-load-more-wrap.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- CAMPAIGN BANNER -->
+  <div id="campaign-banner" role="alert" aria-live="polite"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="/index.html"      class="nav-link">Home</a>
+        <a href="/shop.html"       class="nav-link">Products</a>
+        <a href="/blog.html"       class="nav-link active">Blog</a>
+        <a href="/orders.html"     class="nav-link">My Orders</a>
+        <a href="/about.html"      class="nav-link">About Us</a>
+        <a href="/index.html#contact" class="nav-link">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="blog-hero">
+    <div class="blog-hero-inner">
+      <div class="section-tag">Bunofeed Journal</div>
+      <h1>Health &amp; Nutrition Insights</h1>
+      <p>Science-backed guides, recipes, and tips to fuel a stronger, more vibrant life.</p>
+      <div class="blog-search-wrap">
+        <input type="search" class="blog-search-input" id="blog-search" placeholder="Search articles…" aria-label="Search blog posts"/>
+        <i class="fas fa-search blog-search-icon" aria-hidden="true"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG VIEW -->
+  <div class="blog-view">
+    <div class="blog-container">
+
+      <!-- Category filters (populated dynamically) -->
+      <div class="blog-filter-bar" id="blog-filter-bar">
+        <button class="blog-filter-btn active" data-cat="all">All Articles</button>
+      </div>
+
+      <!-- States -->
+      <div class="blog-loading visible" id="blog-loading">
+        <div class="spin"></div>
+        <p style="color:var(--gray);">Loading articles…</p>
+      </div>
+      <div class="blog-empty" id="blog-empty">
+        <i class="fas fa-newspaper"></i>
+        <h3>No Articles Found</h3>
+        <p>Try a different search term or category.</p>
+      </div>
+      <div class="blog-error" id="blog-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Couldn't Load Articles</h3>
+        <p>Please check your connection and try again.</p>
+        <button class="btn btn-brown" id="blog-retry-btn" style="margin-top:1rem;min-height:44px;">Retry</button>
+      </div>
+
+      <!-- Results count -->
+      <div class="blog-results-count" id="blog-results-count" style="display:none;"></div>
+
+      <!-- Grid -->
+      <div class="blog-grid" id="blog-grid"></div>
+
+      <!-- Load more -->
+      <div class="blog-load-more-wrap" id="load-more-wrap">
+        <button class="btn btn-outline" id="load-more-btn" style="min-height:48px;padding:14px 40px;">
+          <i class="fas fa-plus-circle"></i> Load More Articles
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
+        <p>Your companion in healthy living. Honest food for real people.</p>
+        <div class="social-links">
+          <a href="#" data-social="instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" data-social="facebook"  aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" data-social="linkedin"  aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" data-social="youtube"   aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" data-social="twitter"   aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="/index.html">Home</a>
+        <a href="/shop.html">Products</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/orders.html">My Orders</a>
+        <a href="/about.html">About Us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:bunofeedhelpdesk@gmail.com">bunofeedhelpdesk@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms</a> | <a href="/privacy.html">Privacy</a></p>
+      <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
+    </div>
+  </footer>
+
+  <script src="/products.js"></script>
+  <script src="/api.js"></script>
+  <script src="/script.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    const POSTS_PER_PAGE = 9;
+
+    let allPosts      = [];      // full list from API
+    let filteredPosts = [];      // after category + search filters
+    let visibleCount  = POSTS_PER_PAGE;
+    let activeCategory = 'all';
+    let searchQuery    = '';
+
+    const gridEl        = document.getElementById('blog-grid');
+    const loadingEl     = document.getElementById('blog-loading');
+    const emptyEl       = document.getElementById('blog-empty');
+    const errorEl       = document.getElementById('blog-error');
+    const countEl       = document.getElementById('blog-results-count');
+    const filterBar     = document.getElementById('blog-filter-bar');
+    const searchInput   = document.getElementById('blog-search');
+    const loadMoreWrap  = document.getElementById('load-more-wrap');
+    const loadMoreBtn   = document.getElementById('load-more-btn');
+    const retryBtn      = document.getElementById('blog-retry-btn');
+
+    function setState(state) {
+      loadingEl.classList.toggle('visible', state === 'loading');
+      emptyEl.classList.toggle('visible',   state === 'empty');
+      errorEl.classList.toggle('visible',   state === 'error');
+      gridEl.style.display = (state === 'loaded') ? 'grid' : 'none';
+      countEl.style.display = (state === 'loaded') ? 'block' : 'none';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch(e) { return dateStr; }
+    }
+
+    function buildCard(post) {
+      const card = document.createElement('article');
+      card.className = 'blog-card';
+
+      const imgHtml = post.imageUrl
+        ? `<img class="blog-card-image" src="${escHtml(post.imageUrl)}" alt="${escHtml(post.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+           <div class="blog-card-image-placeholder" style="display:none;">📝</div>`
+        : `<div class="blog-card-image-placeholder">📝</div>`;
+
+      const slug   = post.slug   || post.blogId || '';
+      const readUrl = `/blog-post.html?slug=${encodeURIComponent(slug)}`;
+
+      card.innerHTML = `
+        <a href="${readUrl}" aria-label="Read ${escHtml(post.title)}" style="display:block;text-decoration:none;">
+          ${imgHtml}
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            ${post.category ? `<span class="blog-card-category">${escHtml(post.category)}</span>` : ''}
+            ${post.pubDate  ? `<span class="blog-card-date"><i class="far fa-calendar-alt"></i> ${formatDate(post.pubDate)}</span>` : ''}
+          </div>
+          <h2 class="blog-card-title"><a href="${readUrl}" style="color:inherit;text-decoration:none;">${escHtml(post.title)}</a></h2>
+          <p class="blog-card-excerpt">${escHtml(post.excerpt || '')}</p>
+          <a class="blog-read-more" href="${readUrl}">
+            Read Article <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      `;
+      return card;
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function applyFilters() {
+      const q = searchQuery.trim().toLowerCase();
+      filteredPosts = allPosts.filter(p => {
+        const catOk = activeCategory === 'all' || (p.category || '').toLowerCase() === activeCategory.toLowerCase();
+        if (!catOk) return false;
+        if (!q) return true;
+        return (p.title   || '').toLowerCase().includes(q)
+            || (p.excerpt || '').toLowerCase().includes(q)
+            || (p.category|| '').toLowerCase().includes(q);
+      });
+      visibleCount = POSTS_PER_PAGE;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      gridEl.innerHTML = '';
+
+      if (filteredPosts.length === 0) {
+        setState('empty');
+        return;
+      }
+
+      setState('loaded');
+      const slice = filteredPosts.slice(0, visibleCount);
+      slice.forEach(p => gridEl.appendChild(buildCard(p)));
+
+      const total = filteredPosts.length;
+      countEl.textContent = `Showing ${Math.min(visibleCount, total)} of ${total} article${total !== 1 ? 's' : ''}`;
+
+      loadMoreWrap.classList.toggle('visible', visibleCount < total);
+    }
+
+    function buildCategoryFilters(categories) {
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'blog-filter-btn';
+        btn.dataset.cat = cat;
+        btn.textContent = cat;
+        filterBar.appendChild(btn);
+      });
+    }
+
+    async function loadBlog() {
+      setState('loading');
+      try {
+        const [postsRes, catsRes] = await Promise.all([
+          window.BUNOFEED_API.get('blogPosts', {}),
+          window.BUNOFEED_API.get('blogCategories', {}),
+        ]);
+
+        if (postsRes.status !== 'success') throw new Error(postsRes.message || 'Failed to load posts');
+
+        allPosts = postsRes.posts || [];
+
+        // Build category buttons from API or posts
+        const cats = (catsRes.status === 'success' && catsRes.categories) || [];
+        if (cats.length > 0) buildCategoryFilters(cats);
+
+        applyFilters();
+
+      } catch (err) {
+        console.error('Blog load error:', err);
+        setState('error');
+      }
+    }
+
+    // ── Events ──
+
+    filterBar.addEventListener('click', e => {
+      const btn = e.target.closest('.blog-filter-btn');
+      if (!btn) return;
+      filterBar.querySelectorAll('.blog-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.cat || 'all';
+      applyFilters();
+    });
+
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchQuery = searchInput.value;
+        applyFilters();
+      }, 280);
+    });
+
+    loadMoreBtn.addEventListener('click', () => {
+      visibleCount += POSTS_PER_PAGE;
+      renderGrid();
+      // Scroll to first new card
+      const cards = gridEl.querySelectorAll('.blog-card');
+      if (cards[visibleCount - POSTS_PER_PAGE]) {
+        cards[visibleCount - POSTS_PER_PAGE].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+
+    retryBtn.addEventListener('click', loadBlog);
+
+    // Kick off
+    document.addEventListener('DOMContentLoaded', loadBlog);
+    if (document.readyState !== 'loading') loadBlog();
+
+  })();
+  </script>
+</body>
+</html>
