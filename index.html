@@ -218,6 +218,8 @@
     </div>
   </div>
 
+
+  
   <!-- =========================================================
        FOOTER
        ========================================================= -->
@@ -285,5 +287,182 @@
   <script src="/modal.js"></script>
   <script src="/script.js"></script>
 
+
+  <!-- =========================================================
+     BLOG SECTION — Latest Articles (injected after feedback section)
+     Add this between the feedback section and the footer in index.html
+     ========================================================= -->
+<section class="blog-preview-section" id="blog">
+  <div class="section-header">
+    <p class="section-tag">Bunofeed Journal</p>
+    <h2>Latest <span>Health Tips</span></h2>
+    <p class="section-desc">Expert nutrition insights, recipes, and fitness guides — written for real people.</p>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div id="hp-blog-loading" style="text-align:center;padding:2rem 0;">
+    <div style="display:inline-block;width:36px;height:36px;border:3px solid #e0d4cc;border-top-color:var(--orange);border-radius:50%;animation:hpSpin 0.7s linear infinite;"></div>
+    <style>@keyframes hpSpin{to{transform:rotate(360deg);}}</style>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="hp-blog-grid" id="hp-blog-grid" style="display:none;"></div>
+
+  <!-- Error / empty state -->
+  <div id="hp-blog-empty" style="display:none;text-align:center;padding:2rem;color:var(--gray);font-size:.9rem;">
+    No articles published yet. Check back soon!
+  </div>
+
+  <div style="text-align:center;margin-top:2.5rem;">
+    <a href="/blog.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
+      <i class="fas fa-newspaper" aria-hidden="true"></i> View All Articles
+    </a>
+  </div>
+</section>
+
+<!-- ── Add this CSS to style.css (or in a <style> tag inside index.html) ── -->
+<style id="hp-blog-styles">
+  .blog-preview-section {
+    padding: 5rem 1.5rem;
+    background: var(--white);
+  }
+  .hp-blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.8rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  @media(max-width:900px){ .hp-blog-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:580px){ .hp-blog-grid { grid-template-columns: 1fr; gap:1.2rem; } }
+
+  .hp-blog-card {
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(107,45,14,0.08);
+    border: 1px solid rgba(139,69,19,0.07);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    display: flex; flex-direction: column;
+  }
+  .hp-blog-card:hover { transform: translateY(-5px); box-shadow: 0 14px 40px rgba(107,45,14,0.13); }
+
+  .hp-blog-card a.card-img-link { display: block; text-decoration: none; }
+  .hp-blog-card-img {
+    width: 100%; height: 180px;
+    object-fit: cover; display: block; background: #f2e9e2;
+  }
+  .hp-blog-card-img-ph {
+    width:100%; height:180px;
+    background: linear-gradient(135deg,#f2e9e2,#e0d4cc);
+    display:flex; align-items:center; justify-content:center;
+    font-size:2.5rem; color:#c0a898;
+  }
+
+  .hp-blog-card-body { padding: 1.2rem 1.3rem 1.4rem; display:flex; flex-direction:column; flex:1; }
+
+  .hp-blog-card-meta {
+    display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; flex-wrap: wrap;
+  }
+  .hp-blog-card-cat {
+    font-family: var(--font-head); font-size: 0.65rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    background: rgba(255,107,0,0.1); color: var(--orange);
+    padding: 2px 9px; border-radius: 20px;
+  }
+  .hp-blog-card-date { font-size: 0.73rem; color: var(--gray); }
+
+  .hp-blog-card-title {
+    font-family: var(--font-head); font-size: 0.98rem; font-weight: 800;
+    color: var(--dark); margin-bottom: 0.55rem; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .hp-blog-card-title a { color: inherit; text-decoration: none; }
+  .hp-blog-card-title a:hover { color: var(--orange); }
+
+  .hp-blog-card-excerpt {
+    font-size: 0.83rem; color: var(--gray); line-height: 1.6; flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .hp-blog-read-more {
+    font-family: var(--font-head); font-weight: 700; font-size: 0.78rem;
+    color: var(--orange); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    transition: gap 0.2s;
+  }
+  .hp-blog-read-more:hover { gap: 0.7rem; }
+</style>
+
+<!-- ── Add this <script> block just before </body> in index.html ── -->
+<script id="hp-blog-script">
+(function() {
+  function formatDateShort(dateStr) {
+    if (!dateStr) return '';
+    try { return new Date(dateStr).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); }
+    catch(e) { return ''; }
+  }
+  function escH(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function buildHpCard(post) {
+    const slug    = post.slug || post.blogId || '';
+    const readUrl = `/blog-post.html?slug=${encodeURIComponent(slug)}`;
+    const el = document.createElement('article');
+    el.className = 'hp-blog-card';
+    el.innerHTML = `
+      <a class="card-img-link" href="${readUrl}" aria-label="${escH(post.title)}">
+        ${post.imageUrl
+          ? `<img class="hp-blog-card-img" src="${escH(post.imageUrl)}" alt="${escH(post.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="hp-blog-card-img-ph" style="display:none;">📝</div>`
+          : `<div class="hp-blog-card-img-ph">📝</div>`}
+      </a>
+      <div class="hp-blog-card-body">
+        <div class="hp-blog-card-meta">
+          ${post.category ? `<span class="hp-blog-card-cat">${escH(post.category)}</span>` : ''}
+          ${post.pubDate  ? `<span class="hp-blog-card-date">${formatDateShort(post.pubDate)}</span>` : ''}
+        </div>
+        <h3 class="hp-blog-card-title"><a href="${readUrl}">${escH(post.title)}</a></h3>
+        <p class="hp-blog-card-excerpt">${escH(post.excerpt||'')}</p>
+        <a class="hp-blog-read-more" href="${readUrl}">Read More <i class="fas fa-arrow-right"></i></a>
+      </div>
+    `;
+    return el;
+  }
+
+  async function loadHomepageBlog() {
+    const loadEl  = document.getElementById('hp-blog-loading');
+    const gridEl  = document.getElementById('hp-blog-grid');
+    const emptyEl = document.getElementById('hp-blog-empty');
+    if (!loadEl || !gridEl) return;
+
+    try {
+      const res = await window.BUNOFEED_API.get('blogPosts', { limit: '3' });
+      loadEl.style.display = 'none';
+
+      if (res.status !== 'success' || !res.posts || res.posts.length === 0) {
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      res.posts.forEach(p => gridEl.appendChild(buildHpCard(p)));
+      gridEl.style.display = 'grid';
+
+    } catch(err) {
+      loadEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+    }
+  }
+
+  // Run after existing scripts are ready
+  if (window.BUNOFEED_API) {
+    loadHomepageBlog();
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Wait briefly for api.js to initialise
+      setTimeout(loadHomepageBlog, 100);
+    });
+  }
+})();
+</script>
 </body>
 </html>
