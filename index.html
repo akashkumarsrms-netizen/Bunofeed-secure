@@ -133,12 +133,43 @@
         <a href="/about.html" class="btn btn-primary">Our Story</a>
       </div>
       <div style="margin-top:1.2rem;">
-        <a href="/protein-calculator.html"
-           class="btn"
-           style="display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;padding:12px 24px;min-height:48px;background:transparent;color:#5D4037;border:2px solid #5D4037;">
-          <i class="fas fa-calculator"></i>
-          Know Your Daily Protein Requirement
-        </a>
+  <a href="/protein-calculator.html" class="protein-btn">
+    <i class="fas fa-calculator"></i>
+    Know Your Daily Protein Requirement
+  </a>
+</div>
+
+<style>
+.protein-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  font-size:.9rem;
+  padding:12px 24px;
+  min-height:48px;
+  background:transparent;
+  color:var(--brown-dark);
+  border:3px solid var(--brown-dark);
+  border-radius:6px;
+  text-decoration:none;
+  transition:all 0.3s ease;
+}
+
+.protein-btn:hover{
+  background:var(--brown-dark);
+  color:#ffffff;
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(78,52,46,0.25);
+}
+
+.protein-btn:hover i{
+  transform:scale(1.1);
+}
+
+.protein-btn i{
+  transition:transform 0.3s ease;
+}
+</style>
       </div>
     </div>
     <div class="hero-image">
