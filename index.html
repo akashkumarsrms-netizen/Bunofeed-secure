@@ -129,7 +129,9 @@
         Fuel your body with nature's finest — real, healthy food products. No nasties. Just goodness.
       </p>
       <div class="hero-btns">
-        
+        <a href="#shop" class="btn btn-primary" id="hero-cta">
+          <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Now
+        </a>
         <a href="/about.html" class="btn btn-outline">Our Story</a>
       </div>
       <div style="margin-top:1.2rem;">
@@ -220,7 +222,8 @@
   <section class="blog-preview-section" id="blog">
     <div class="section-header">
       <p class="section-tag">Bunofeed Journal</p>
-      <h2>Latest <span>Wellness Insights</span></h2>
+      <h2>Latest <span>Health Tips</span></h2>
+      <p class="section-desc">Expert nutrition insights, recipes, and fitness guides — written for real people.</p>
     </div>
 
     <!-- Loading spinner -->
@@ -276,9 +279,9 @@
         </div>
         <div class="form-group" style="border: 1px dashed #e0d4cc; padding: 1rem; border-radius: 10px; background: #fffaf7;">
           <label style="color: #6B2D0E; font-size: 0.78rem;">Have a Promo/Coupon Code?</label>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
-            <input type="text" id="coupon-code" class="form-input" placeholder="Enter coupon code" style="flex: 1; text-transform: uppercase;">
-            <button type="button" class="btn btn-brown" id="apply-coupon-btn" style="min-height: 40px; padding: 0 15px; font-size: 0.8rem;">Apply</button>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem; align-items: stretch; min-width: 0;">
+            <input type="text" id="coupon-code" class="form-input" placeholder="Enter coupon code" style="flex: 1; min-width: 0; text-transform: uppercase;">
+            <button type="button" class="btn btn-brown" id="apply-coupon-btn" style="flex-shrink: 0; white-space: nowrap; min-height: 40px; padding: 0 15px; font-size: 0.8rem;">Apply</button>
           </div>
           <div id="coupon-msg" style="font-size: 0.75rem; font-weight: 600; margin-top: 5px;"></div>
         </div>
