@@ -893,7 +893,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   font-size: 0.98rem;
   font-weight: 600;
 }
@@ -905,7 +905,7 @@ ul { list-style: none; }
 }
 .presubmitnote {
   font-size: 1.05rem;
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   line-height: 1.7;
 }
 .feedback-submit {
