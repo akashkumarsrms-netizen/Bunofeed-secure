@@ -865,7 +865,7 @@ ul { list-style: none; }
    ============================================================ */
 .feedback-section {
   background: var(--brown);
-  padding: 5.5rem 1.5rem;
+  padding: 4.0rem 1.5rem;
 }
 .feedback-inner {
   max-width: 1280px;
