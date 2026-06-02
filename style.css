@@ -366,7 +366,7 @@ ul { list-style: none; }
   color: var(--orange);
 }
 .hero-desc {
-  color: #7a6155;
+  color: #1a1a1a;
   font-size: 1.05rem;
   max-width: 480px;
   line-height: 1.8;
