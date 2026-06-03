@@ -340,7 +340,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         </div>
 
         <div class="product-card-btns">
-          <button class="btn-view-detail c-view-btn" data-id="${product.id}">View Details</button>
+          <a href="/product.html?id=${product.id}" class="btn-view-detail c-view-btn">View Details</a>
           <button class="btn-buy c-buy-btn" data-id="${product.id}">Buy Now</button>
         </div>
       </div>`;
@@ -368,12 +368,6 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn') && !e.target.closest('.card-select')) {
         window.location.href = `/product.html?id=${encodeURIComponent(product.id)}`;
       }
-    });
-
-    card.querySelector('.c-view-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      // Navigate to the dedicated SEO-friendly product page
-      window.location.href = `/product.html?id=${encodeURIComponent(product.id)}`;
     });
 
     card.querySelector('.c-buy-btn').addEventListener('click', (e) => {
