@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /api.js
 
 Sitemap: https://bunofeed.in/sitemap.xml

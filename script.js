@@ -363,16 +363,17 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     sSelect.addEventListener('change', executePriceRecalculation);
     tSelect.addEventListener('change', executePriceRecalculation);
 
-    // Button Triggers
+    // Clicking the card body navigates to the product page
     card.addEventListener('click', (e) => {
       if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn') && !e.target.closest('.card-select')) {
-        openProductModal(product.id);
+        window.location.href = `/product.html?id=${encodeURIComponent(product.id)}`;
       }
     });
 
     card.querySelector('.c-view-btn').addEventListener('click', (e) => {
       e.stopPropagation();
-      openProductModal(product.id);
+      // Navigate to the dedicated SEO-friendly product page
+      window.location.href = `/product.html?id=${encodeURIComponent(product.id)}`;
     });
 
     card.querySelector('.c-buy-btn').addEventListener('click', (e) => {
@@ -664,6 +665,31 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     injectOrUpdateOrderSummary();
     refreshCheckoutCalculation();
   }
+
+  /* ----------------------------------------------------------
+     PUBLIC CHECKOUT HOOK — used by product.html (PDP page)
+     product.html dispatches 'bunofeed:openCheckout' with the
+     chosen product / qty / price / label so the same Razorpay
+     pipeline runs without duplicating code.
+  ---------------------------------------------------------- */
+  document.addEventListener('bunofeed:openCheckout', function (e) {
+    const { product, qty: q, price, label } = e.detail || {};
+    if (!product) return;
+    currentProduct        = product;
+    qty                   = q || 1;
+    selectedUnitPrice     = price;
+    selectedVariantLabel  = label || '';
+    openCheckoutModal();
+  });
+
+  // Also expose imperatively for direct calls from product.html
+  window.BUNO_OPEN_CHECKOUT = function (product, q, price, label) {
+    currentProduct        = product;
+    qty                   = q || 1;
+    selectedUnitPrice     = price;
+    selectedVariantLabel  = label || '';
+    openCheckoutModal();
+  };
 
   function closeCheckoutModal() {
     checkoutOverlay.classList.remove('open');

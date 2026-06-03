@@ -3,75 +3,333 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
+  <!-- ── Dynamic SEO meta (overwritten by JS once product loads) ── -->
   <title id="page-title">Product | Bunofeed</title>
-  <meta id="meta-desc" name="description" content="Shop natural, clean-label food products at Bunofeed."/>
-  <link id="canonical-link" rel="canonical" href="https://bunofeed.in/product.html"/>
-  <!-- Open Graph -->
-  <meta id="og-title"  property="og:title"       content="Product | Bunofeed"/>
-  <meta id="og-desc"   property="og:description"  content="Shop natural food at Bunofeed."/>
-  <meta id="og-image"  property="og:image"        content="https://bunofeed.in/images/logo2.png"/>
-  <meta               property="og:type"           content="product"/>
-  <meta               property="og:site_name"      content="Bunofeed"/>
-  <!-- JSON-LD structured data (populated by JS) -->
-  <script id="jsonld-product" type="application/ld+json"></script>
+  <meta id="meta-desc"    name="description" content="Shop natural healthy food at Bunofeed."/>
+  <meta id="og-title"     property="og:title" content="Bunofeed Product"/>
+  <meta id="og-desc"      property="og:description" content="Shop natural healthy food at Bunofeed."/>
+  <meta id="og-image"     property="og:image" content="https://bunofeed.in/images/logo2.png"/>
+  <meta id="og-url"       property="og:url" content="https://bunofeed.in/product.html"/>
+  <meta                   property="og:type" content="product"/>
+  <meta                   property="og:site_name" content="Bunofeed"/>
+  <meta id="tw-title"     name="twitter:title" content="Bunofeed Product"/>
+  <meta id="tw-desc"      name="twitter:description" content="Shop natural healthy food at Bunofeed."/>
+  <meta id="tw-image"     name="twitter:image" content="https://bunofeed.in/images/logo2.png"/>
+  <meta                   name="twitter:card" content="summary_large_image"/>
+
+  <!-- ── JSON-LD Structured Data (Product schema — injected by JS) ── -->
+  <script type="application/ld+json" id="product-schema">{}</script>
+
+  <!-- ── Canonical ── -->
+  <link id="canonical" rel="canonical" href="https://bunofeed.in/product.html"/>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/style.css"/>
+
   <style>
-    .pdp-hero{background:var(--off-white);padding:3rem 1.5rem 4rem;}
-    .pdp-container{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
-    .pdp-gallery{position:sticky;top:90px;}
-    .pdp-main-img{width:100%;border-radius:16px;aspect-ratio:1;object-fit:cover;background:#f2e9e2;display:block;border:1px solid rgba(139,69,19,.08);}
-    .pdp-thumbs{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;}
-    .pdp-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent;transition:.2s;}
-    .pdp-thumb:hover,.pdp-thumb.active{border-color:var(--orange);}
-    .pdp-info{display:flex;flex-direction:column;gap:1.2rem;}
-    .pdp-badge{display:inline-block;font-family:var(--font-head);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:20px;background:rgba(255,107,0,.1);color:var(--orange);width:fit-content;}
-    .pdp-name{font-family:var(--font-head);font-size:clamp(1.5rem,3.5vw,2.1rem);font-weight:800;color:var(--dark);line-height:1.2;margin:0;}
-    .pdp-tagline{color:var(--gray);font-size:.97rem;line-height:1.65;}
-    .pdp-price-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
-    .pdp-price{font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--brown-dark);}
-    .pdp-mrp{font-size:1rem;color:var(--gray);text-decoration:line-through;}
-    .pdp-save{font-family:var(--font-head);font-size:.78rem;font-weight:800;background:#e8f8ed;color:#28a745;padding:4px 10px;border-radius:20px;}
-    .pdp-options{display:flex;flex-direction:column;gap:.9rem;}
-    .pdp-opt-label{font-family:var(--font-head);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--brown);margin-bottom:.4rem;display:block;}
-    .opt-pills{display:flex;gap:.5rem;flex-wrap:wrap;}
-    .opt-pill{padding:8px 18px;border:2px solid #e0d4cc;border-radius:50px;font-family:var(--font-head);font-size:.82rem;font-weight:700;color:var(--gray);cursor:pointer;transition:.2s;background:none;}
-    .opt-pill:hover{border-color:var(--orange);color:var(--orange);}
-    .opt-pill.active{border-color:var(--orange);background:var(--orange);color:#fff;}
-    .pdp-actions{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;}
-    .qty-box{display:flex;align-items:center;border:2px solid #e0d4cc;border-radius:10px;overflow:hidden;}
-    .qty-btn{width:40px;height:48px;border:none;background:none;font-size:1.1rem;cursor:pointer;color:var(--brown);font-weight:800;transition:.15s;}
-    .qty-btn:hover{background:var(--off-white);}
-    #pdp-qty{width:44px;text-align:center;border:none;font-family:var(--font-head);font-size:1rem;font-weight:800;color:var(--dark);background:none;outline:none;}
-    .pdp-buy-btn{flex:1;min-height:52px;font-size:1rem;}
-    .pdp-highlights{display:flex;flex-wrap:wrap;gap:.6rem;}
-    .highlight-chip{display:flex;align-items:center;gap:.4rem;background:var(--off-white);border:1px solid rgba(139,69,19,.08);border-radius:8px;padding:6px 12px;font-size:.8rem;color:var(--brown-dark);font-weight:600;}
-    .highlight-chip i{color:var(--orange);font-size:.75rem;}
-    .pdp-tabs{border-top:1px solid #f0e8e0;padding-top:1.5rem;}
-    .tab-btns{display:flex;border-bottom:2px solid #f0e8e0;margin-bottom:1.2rem;overflow-x:auto;}
-    .tab-btn{padding:10px 18px;border:none;background:none;font-family:var(--font-head);font-size:.82rem;font-weight:700;color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.2s;}
-    .tab-btn.active{color:var(--orange);border-bottom-color:var(--orange);}
-    .tab-panel{display:none;font-size:.93rem;color:var(--gray);line-height:1.75;}
-    .tab-panel.active{display:block;}
-    .tab-panel p{margin-bottom:.7rem;}
-    .tab-panel strong{color:var(--dark);}
-    .pdp-breadcrumb{font-size:.8rem;color:var(--gray);margin-bottom:1.5rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
-    .pdp-breadcrumb a{color:var(--orange);text-decoration:none;}
-    .pdp-breadcrumb i{font-size:.6rem;color:#c0a898;}
-    .pdp-state{text-align:center;padding:5rem 1rem;}
-    .pdp-state .spin{display:inline-block;width:40px;height:40px;border:4px solid #e0d4cc;border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:1rem;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .pdp-ship-strip{background:rgba(40,167,69,.06);border:1px solid rgba(40,167,69,.2);border-radius:10px;padding:.8rem 1.2rem;display:flex;align-items:center;gap:.7rem;font-size:.85rem;color:#28a745;font-weight:600;}
-    @media(max-width:760px){.pdp-container{grid-template-columns:1fr;gap:1.5rem;}.pdp-gallery{position:static;}.pdp-hero{padding:2rem 1rem 3rem;}}
+    /* ── Page shell ── */
+    .pdp-page {
+      background: var(--off-white);
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+    .pdp-container { max-width: 1160px; margin: 0 auto; }
+
+    /* ── Breadcrumb ── */
+    .pdp-breadcrumb {
+      font-size: 0.8rem; color: var(--gray);
+      margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .pdp-breadcrumb a { color: var(--orange); text-decoration: none; }
+    .pdp-breadcrumb a:hover { text-decoration: underline; }
+    .pdp-breadcrumb i { font-size: 0.65rem; color: #c0a898; }
+
+    /* ── Two-column layout ── */
+    .pdp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    /* ── Image column ── */
+    .pdp-img-col {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(107,45,14,0.10);
+      border: 1px solid rgba(139,69,19,0.06);
+      overflow: hidden;
+      position: sticky; top: 90px;
+    }
+    .pdp-main-img {
+      width: 100%; aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+      background: #FFF8F3;
+      cursor: zoom-in;
+      overflow: hidden;
+      position: relative;
+    }
+    .pdp-main-img img {
+      width: 86%; height: 86%;
+      object-fit: contain;
+      padding: 12px;
+      transition: transform 0.35s ease;
+    }
+    .pdp-main-img:hover img { transform: scale(1.05); }
+    .pdp-main-img .pdp-emoji { font-size: 8rem; }
+
+    /* Nav arrows */
+    .pdp-img-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.82); backdrop-filter: blur(4px);
+      border: 1px solid rgba(107,45,14,0.1); color: #6B2D0E;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.9rem;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s;
+      z-index: 5;
+    }
+    .pdp-img-col:hover .pdp-img-nav { opacity: 1; }
+    .pdp-img-nav:hover { background: #fff; transform: translateY(-50%) scale(1.05); }
+    #pdp-img-prev { left: 12px; }
+    #pdp-img-next { right: 12px; }
+
+    /* Dots */
+    .pdp-dots {
+      display: flex; justify-content: center; gap: 7px;
+      padding: 10px 16px;
+    }
+    .pdp-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(107,45,14,0.2); border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .pdp-dot.active { background: var(--orange); transform: scale(1.35); }
+
+    /* Thumbnails */
+    .pdp-thumbs {
+      display: flex; gap: 8px; padding: 8px 14px 14px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .pdp-thumbs::-webkit-scrollbar { display: none; }
+    .pdp-thumb {
+      width: 62px; height: 62px; border-radius: 10px; overflow: hidden;
+      border: 2px solid transparent; cursor: pointer; flex-shrink: 0;
+      background: #fff; transition: border-color 0.2s, transform 0.2s;
+    }
+    .pdp-thumb.active { border-color: var(--orange); }
+    .pdp-thumb:hover { transform: scale(1.04); }
+    .pdp-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+
+    /* ── Info column ── */
+    .pdp-info-col {
+      display: flex; flex-direction: column; gap: 1.4rem;
+    }
+
+    /* Badges */
+    .pdp-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .pdp-badge {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.72rem;
+      padding: 5px 14px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .pdp-badge.limited  { background: #dc3545; color: #fff; }
+    .pdp-badge.new      { background: #28a745; color: #fff; }
+    .pdp-badge.bestseller { background: var(--brown); color: #fff; }
+    .pdp-badge.sale     { background: var(--orange); color: #fff; }
+
+    /* Category breadcrumb tag */
+    .pdp-category-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; font-family: var(--font-head);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      background: rgba(255,107,0,0.1); color: var(--orange);
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* Name & tagline */
+    .pdp-name {
+      font-family: var(--font-head); font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+      font-weight: 800; color: var(--dark); line-height: 1.2;
+      margin: 0;
+    }
+    .pdp-tagline { font-size: 1rem; color: var(--orange); font-weight: 600; margin: 0; }
+
+    /* Description */
+    .pdp-desc { font-size: 0.96rem; color: var(--gray); line-height: 1.75; }
+
+    /* Feature chips */
+    .pdp-features { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pdp-chip {
+      background: rgba(255,107,0,0.08); color: var(--brown-dark);
+      font-size: 0.8rem; font-family: var(--font-head); font-weight: 600;
+      padding: 6px 14px; border-radius: 50px;
+    }
+
+    /* Selectors */
+    .pdp-selector-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .pdp-selector-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .pdp-selector-label {
+      font-family: var(--font-head); font-weight: 700;
+      font-size: 0.78rem; color: var(--dark);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .pdp-select {
+      padding: 10px 14px; border-radius: 10px;
+      border: 2px solid #e0d4cc; background: #fff;
+      font-family: var(--font-body); font-size: 0.9rem; color: var(--dark);
+      outline: none; cursor: pointer; min-height: 44px; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .pdp-select:focus { border-color: var(--orange); }
+
+    /* Price */
+    .pdp-price-row {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      padding: 1.1rem 0;
+      border-top: 1px solid #f2e8e0;
+      border-bottom: 1px solid #f2e8e0;
+    }
+    .pdp-price-current {
+      font-family: var(--font-head); font-size: 2.1rem;
+      font-weight: 800; color: var(--dark);
+    }
+    .pdp-price-mrp {
+      font-size: 1.1rem; color: #d32f2f;
+      text-decoration: line-through; font-weight: 600;
+    }
+    .pdp-price-save {
+      background: #eafbe1; color: #2e7d32;
+      font-size: 0.78rem; font-weight: 700;
+      font-family: var(--font-head);
+      padding: 4px 12px; border-radius: 50px;
+    }
+
+    /* Qty */
+    .pdp-qty-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .pdp-qty-label {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; color: var(--dark);
+    }
+    .pdp-qty-control {
+      display: flex; align-items: center;
+      border: 2px solid #e0d4cc; border-radius: 50px; overflow: hidden;
+      background: #fff;
+    }
+    .pdp-qty-btn {
+      width: 44px; height: 44px; background: none; border: none;
+      cursor: pointer; font-size: 1.3rem; font-weight: 700; color: var(--dark);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .pdp-qty-btn:hover { background: #FFF8F3; }
+    .pdp-qty-num {
+      min-width: 40px; text-align: center;
+      font-family: var(--font-head); font-weight: 700; font-size: 1rem;
+    }
+    .pdp-subtotal { font-size: 0.9rem; color: #555; font-weight: 600; }
+
+    /* Actions */
+    .pdp-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .pdp-actions .btn { flex: 1; min-width: 140px; justify-content: center; min-height: 50px; }
+
+    /* Share row */
+    .pdp-share {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.8rem; color: var(--gray); flex-wrap: wrap;
+    }
+    .pdp-share span { font-weight: 600; }
+    .pdp-share-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--off-white); border: 1px solid #e0d4cc;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--brown); font-size: 0.9rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .pdp-share-btn:hover { background: var(--orange); color: #fff; transform: scale(1.1); }
+
+    /* Accordion */
+    .pdp-accordion { margin-top: 0.5rem; }
+    .pdp-acc-item { border-top: 1px solid #f2e8e0; }
+    .pdp-acc-item:last-child { border-bottom: 1px solid #f2e8e0; }
+    .pdp-acc-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0; cursor: pointer;
+      font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; color: var(--dark);
+      background: none; border: none; width: 100%; text-align: left; min-height: 44px;
+    }
+    .pdp-acc-head i { transition: transform 0.25s ease; color: var(--orange); font-size: 0.85rem; }
+    .pdp-acc-head.open i { transform: rotate(180deg); }
+    .pdp-acc-body {
+      display: none; padding: 0.4rem 0 1.2rem;
+      color: #666; font-size: 0.92rem; line-height: 1.75; white-space: pre-line;
+    }
+    .pdp-acc-body.open { display: block; }
+
+    /* ── Loading / Error states ── */
+    .pdp-state { text-align: center; padding: 6rem 1rem; }
+    .pdp-state .spin {
+      display: inline-block; width: 44px; height: 44px;
+      border: 4px solid #e0d4cc; border-top-color: var(--orange);
+      border-radius: 50%; animation: pdpSpin 0.7s linear infinite; margin-bottom: 1rem;
+    }
+    @keyframes pdpSpin { to { transform: rotate(360deg); } }
+    .pdp-state i { font-size: 3rem; color: #e0d4cc; display: block; margin-bottom: 1rem; }
+    .pdp-state h3 {
+      font-family: var(--font-head); font-size: 1.3rem;
+      color: var(--brown-dark); margin-bottom: 0.4rem;
+    }
+    .pdp-state p { color: var(--gray); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .pdp-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .pdp-img-col { position: static; }
+    }
+    @media (max-width: 560px) {
+      .pdp-selector-grid { grid-template-columns: 1fr; }
+      .pdp-actions { flex-direction: column; }
+      .pdp-actions .btn { flex: unset; width: 100%; }
+      .pdp-page { padding: 1.5rem 1rem 4rem; }
+    }
+
+    /* ── Fullscreen viewer (reuse same pattern as modal.js) ── */
+    #pdp-fullscreen {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(5,2,1,0.95); backdrop-filter: blur(20px);
+      align-items: center; justify-content: center;
+      touch-action: none;
+    }
+    #pdp-fullscreen.open { display: flex; }
+    #pdp-fs-close {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; font-size: 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    #pdp-fs-close:hover { background: rgba(255,255,255,0.25); }
+    #pdp-fs-img { max-width: 95%; max-height: 85%; object-fit: contain; }
+    #pdp-fs-counter {
+      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: rgba(255,255,255,0.12); color: #fff;
+      font-size: 0.85rem; font-family: var(--font-head); font-weight: 700;
+      padding: 5px 16px; border-radius: 50px;
+    }
   </style>
 </head>
 <body>
 
+  <!-- CAMPAIGN BANNER -->
   <div id="campaign-banner" role="alert" aria-live="polite"></div>
 
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/index.html" class="logo" aria-label="Bunofeed Home">
@@ -81,100 +339,140 @@
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html" class="nav-link">Home</a>
-        <a href="/shop.html" class="nav-link active">Products</a>
-        <a href="/orders.html" class="nav-link">My Orders</a>
-        <a href="/about.html" class="nav-link">About Us</a>
+        <a href="/index.html"         class="nav-link">Home</a>
+        <a href="/shop.html"          class="nav-link">Products</a>
+        <a href="/orders.html"        class="nav-link">My Orders</a>
+        <a href="/about.html"         class="nav-link">About Us</a>
         <a href="/index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Loading -->
-  <div class="pdp-state" id="pdp-loading">
-    <div class="spin"></div>
-    <p style="color:var(--gray)">Loading product…</p>
-  </div>
+  <!-- PAGE -->
+  <div class="pdp-page">
+    <div class="pdp-container">
 
-  <!-- Error -->
-  <div class="pdp-state" id="pdp-error" style="display:none;">
-    <i class="fas fa-box-open" style="font-size:3rem;color:#e0d4cc;display:block;margin-bottom:1rem;"></i>
-    <h3 style="font-family:var(--font-head);color:var(--brown-dark);">Product Not Found</h3>
-    <p style="color:var(--gray);">This product may have been removed or the link is incorrect.</p>
-    <a href="/shop.html" class="btn btn-primary" style="display:inline-flex;margin-top:1.2rem;min-height:44px;">
-      <i class="fas fa-arrow-left"></i> Back to Shop
-    </a>
-  </div>
+      <!-- Loading -->
+      <div class="pdp-state" id="pdp-loading">
+        <div class="spin"></div>
+        <p style="color:var(--gray);">Loading product…</p>
+      </div>
 
-  <!-- Product Page -->
-  <div id="pdp-wrapper" style="display:none;">
-    <div class="pdp-hero">
-      <div class="pdp-container">
+      <!-- Error -->
+      <div class="pdp-state" id="pdp-error" style="display:none;">
+        <i class="fas fa-box-open"></i>
+        <h3>Product Not Found</h3>
+        <p>This product may no longer be available.</p>
+        <a href="/shop.html" class="btn btn-primary" style="margin-top:1.2rem;display:inline-flex;min-height:44px;">
+          <i class="fas fa-arrow-left"></i> Back to Shop
+        </a>
+      </div>
 
-        <!-- Gallery -->
-        <div class="pdp-gallery">
-          <img id="pdp-main-img" class="pdp-main-img" src="" alt="Product image"/>
-          <div class="pdp-thumbs" id="pdp-thumbs"></div>
-        </div>
+      <!-- Content -->
+      <div id="pdp-wrapper" style="display:none;">
 
-        <!-- Info -->
-        <div class="pdp-info">
-          <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
-            <a href="/index.html">Home</a>
-            <i class="fas fa-chevron-right"></i>
-            <a href="/shop.html">Products</a>
-            <i class="fas fa-chevron-right"></i>
-            <span id="pdp-breadcrumb-name">Product</span>
-          </nav>
+        <!-- Breadcrumb -->
+        <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
+          <a href="/index.html">Home</a>
+          <i class="fas fa-chevron-right"></i>
+          <a href="/shop.html">Products</a>
+          <i class="fas fa-chevron-right"></i>
+          <span id="pdp-bc-name">Product</span>
+        </nav>
 
-          <span class="pdp-badge" id="pdp-badge"></span>
-          <h1 class="pdp-name" id="pdp-name"></h1>
-          <p class="pdp-tagline" id="pdp-tagline"></p>
+        <div class="pdp-grid">
 
-          <div class="pdp-price-row">
-            <span class="pdp-price" id="pdp-price"></span>
-            <span class="pdp-mrp"   id="pdp-mrp"></span>
-            <span class="pdp-save"  id="pdp-save"></span>
-          </div>
-
-          <div class="pdp-ship-strip">
-            <i class="fas fa-truck"></i>
-            <span id="pdp-ship-msg">Free shipping on orders above ₹499</span>
-          </div>
-
-          <div class="pdp-options" id="pdp-options"></div>
-
-          <div class="pdp-actions">
-            <div class="qty-box">
-              <button class="qty-btn" id="qty-minus" aria-label="Decrease">−</button>
-              <input type="number" id="pdp-qty" value="1" min="1" max="10" readonly aria-label="Quantity"/>
-              <button class="qty-btn" id="qty-plus" aria-label="Increase">+</button>
+          <!-- Left: Images -->
+          <div class="pdp-img-col">
+            <div class="pdp-main-img" id="pdp-main-img" role="button" aria-label="View full image" tabindex="0">
+              <span class="pdp-emoji" id="pdp-emoji">🥜</span>
             </div>
-            <button class="btn btn-primary pdp-buy-btn" id="pdp-buy-btn">
-              <i class="fas fa-bolt"></i> Buy Now
-            </button>
+            <button class="pdp-img-nav" id="pdp-img-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+            <button class="pdp-img-nav" id="pdp-img-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+            <div class="pdp-dots" id="pdp-dots"></div>
+            <div class="pdp-thumbs" id="pdp-thumbs"></div>
           </div>
 
-          <div class="pdp-highlights" id="pdp-highlights"></div>
-
-          <div class="pdp-tabs">
-            <div class="tab-btns">
-              <button class="tab-btn active" data-tab="desc">Description</button>
-              <button class="tab-btn" data-tab="ingr">Ingredients</button>
-              <button class="tab-btn" data-tab="stor">Storage</button>
-              <button class="tab-btn" data-tab="alle">Allergens</button>
+          <!-- Right: Info -->
+          <div class="pdp-info-col">
+            <div>
+              <span class="pdp-category-tag" id="pdp-category" style="display:none;"></span>
             </div>
-            <div class="tab-panel active" id="tab-desc"></div>
-            <div class="tab-panel"        id="tab-ingr"></div>
-            <div class="tab-panel"        id="tab-stor"></div>
-            <div class="tab-panel"        id="tab-alle"></div>
+            <div class="pdp-badges" id="pdp-badges"></div>
+            <h1 class="pdp-name" id="pdp-name">—</h1>
+            <p class="pdp-tagline" id="pdp-tagline" style="display:none;"></p>
+            <p class="pdp-desc" id="pdp-desc"></p>
+
+            <div class="pdp-features" id="pdp-features"></div>
+
+            <!-- Selectors -->
+            <div class="pdp-selector-grid">
+              <div class="pdp-selector-group">
+                <label class="pdp-selector-label" for="pdp-size">Pack Size</label>
+                <select class="pdp-select" id="pdp-size"></select>
+              </div>
+              <div class="pdp-selector-group" id="pdp-texture-group">
+                <label class="pdp-selector-label" for="pdp-texture">Texture</label>
+                <select class="pdp-select" id="pdp-texture"></select>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="pdp-price-row">
+              <span class="pdp-price-current" id="pdp-price">₹0</span>
+              <span class="pdp-price-mrp" id="pdp-mrp" style="display:none;"></span>
+              <span class="pdp-price-save" id="pdp-save" style="display:none;"></span>
+            </div>
+
+            <!-- Qty -->
+            <div class="pdp-qty-row">
+              <span class="pdp-qty-label">Quantity:</span>
+              <div class="pdp-qty-control">
+                <button class="pdp-qty-btn" id="pdp-qty-minus" aria-label="Decrease">−</button>
+                <span class="pdp-qty-num" id="pdp-qty-num">1</span>
+                <button class="pdp-qty-btn" id="pdp-qty-plus" aria-label="Increase">+</button>
+              </div>
+              <span class="pdp-subtotal" id="pdp-subtotal"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="pdp-actions">
+              <button class="btn btn-primary" id="pdp-buy-btn" style="min-height:50px;">
+                <i class="fas fa-bolt"></i> Buy Now
+              </button>
+              <a href="/shop.html" class="btn btn-brown">
+                <i class="fas fa-store"></i> All Products
+              </a>
+            </div>
+
+            <!-- Share -->
+            <div class="pdp-share">
+              <span>Share:</span>
+              <button class="pdp-share-btn" id="pdp-share-wa" title="Share on WhatsApp" aria-label="Share on WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+              </button>
+              <button class="pdp-share-btn" id="pdp-share-copy" title="Copy link" aria-label="Copy link">
+                <i class="fas fa-link"></i>
+              </button>
+            </div>
+
+            <!-- Accordion -->
+            <div class="pdp-accordion" id="pdp-accordion"></div>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Checkout Modal -->
+  <!-- Fullscreen viewer -->
+  <div id="pdp-fullscreen" role="dialog" aria-modal="true" aria-label="Fullscreen image">
+    <button id="pdp-fs-close" aria-label="Close fullscreen"><i class="fas fa-times"></i></button>
+    <img id="pdp-fs-img" alt="Product image fullscreen"/>
+    <div id="pdp-fs-counter">1 / 1</div>
+  </div>
+
+  <!-- Checkout modal (same as shop.html) -->
   <div class="checkout-modal-overlay" id="checkout-modal-overlay">
     <div class="checkout-modal">
       <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
@@ -182,58 +480,61 @@
       <form class="checkout-form" id="checkout-form">
         <div class="form-group">
           <label>Full Name <span>*</span></label>
-          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
+          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required/>
           <div class="error-msg" id="name-error">Please enter your full name</div>
         </div>
         <div class="form-group">
           <label>Mobile Number <span>*</span></label>
-          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10">
+          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10"/>
           <div class="error-msg" id="phone-error">Please enter a valid 10-digit mobile number</div>
         </div>
         <div class="form-group">
           <label>Email ID <span>*</span></label>
-          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required>
+          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required/>
           <div class="error-msg" id="email-error">Please enter a valid email address</div>
         </div>
         <div class="form-group">
           <label>Full Address <span>*</span></label>
-          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required>
+          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required/>
           <div class="error-msg" id="address-error">Please enter your delivery address</div>
         </div>
         <div class="form-group">
           <label>Pincode <span>*</span></label>
-          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
+          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6"/>
           <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
         </div>
         <div class="form-group" style="border:1px dashed #e0d4cc;padding:1rem;border-radius:10px;background:#fffaf7;">
-          <label style="color:#6B2D0E;font-size:.78rem;">Have a Promo/Coupon Code?</label>
-          <div style="display:flex;gap:.5rem;margin-top:.3rem;align-items:stretch;">
-            <input type="text" id="coupon-code" class="form-input" placeholder="Enter coupon code" style="flex:1;text-transform:uppercase;">
-            <button type="button" class="btn btn-brown" id="apply-coupon-btn" style="flex-shrink:0;min-height:40px;padding:0 15px;font-size:.8rem;">Apply</button>
+          <label style="color:#6B2D0E;font-size:0.78rem;">Have a Promo / Coupon Code?</label>
+          <div style="display:flex;gap:0.5rem;margin-top:0.3rem;align-items:stretch;min-width:0;">
+            <input type="text" id="coupon-code" class="form-input" placeholder="Enter coupon code" style="flex:1;min-width:0;text-transform:uppercase;"/>
+            <button type="button" class="btn btn-brown" id="apply-coupon-btn" style="flex-shrink:0;white-space:nowrap;min-height:40px;padding:0 15px;font-size:0.8rem;">Apply</button>
           </div>
-          <div id="coupon-msg" style="font-size:.75rem;font-weight:600;margin-top:5px;"></div>
+          <div id="coupon-msg" style="font-size:0.75rem;font-weight:600;margin-top:5px;"></div>
         </div>
-        <p style="color:red;font-size:.8rem;line-height:1.4;">Please enter your email and phone carefully — order details and status updates will be sent there.</p>
-        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">Proceed to Pay</button>
+        <p style="color:red;font-size:0.8rem;line-height:1.4;">Please enter your email and phone carefully — order details & updates will be sent to these.</p>
+        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
+          Proceed to Pay
+        </button>
       </form>
     </div>
   </div>
 
-  <footer class="footer">
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
         <p>Your companion in healthy living. Honest food for real people.</p>
         <div class="social-links">
-          <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="https://www.facebook.com"  target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-          <a href="https://www.linkedin.com/in/akash-kumar-995739293" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="https://www.youtube.com"   target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.x.com"         target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" data-social="instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" data-social="facebook"  aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" data-social="linkedin"  aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" data-social="youtube"   aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" data-social="twitter"   aria-label="X"><i class="fab fa-x-twitter"></i></a>
         </div>
       </div>
       <div class="footer-col">
-        <h4>Quick Links</h4>
+        <h4>Store Menu</h4>
         <a href="/index.html">Home</a>
         <a href="/shop.html">Products</a>
         <a href="/orders.html">My Orders</a>
@@ -251,153 +552,392 @@
     </div>
     <div class="footer-bottom">
       <p>© 2026 Bunofeed. All rights reserved. | <a href="/terms.html">Terms</a> | <a href="/privacy.html">Privacy</a></p>
-      <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
     </div>
   </footer>
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="/products.js"></script>
   <script src="/api.js"></script>
-  <script src="/modal.js"></script>
   <script src="/script.js"></script>
+
   <script>
-  (function(){
+  (function () {
     'use strict';
-    const params = new URLSearchParams(window.location.search);
-    const pid    = params.get('id') || '';
-    const D      = window.BUNOFEED_DATA;
 
-    const loadEl = document.getElementById('pdp-loading');
-    const errEl  = document.getElementById('pdp-error');
-    const wrapEl = document.getElementById('pdp-wrapper');
-
-    function showErr(){ loadEl.style.display='none'; wrapEl.style.display='none'; errEl.style.display='block'; }
-    function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function set(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
-    function setH(id,v){ const el=document.getElementById(id); if(el) el.innerHTML=v; }
-
-    function initProduct(){
-      if(!D||!pid){ showErr(); return; }
-      const p = D.products.find(x=>x.id===pid && x.visible!==false);
-      if(!p){ showErr(); return; }
-
-      const pricingKey  = Object.keys(p.pricing||{})[0];
-      const pObj        = p.pricing&&pricingKey ? p.pricing[pricingKey] : {};
-      const basePrice   = pObj.basePrice || p.price || 0;
-      const gstRate     = pObj.gst || 5;
-      const discount    = pObj.discount || 0;
-      const saleMulti   = D.sale?.active ? (1 - D.sale.discountPercent/100) : 1;
-      const sellPrice   = Math.round(basePrice * (1+gstRate/100) * (1-discount/100) * saleMulti);
-      const displayPrice= p.price || sellPrice;
-
-      // SEO head
-      document.title = p.name + ' | Bunofeed';
-      document.getElementById('meta-desc').content = p.tagline || (p.description||'').slice(0,160);
-      document.getElementById('og-title').content  = p.name + ' | Bunofeed';
-      document.getElementById('og-desc').content   = p.tagline || '';
-      document.getElementById('og-image').content  = p.image || '';
-      document.getElementById('canonical-link').href = `https://bunofeed.in/product.html?id=${encodeURIComponent(pid)}`;
-
-      // JSON-LD
-      document.getElementById('jsonld-product').textContent = JSON.stringify({
-        "@context":"https://schema.org/","@type":"Product",
-        "name":p.name,"image":p.images||[p.image],"description":p.description,
-        "brand":{"@type":"Brand","name":"Bunofeed"},
-        "offers":{"@type":"Offer","priceCurrency":"INR","price":displayPrice,
-          "itemCondition":"https://schema.org/NewCondition",
-          "availability":"https://schema.org/InStock","url":window.location.href}
-      });
-
-      // Gallery
-      const mainImg = document.getElementById('pdp-main-img');
-      mainImg.src = p.image; mainImg.alt = p.name;
-      const thumbsEl = document.getElementById('pdp-thumbs');
-      (p.images||[p.image]).forEach((src,i)=>{
-        const img = document.createElement('img');
-        img.className = 'pdp-thumb'+(i===0?' active':'');
-        img.src=src; img.alt=p.name+' view '+(i+1); img.loading='lazy';
-        img.addEventListener('click',()=>{
-          mainImg.src=src;
-          thumbsEl.querySelectorAll('.pdp-thumb').forEach(t=>t.classList.remove('active'));
-          img.classList.add('active');
-        });
-        thumbsEl.appendChild(img);
-      });
-
-      // Info
-      set('pdp-breadcrumb-name', p.name);
-      const badgeEl=document.getElementById('pdp-badge');
-      if(p.badge){ badgeEl.textContent=p.badge; } else { badgeEl.style.display='none'; }
-      set('pdp-name',    p.name);
-      set('pdp-tagline', p.tagline);
-      document.getElementById('pdp-price').textContent='₹'+displayPrice;
-      if(p.mrp && p.mrp>displayPrice){
-        document.getElementById('pdp-mrp').textContent='₹'+p.mrp;
-        document.getElementById('pdp-save').textContent=Math.round(((p.mrp-displayPrice)/p.mrp)*100)+'% OFF';
-      }
-      const freeAbove=D.shipping?.freeShippingAbove||499;
-      set('pdp-ship-msg', displayPrice>=freeAbove ? '🎉 This order qualifies for FREE shipping!' : `Free shipping on orders above ₹${freeAbove}`);
-
-      // Options
-      const optWrap=document.getElementById('pdp-options');
-      let selectedSize=(p.allowedSizes||[])[0]||p.weight||'';
-      let selectedTexture=(p.allowedTextures||[])[0]||'';
-      function buildPills(label,items,getVal,setVal){
-        if(!items||items.length<=1) return;
-        const grp=document.createElement('div');
-        const lbl=document.createElement('span'); lbl.className='pdp-opt-label'; lbl.textContent=label; grp.appendChild(lbl);
-        const pills=document.createElement('div'); pills.className='opt-pills';
-        items.forEach(val=>{
-          const btn=document.createElement('button'); btn.type='button';
-          btn.className='opt-pill'+(val===getVal()?' active':''); btn.textContent=val;
-          btn.addEventListener('click',()=>{ setVal(val); pills.querySelectorAll('.opt-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); });
-          pills.appendChild(btn);
-        });
-        grp.appendChild(pills); optWrap.appendChild(grp);
-      }
-      buildPills('Size',    p.allowedSizes,    ()=>selectedSize,    v=>{selectedSize=v;});
-      buildPills('Texture', p.allowedTextures, ()=>selectedTexture, v=>{selectedTexture=v;});
-
-      // Qty
-      let qty=1; const qtyInput=document.getElementById('pdp-qty');
-      document.getElementById('qty-minus').addEventListener('click',()=>{ if(qty>1){qty--;qtyInput.value=qty;} });
-      document.getElementById('qty-plus').addEventListener('click',()=>{ if(qty<10){qty++;qtyInput.value=qty;} });
-
-      // Buy
-      document.getElementById('pdp-buy-btn').addEventListener('click',()=>{
-        if(window.OPEN_CHECKOUT_MODAL) window.OPEN_CHECKOUT_MODAL(p, selectedTexture, selectedSize, qty);
-      });
-
-      // Highlights
-      const hEl=document.getElementById('pdp-highlights');
-      (p.features||[]).forEach(f=>{
-        const c=document.createElement('span'); c.className='highlight-chip';
-        c.innerHTML=`<i class="fas fa-check-circle"></i>${esc(f)}`;
-        hEl.appendChild(c);
-      });
-
-      // Tabs
-      document.querySelectorAll('.tab-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          document.querySelectorAll('.tab-btn,.tab-panel').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
-        });
-      });
-      setH('tab-desc','<p>'+esc(p.description)+'</p>');
-      setH('tab-ingr','<p><strong>Ingredients:</strong> '+esc(p.ingredients)+'</p>');
-      setH('tab-stor','<p>'+esc((p.storageInfo||'').replace(/\n/g,'</p><p>'))+'</p>');
-      setH('tab-alle','<p>'+esc(p.allergenInfo||'No allergen information available.')+'</p>');
-
-      loadEl.style.display='none'; wrapEl.style.display='block';
+    /* ── helpers ── */
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    if(document.readyState==='loading'){
-      document.addEventListener('DOMContentLoaded', initProduct);
+    /* ── Read product id from URL ── */
+    const params  = new URLSearchParams(window.location.search);
+    const pid     = params.get('id') || '';
+
+    const loadingEl = document.getElementById('pdp-loading');
+    const errorEl   = document.getElementById('pdp-error');
+    const wrapperEl = document.getElementById('pdp-wrapper');
+
+    function showError() {
+      loadingEl.style.display = 'none';
+      wrapperEl.style.display = 'none';
+      errorEl.style.display   = 'block';
+    }
+
+    /* ── Wait for products.js to be ready ── */
+    function init() {
+      const D = window.BUNOFEED_DATA;
+      if (!D || !D.products) { showError(); return; }
+
+      const product = D.products.find(p => p.id === pid && p.visible !== false);
+      if (!product) { showError(); return; }
+
+      renderProduct(product, D);
+    }
+
+    /* ── Price engine (mirrors script.js parseComboPrice) ── */
+    function parseComboPrice(product, sizeLabel, textureLabel) {
+      const pricing  = product.pricing;
+      const comboKey = (textureLabel && textureLabel !== 'Default')
+        ? `${textureLabel}_${sizeLabel}`
+        : `Default_${sizeLabel}`;
+      const combo = pricing && pricing[comboKey];
+
+      if (combo) {
+        const base     = parseFloat(combo.basePrice) || 0;
+        const gst      = parseFloat(combo.gst)       || 0;
+        const discount = parseFloat(combo.discount)  || 0;
+        const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
+        const mrp = discount < 100
+          ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
+          : sellingPrice;
+        return { price: sellingPrice, mrp, gstRate: gst, gstAmount: parseFloat((base * gst / 100).toFixed(2)) };
+      }
+      return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0 };
+    }
+
+    /* ── Render ── */
+    function renderProduct(product, D) {
+
+      /* --- SEO: Page Title & Meta --- */
+      const canonicalURL = `https://bunofeed.in/product.html?id=${encodeURIComponent(product.id)}`;
+      document.getElementById('page-title').textContent     = `${product.name} | Bunofeed`;
+      document.getElementById('meta-desc').content          = product.tagline || product.description?.slice(0,160) || '';
+      document.getElementById('og-title').content           = product.name;
+      document.getElementById('og-desc').content            = product.tagline || product.description?.slice(0,160) || '';
+      document.getElementById('og-image').content           = product.image || 'https://bunofeed.in/images/logo2.png';
+      document.getElementById('og-url').content             = canonicalURL;
+      document.getElementById('tw-title').content           = product.name;
+      document.getElementById('tw-desc').content            = product.tagline || product.description?.slice(0,160) || '';
+      document.getElementById('tw-image').content           = product.image || 'https://bunofeed.in/images/logo2.png';
+      document.getElementById('canonical').href             = canonicalURL;
+
+      /* --- JSON-LD Product Schema --- */
+      const sizes  = product.allowedSizes || [product.weight || ''];
+      const initSz = sizes[0] || '';
+      const textures = product.allowedTextures || ['Default'];
+      const hasT = textures.some(t => t.toLowerCase() !== 'default') && textures.length > 1;
+      const initTx = hasT ? textures[0] : 'Default';
+      const initPricing = parseComboPrice(product, initSz, initTx);
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description || product.tagline || '',
+        "image": product.images || (product.image ? [product.image] : []),
+        "brand": { "@type": "Brand", "name": "Bunofeed" },
+        "sku": product.id,
+        "offers": {
+          "@type": "Offer",
+          "url": canonicalURL,
+          "priceCurrency": "INR",
+          "price": initPricing.price.toFixed(2),
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": "https://schema.org/InStock",
+          "seller": { "@type": "Organization", "name": "Bunofeed" }
+        }
+      };
+      document.getElementById('product-schema').textContent = JSON.stringify(schema);
+
+      /* --- Breadcrumb --- */
+      document.getElementById('pdp-bc-name').textContent = product.name;
+
+      /* --- Category tag --- */
+      if (product.category) {
+        const catEl = document.getElementById('pdp-category');
+        catEl.textContent = product.category.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        catEl.style.display = 'inline-block';
+      }
+
+      /* --- Badges --- */
+      const badgesEl = document.getElementById('pdp-badges');
+      if (product.badge) {
+        badgesEl.innerHTML = `<span class="pdp-badge ${product.badgeType || ''}">${esc(product.badge)}</span>`;
+      }
+
+      /* --- Name / tagline --- */
+      document.getElementById('pdp-name').textContent = product.name;
+      if (product.tagline) {
+        const tl = document.getElementById('pdp-tagline');
+        tl.textContent = product.tagline;
+        tl.style.display = 'block';
+      }
+
+      /* --- Description --- */
+      document.getElementById('pdp-desc').textContent = product.description || '';
+
+      /* --- Features --- */
+      const featEl = document.getElementById('pdp-features');
+      featEl.innerHTML = (product.features || []).map(f => `<span class="pdp-chip">${esc(f)}</span>`).join('');
+
+      /* --- Gallery setup --- */
+      const images = (product.images || []).filter(u => u && u.trim());
+      let imgIdx   = 0;
+
+      const mainImgEl = document.getElementById('pdp-main-img');
+      const dotsEl    = document.getElementById('pdp-dots');
+      const thumbsEl  = document.getElementById('pdp-thumbs');
+      const prevBtn   = document.getElementById('pdp-img-prev');
+      const nextBtn   = document.getElementById('pdp-img-next');
+
+      function setImg(idx, instant) {
+        if (!images.length) return;
+        imgIdx = (images.length + idx) % images.length;
+        const src = images[imgIdx];
+
+        const current = mainImgEl.querySelector('img');
+        const img = new Image();
+        img.alt = product.name;
+        img.src = src;
+        img.decoding = 'async';
+        if (instant || !current) {
+          mainImgEl.innerHTML = '';
+          mainImgEl.appendChild(img);
+        } else {
+          current.style.opacity = '0';
+          img.onload = () => {
+            img.style.opacity = '0';
+            mainImgEl.innerHTML = '';
+            mainImgEl.appendChild(img);
+            requestAnimationFrame(() => requestAnimationFrame(() => { img.style.opacity = '1'; }));
+          };
+          img.onerror = () => {
+            mainImgEl.innerHTML = `<span class="pdp-emoji">${product.emoji || '🥜'}</span>`;
+          };
+        }
+
+        dotsEl.querySelectorAll('.pdp-dot').forEach((d,i) => d.classList.toggle('active', i === imgIdx));
+        thumbsEl.querySelectorAll('.pdp-thumb').forEach((t,i) => {
+          t.classList.toggle('active', i === imgIdx);
+          if (i === imgIdx) t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+        });
+        prevBtn.style.display = images.length > 1 ? 'flex' : 'none';
+        nextBtn.style.display = images.length > 1 ? 'flex' : 'none';
+        document.getElementById('pdp-fs-counter').textContent = `${imgIdx+1} / ${images.length}`;
+      }
+
+      if (images.length) {
+        /* dots */
+        dotsEl.innerHTML = images.map((_,i) =>
+          `<button class="pdp-dot${i===0?' active':''}" aria-label="Image ${i+1}"></button>`).join('');
+        dotsEl.querySelectorAll('.pdp-dot').forEach((d,i) => d.addEventListener('click', () => setImg(i)));
+
+        /* thumbs */
+        if (images.length > 1) {
+          thumbsEl.innerHTML = images.map((src,i) =>
+            `<div class="pdp-thumb${i===0?' active':''}"><img src="${esc(src)}" alt="Thumb ${i+1}" loading="lazy"/></div>`).join('');
+          thumbsEl.querySelectorAll('.pdp-thumb').forEach((t,i) => t.addEventListener('click', () => setImg(i)));
+        }
+
+        setImg(0, true);
+      } else {
+        mainImgEl.innerHTML = `<span class="pdp-emoji">${product.emoji || '🥜'}</span>`;
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+
+      prevBtn.addEventListener('click', () => setImg(imgIdx - 1));
+      nextBtn.addEventListener('click', () => setImg(imgIdx + 1));
+
+      /* touch swipe */
+      let swX = 0, swY = 0, swiping = false;
+      mainImgEl.addEventListener('touchstart', e => { swX = e.touches[0].clientX; swY = e.touches[0].clientY; swiping = false; }, {passive:true});
+      mainImgEl.addEventListener('touchmove',  e => {
+        const dx = e.touches[0].clientX - swX, dy = e.touches[0].clientY - swY;
+        if (!swiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) swiping = true;
+      }, {passive:true});
+      mainImgEl.addEventListener('touchend', e => {
+        if (!swiping || images.length <= 1) return;
+        const dx = e.changedTouches[0].clientX - swX;
+        if (Math.abs(dx) > 40) setImg(imgIdx + (dx < 0 ? 1 : -1));
+        swiping = false;
+      }, {passive:true});
+
+      /* fullscreen */
+      const fsEl    = document.getElementById('pdp-fullscreen');
+      const fsImg   = document.getElementById('pdp-fs-img');
+      const fsClose = document.getElementById('pdp-fs-close');
+      mainImgEl.addEventListener('click', () => {
+        if (!images.length) return;
+        fsImg.src = images[imgIdx];
+        document.getElementById('pdp-fs-counter').textContent = `${imgIdx+1} / ${images.length}`;
+        fsEl.classList.add('open');
+      });
+      fsClose.addEventListener('click', () => fsEl.classList.remove('open'));
+      fsEl.addEventListener('click', e => { if(e.target === fsEl) fsEl.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') fsEl.classList.remove('open'); });
+
+      /* --- Selectors --- */
+      const sizeSelect    = document.getElementById('pdp-size');
+      const textureSelect = document.getElementById('pdp-texture');
+      const textureGroup  = document.getElementById('pdp-texture-group');
+
+      sizes.forEach(sz => {
+        const o = document.createElement('option'); o.value = sz; o.textContent = sz;
+        sizeSelect.appendChild(o);
+      });
+
+      if (hasT) {
+        textureGroup.style.display = '';
+        textures.forEach(tx => {
+          const o = document.createElement('option'); o.value = tx; o.textContent = tx;
+          textureSelect.appendChild(o);
+        });
+      } else {
+        textureGroup.style.display = 'none';
+        const o = document.createElement('option'); o.value = 'Default'; o.textContent = 'Default';
+        textureSelect.appendChild(o);
+      }
+
+      /* --- Qty & price state --- */
+      let qty       = 1;
+      const qtyNum  = document.getElementById('pdp-qty-num');
+      const subEl   = document.getElementById('pdp-subtotal');
+
+      function currentPricing() {
+        const sz = sizeSelect.value;
+        const tx = hasT ? textureSelect.value : 'Default';
+        return parseComboPrice(product, sz, tx);
+      }
+
+      function updatePrice() {
+        const { price, mrp } = currentPricing();
+        document.getElementById('pdp-price').textContent = `₹${price.toFixed(2)}`;
+        const mrpEl  = document.getElementById('pdp-mrp');
+        const saveEl = document.getElementById('pdp-save');
+        if (mrp && mrp > price) {
+          mrpEl.textContent  = `₹${mrp.toFixed(2)}`;
+          mrpEl.style.display = 'inline';
+          const pct = Math.round((1 - price / mrp) * 100);
+          saveEl.textContent  = `${pct}% OFF`;
+          saveEl.style.display = 'inline';
+        } else {
+          mrpEl.style.display  = 'none';
+          saveEl.style.display = 'none';
+        }
+        subEl.textContent = `Total: ₹${(price * qty).toFixed(2)}`;
+      }
+      sizeSelect.addEventListener('change', updatePrice);
+      textureSelect.addEventListener('change', updatePrice);
+      updatePrice();
+
+      document.getElementById('pdp-qty-minus').addEventListener('click', () => {
+        if (qty > 1) { qty--; qtyNum.textContent = qty; updatePrice(); }
+      });
+      document.getElementById('pdp-qty-plus').addEventListener('click', () => {
+        qty++; qtyNum.textContent = qty; updatePrice();
+      });
+
+      /* --- Buy Now → open shared checkout modal ── */
+      document.getElementById('pdp-buy-btn').addEventListener('click', () => {
+        const { price } = currentPricing();
+        const sz = sizeSelect.value;
+        const tx = hasT ? textureSelect.value : 'Default';
+        const label = `${hasT ? tx + ' ' : ''}${sz}`;
+
+        /* Expose to script.js checkout system */
+        window._pdpCurrentProduct      = product;
+        window._pdpCurrentQty          = qty;
+        window._pdpSelectedUnitPrice   = price;
+        window._pdpSelectedVariantLabel = label;
+
+        /* Trigger the existing checkout system in script.js */
+        if (window.BUNO_OPEN_CHECKOUT) {
+          window.BUNO_OPEN_CHECKOUT(product, qty, price, label);
+        } else {
+          /* Fallback: directly open checkout overlay */
+          const overlay = document.getElementById('checkout-modal-overlay');
+          if (overlay) overlay.classList.add('open');
+        }
+      });
+
+      /* --- Share buttons --- */
+      const shareURL = `https://bunofeed.in/product.html?id=${encodeURIComponent(product.id)}`;
+      document.getElementById('pdp-share-wa').addEventListener('click', () => {
+        window.open(`https://wa.me/?text=${encodeURIComponent(product.name + ' – ' + shareURL)}`, '_blank');
+      });
+      document.getElementById('pdp-share-copy').addEventListener('click', () => {
+        navigator.clipboard?.writeText(shareURL).then(() => alert('Link copied!')).catch(() => {});
+      });
+
+      /* --- Accordion --- */
+      const accData = [
+        { title: 'Ingredients',   body: product.ingredients  || 'See product label.' },
+        { title: 'Key Benefits',  body: product.keyBenefits  || (product.features || []).join(' • ') },
+        { title: 'Storage Info',  body: product.storageInfo  || 'Store in a cool, dry place.' },
+        { title: 'Allergen Info', body: product.allergenInfo || 'May contain traces of nuts and soy.' },
+      ];
+      document.getElementById('pdp-accordion').innerHTML = accData.map((a, i) => `
+        <div class="pdp-acc-item">
+          <button class="pdp-acc-head" data-acc="${i}">
+            ${esc(a.title)} <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="pdp-acc-body" data-acc-body="${i}">${esc(a.body)}</div>
+        </div>`).join('');
+
+      document.querySelectorAll('.pdp-acc-head').forEach(head => {
+        head.addEventListener('click', () => {
+          const body = document.querySelector(`.pdp-acc-body[data-acc-body="${head.dataset.acc}"]`);
+          const open = head.classList.toggle('open');
+          body.classList.toggle('open', open);
+        });
+      });
+
+      /* --- Show page --- */
+      loadingEl.style.display = 'none';
+      wrapperEl.style.display = 'block';
+    }
+
+    /* ── Bootstrap on DOMContentLoaded ── */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
     } else {
-      initProduct();
+      init();
     }
+
   })();
+  </script>
+
+  <!--
+    ── HOW script.js CHECKOUT IS BRIDGED ──
+    script.js exposes window.BUNO_OPEN_CHECKOUT after DOMContentLoaded.
+    We patch it here so the Buy Now button on this page uses the same
+    checkout pipeline (Razorpay + order save) already in script.js.
+  -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Patch script.js: expose a public checkout trigger for this page
+    // script.js sets currentProduct / selectedUnitPrice / selectedVariantLabel
+    // via its own openCheckoutModal(). We replicate the same flow.
+    window.BUNO_OPEN_CHECKOUT = function (product, qty, price, label) {
+      // Write into script.js internal state via the same globals it reads
+      window.__pdp_overrideCheckout = { product, qty, price, label };
+      // script.js listens for this and opens checkout
+      document.dispatchEvent(new CustomEvent('bunofeed:openCheckout', {
+        detail: { product, qty, price, label }
+      }));
+    };
+  });
   </script>
 </body>
 </html>
