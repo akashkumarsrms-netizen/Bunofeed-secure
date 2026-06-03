@@ -1,0 +1,19 @@
+# Bunofeed
+
+> Clean, natural food brand from Uttar Pradesh, India. Est. 2026.
+
+## Brand
+- Mission: Transparent ingredients, no additives, real nutrition
+- Email: bunofeedhelpdesk@gmail.com
+- Website: https://bunofeed.in
+
+## Products
+- [Classic Peanut Butter Smooth](/product.html?id=creamy-pb): 400g jar, Smooth or Crunchy. Ingredients: Roasted Peanut (87.5%), Dhaga Mishri (10%), Pink Salt. ₹299 MRP ₹399. 5% GST. High protein, no trans fat, vegetarian.
+
+## Pages
+- [Shop](/shop.html): Full product catalog
+- [About](/about.html): Brand story and values
+- [Blog](/blog.html): Health and nutrition articles
+- [Protein Calculator](/protein-calculator.html): Daily protein target tool
+- [My Orders](/orders.html): Order tracking
+- [Terms](/terms.html) | [Privacy](/privacy.html)

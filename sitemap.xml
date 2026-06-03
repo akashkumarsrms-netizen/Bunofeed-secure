@@ -1,45 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <url>
-    <loc>https://bunofeed.in/</loc>
-  </url>
-
-   <url>
-    <loc>https://bunofeed.in/shop</loc>
-  </url>
-  
-
-  <url>
-    <loc>https://bunofeed.in/about</loc>
-  </url>
-
-  <url>
-    <loc>https://bunofeed.in/contact</loc>
-  </url>
-  
-   <url>
-    <loc>https://bunofeed.in/blog</loc>
-  </url>
-
-   <url>
-    <loc>https://bunofeed.in/orders</loc>
-  </url>
-
-   <url>
-    <loc>https://bunofeed.in/protein-calculator</loc>
-  </url>
-
-  
-   <url>
-    <loc>https://bunofeed.in/terms</loc>
-  </url>
-
-  
-   <url>
-    <loc>https://bunofeed.in/privacy</loc>
-  </url>
-
-  
-
+  <url><loc>https://bunofeed.in/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://bunofeed.in/shop.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bunofeed.in/product.html?id=creamy-pb</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bunofeed.in/about.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bunofeed.in/blog.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bunofeed.in/protein-calculator.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://bunofeed.in/orders.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bunofeed.in/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://bunofeed.in/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

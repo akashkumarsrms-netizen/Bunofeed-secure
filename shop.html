@@ -4,87 +4,37 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Shop Natural Foods & Peanut Butter | Bunofeed</title>
+  <meta name="description" content="Shop clean-label peanut butter, oats, and muesli at Bunofeed. No additives, real nutrition."/>
+  <link rel="canonical" href="https://bunofeed.in/shop.html"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/style.css"/>
   <style>
-    /* ── Catalog Page Specific Styles ── */
-    .shop-header {
-      background: var(--brown);
-      padding: 4.5rem 1.5rem 3.5rem;
-      text-align: center;
-      position: relative;
-    }
-    .shop-header::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(139,69,19,0.3) 0%, transparent 80%);
-      pointer-events: none;
-    }
-    .shop-header-inner { position: relative; z-index: 1; }
-    .shop-header .section-tag { background: rgba(255,255,255,0.15); color: #fff; margin-bottom: 1rem; }
-    .shop-header h1 {
-      font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800; color: #fff; margin-bottom: 0.6rem;
-    }
-    .shop-header p { color: rgba(255,255,255,0.7); font-size: 1rem; }
-
-    .shop-view {
-      background: var(--off-white);
-      min-height: 80vh;
-      padding: 3rem 1.5rem 5rem;
-    }
-    .shop-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* ── Filter Bar ── */
-    .filter-bar {
-      display: flex; gap: 0.8rem; justify-content: center;
-      flex-wrap: wrap; margin-bottom: 3.5rem;
-    }
-    .filter-btn {
-      padding: 10px 24px;
-      border: 2px solid #e0d4cc;
-      background: var(--white);
-      border-radius: 50px;
-      font-family: var(--font-head);
-      font-weight: 700; font-size: 0.85rem;
-      color: var(--gray); cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: all 0.22s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    .filter-btn:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-1px); }
-    .filter-btn.active {
-      background: var(--orange);
-      border-color: var(--orange);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-
-    /* ── No Items State ── */
-    .no-products {
-      text-align: center; padding: 4rem 1rem; display: none;
-    }
-    .no-products i { font-size: 3.5rem; color: #e0d4cc; margin-bottom: 1.2rem; }
-    .no-products h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; color: var(--brown-dark); margin-bottom: 0.4rem; }
-    .no-products p { color: var(--gray); font-size: 0.95rem; }
-
-    @media (max-width: 520px) {
-      .filter-btn { padding: 8px 18px; font-size: 0.8rem; }
-      .shop-view { padding: 2rem 1rem 4rem; }
-    }
+    .shop-header{background:var(--brown);padding:4.5rem 1.5rem 3.5rem;text-align:center;position:relative;}
+    .shop-header::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(139,69,19,.3) 0%,transparent 80%);pointer-events:none;}
+    .shop-header-inner{position:relative;z-index:1;}
+    .shop-header .section-tag{background:rgba(255,255,255,.15);color:#fff;margin-bottom:1rem;}
+    .shop-header h1{font-family:var(--font-head);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;margin-bottom:.6rem;}
+    .shop-header p{color:rgba(255,255,255,.7);font-size:1rem;}
+    .shop-view{background:var(--off-white);min-height:80vh;padding:3rem 1.5rem 5rem;}
+    .shop-container{max-width:1200px;margin:0 auto;}
+    .filter-bar{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem;}
+    .filter-btn{padding:10px 24px;border:2px solid #e0d4cc;background:var(--white);border-radius:50px;font-family:var(--font-head);font-weight:700;font-size:.85rem;color:var(--gray);cursor:pointer;box-shadow:var(--shadow);transition:all .22s cubic-bezier(.165,.84,.44,1);}
+    .filter-btn:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px);}
+    .filter-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;transform:translateY(-2px);}
+    .no-products{text-align:center;padding:4rem 1rem;display:none;}
+    .no-products i{font-size:3.5rem;color:#e0d4cc;margin-bottom:1.2rem;}
+    .no-products h3{font-family:var(--font-head);font-weight:800;font-size:1.4rem;color:var(--brown-dark);margin-bottom:.4rem;}
+    .no-products p{color:var(--gray);font-size:.95rem;}
+    @media(max-width:520px){.filter-btn{padding:8px 18px;font-size:.8rem;}.shop-view{padding:2rem 1rem 4rem;}}
   </style>
 </head>
 <body>
 
-  <!-- ═══════════ CAMPAIGN BANNER ═══════════ -->
   <div id="campaign-banner" role="alert" aria-live="polite"></div>
 
-  <!-- ═══════════ NAVBAR ═══════════ -->
   <header class="navbar">
     <div class="nav-container">
       <a href="/index.html" class="logo" aria-label="Bunofeed Home">
@@ -94,16 +44,15 @@
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/index.html"      class="nav-link">Home</a>
-        <a href="/shop.html"       class="nav-link active">Products</a>
-        <a href="/orders.html"     class="nav-link">My Orders</a>
-        <a href="/about.html"      class="nav-link">About Us</a>
+        <a href="/index.html" class="nav-link">Home</a>
+        <a href="/shop.html" class="nav-link active">Products</a>
+        <a href="/orders.html" class="nav-link">My Orders</a>
+        <a href="/about.html" class="nav-link">About Us</a>
         <a href="/index.html#contact" class="nav-link">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- ═══════════ ACTION SHIELD HERO ═══════════ -->
   <section class="shop-header">
     <div class="shop-header-inner">
       <div class="section-tag">Bunofeed Store</div>
@@ -112,90 +61,31 @@
     </div>
   </section>
 
-  <!-- ═══════════ SHOP VIEW ═══════════ -->
   <div class="shop-view">
     <div class="shop-container">
-
-      <!-- Categories Filter Ring -->
       <div class="filter-bar" id="categoryMenu">
         <button class="filter-btn active" data-slug="all">All Specialties</button>
       </div>
-
-      <!-- Live Catalog Grid -->
       <div class="products-grid" id="full-catalog-grid"></div>
-
-      <!-- No products match -->
       <div class="no-products" id="no-products">
         <i class="fas fa-box-open"></i>
         <h3>No Products Found</h3>
         <p>Stay tuned! We are pre-baking healthy recipes for this category soon.</p>
       </div>
-
     </div>
   </div>
 
-  <!-- ═══════════ CHECKOUT OVERLAY MODAL ═══════════ -->
-  <div class="checkout-modal-overlay" id="checkout-modal-overlay">
-    <div class="checkout-modal">
-      <button class="checkout-close" id="checkout-close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
-      <h2>Secure Checkout</h2>
-      <form class="checkout-form" id="checkout-form">
-        <div class="form-group">
-          <label>Full Name <span>*</span></label>
-          <input type="text" id="cust-name" class="form-input" placeholder="Your full name" required>
-          <div class="error-msg" id="name-error">Please enter your full name</div>
-        </div>
-        <div class="form-group">
-          <label>Mobile Number <span>*</span></label>
-          <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number" required maxlength="10">
-          <div class="error-msg" id="phone-error">Please enter a valid 10-digit mobile number</div>
-        </div>
-        <div class="form-group">
-          <label>Email ID <span>*</span></label>
-          <input type="email" id="cust-email" class="form-input" placeholder="Email address" required>
-          <div class="error-msg" id="email-error">Please enter a valid email address</div>
-        </div>
-        <div class="form-group">
-          <label>Full Address <span>*</span></label>
-          <input type="text" id="cust-address" class="form-input" placeholder="House no, Street, Landmark" required>
-          <div class="error-msg" id="address-error">Please enter your delivery address</div>
-        </div>
-        <div class="form-group">
-          <label>Pincode <span>*</span></label>
-          <input type="text" id="cust-pincode" class="form-input" placeholder="6-digit pincode" required maxlength="6">
-          <div class="error-msg" id="pincode-error">Please enter a valid 6-digit pincode</div>
-        </div>
-
-        <!-- NEW COUPON ENGING INTEGRATION -->
-        <div class="form-group" style="border: 1px dashed #e0d4cc; padding: 1rem; border-radius: 10px; background: #fffaf7;">
-          <label style="color: #6B2D0E; font-size: 0.78rem;">Have a Promo/Coupon Code?</label>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem; align-items: stretch; min-width: 0;">
-            <input type="text" id="coupon-code" class="form-input" placeholder="Enter coupon code" style="flex: 1; min-width: 0; text-transform: uppercase;">
-            <button type="button" class="btn btn-brown" id="apply-coupon-btn" style="flex-shrink: 0; white-space: nowrap; min-height: 40px; padding: 0 15px; font-size: 0.8rem;">Apply</button>
-          </div>
-          <div id="coupon-msg" style="font-size: 0.75rem; font-weight: 600; margin-top: 5px;"></div>
-        </div>
-
-        <p style="color:red; font-size:0.8rem; line-height:1.4;">Please enter your email address and phone number carefully, as your complete order details and status updates will be shared via your email/phone number.</p>
-        <button type="submit" class="btn btn-primary checkout-btn" id="proceed-pay-btn" style="min-height:48px;">
-          Proceed to Pay
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ═══════════ FOOTER ═══════════ -->
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
         <p>Your companion in healthy living. Honest food for real people.</p>
         <div class="social-links">
-          <a href="#" data-social="instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" data-social="facebook"  aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-          <a href="#" data-social="linkedin"  aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="#" data-social="youtube"   aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="#" data-social="twitter"   aria-label="X"><i class="fab fa-x-twitter"></i></a>
+          <a href="https://www.instagram.com" data-social="instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.facebook.com" data-social="facebook" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="https://www.linkedin.com/in/akash-kumar-995739293" data-social="linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.youtube.com" data-social="youtube" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.x.com" data-social="twitter" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fab fa-x-twitter"></i></a>
         </div>
       </div>
       <div class="footer-col">
@@ -220,72 +110,84 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="/products.js"></script>
   <script src="/api.js"></script>
-  <script src="/modal.js"></script>
   <script src="/script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const D = window.BUNOFEED_DATA;
-      if (!D) return;
+  document.addEventListener('DOMContentLoaded', () => {
+    const D = window.BUNOFEED_DATA;
+    if (!D) return;
+    const catMenu = document.getElementById('categoryMenu');
+    const catalogGrid = document.getElementById('full-catalog-grid');
+    const noProdEl = document.getElementById('no-products');
+    let activeCategory = 'all';
 
-      const catMenu = document.getElementById('categoryMenu');
-      const catalogGrid = document.getElementById('full-catalog-grid');
-      const noProdEl = document.getElementById('no-products');
-
-      let activeCategory = 'all';
-
-      // Build Category Switcher buttons dynamically
-      if (D.categories) {
-        D.categories.forEach(c => {
-          const btn = document.createElement('button');
-          btn.className = 'filter-btn';
-          btn.dataset.slug = c.slug;
-          btn.textContent = c.name;
-          catMenu.appendChild(btn);
+    if (D.categories) {
+      D.categories.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        btn.dataset.slug = c.slug;
+        btn.textContent = c.name;
+        catMenu.appendChild(btn);
+      });
+      catMenu.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          catMenu.querySelector('.filter-btn.active').classList.remove('active');
+          btn.classList.add('active');
+          activeCategory = btn.dataset.slug;
+          renderCollection();
         });
+      });
+    }
 
-        // Add filter interactions
-        catMenu.querySelectorAll('.filter-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            catMenu.querySelector('.filter-btn.active').classList.remove('active');
-            btn.classList.add('active');
-            activeCategory = btn.dataset.slug;
-            renderCollection();
-          });
-        });
+    function renderCollection() {
+      catalogGrid.innerHTML = '';
+      const filtered = D.products.filter(p => {
+        if (p.visible === false) return false;
+        return activeCategory === 'all' || p.category === activeCategory;
+      });
+      if (filtered.length === 0) {
+        noProdEl.style.display = 'block';
+        catalogGrid.style.display = 'none';
+        return;
       }
+      noProdEl.style.display = 'none';
+      catalogGrid.style.display = 'grid';
+      filtered.forEach(p => {
+        // Build card with link to dedicated product page (SEO-friendly)
+        const card = window.BUILD_PRODUCT_CARD_ELEMENT
+          ? window.BUILD_PRODUCT_CARD_ELEMENT(p, { linkToPage: true })
+          : buildFallbackCard(p);
+        catalogGrid.appendChild(card);
+      });
+    }
 
-      function renderCollection() {
-        catalogGrid.innerHTML = '';
-        
-        const filtered = D.products.filter(p => {
-          if (p.visible === false) return false;
-          if (activeCategory === 'all') return true;
-          return p.category === activeCategory;
-        });
+    // Fallback card builder if BUILD_PRODUCT_CARD_ELEMENT doesn't support linkToPage
+    function buildFallbackCard(p) {
+      const a = document.createElement('a');
+      a.href = `/product.html?id=${encodeURIComponent(p.id)}`;
+      a.className = 'product-card';
+      a.style.textDecoration = 'none';
+      a.innerHTML = `
+        <div class="product-img-wrap">
+          <img src="${p.image}" alt="${p.name}" loading="lazy"/>
+          ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">${p.name}</h3>
+          <p class="product-tagline">${p.tagline || ''}</p>
+          <div class="product-price-row">
+            <span class="product-price">₹${p.price}</span>
+            ${p.mrp ? `<span class="product-mrp">₹${p.mrp}</span>` : ''}
+          </div>
+          <span class="btn btn-primary" style="margin-top:.8rem;width:100%;justify-content:center;">View Product</span>
+        </div>`;
+      return a;
+    }
 
-        if (filtered.length === 0) {
-          noProdEl.style.display = 'block';
-          catalogGrid.style.display = 'none';
-          return;
-        }
-
-        noProdEl.style.display = 'none';
-        catalogGrid.style.display = 'grid';
-
-        filtered.forEach(p => {
-          const card = window.BUILD_PRODUCT_CARD_ELEMENT(p);
-          catalogGrid.appendChild(card);
-        });
-      }
-
-      // Hook render function so main scripts can trigger it on filter
-      window.TRIGGER_RENDER_SHOP_COLLECTION = renderCollection;
-      renderCollection();
-    });
+    window.TRIGGER_RENDER_SHOP_COLLECTION = renderCollection;
+    renderCollection();
+  });
   </script>
 </body>
 </html>

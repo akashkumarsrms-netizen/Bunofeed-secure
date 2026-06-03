@@ -1,17 +1,6 @@
 User-agent: *
 Allow: /
- 
-# AI agent optimization
-User-agent: GPTBot
-Allow: /llms.txt
-Allow: /product.html
- 
-User-agent: ClaudeBot
-Allow: /llms.txt
-Allow: /product.html
- 
-User-agent: PerplexityBot
-Allow: /llms.txt
-Allow: /product.html
- 
+Disallow: /admin.html
+Disallow: /api.js
+
 Sitemap: https://bunofeed.in/sitemap.xml
