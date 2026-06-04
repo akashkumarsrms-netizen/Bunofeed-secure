@@ -32,11 +32,6 @@
     <priority>0.8</priority>
   </url>
 
-  <url>
-    <loc>https://bunofeed.in/orders.html</loc>
-    <changefreq>never</changefreq>
-    <priority>0.4</priority>
-  </url>
 
   <url>
     <loc>https://bunofeed.in/protein-calculator.html</loc>
