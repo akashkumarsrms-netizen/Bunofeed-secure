@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -210,6 +210,175 @@
       white-space: nowrap;
     }
     .mv-value i { color: var(--brown); font-size: 0.95rem; }
+    /* ── Brand Visual Section ── */
+    .brand-visual-section {
+      padding: 5rem 1.5rem 4rem;
+      background: var(--white);
+    }
+    .bvs-identity {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    /* --- Logo panel --- */
+    .bvs-logo-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .bvs-logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .bvs-logo {
+      width: clamp(130px, 22vw, 200px);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 20px rgba(139,69,19,0.18));
+      transition: transform 0.4s ease;
+    }
+    .bvs-logo:hover { transform: scale(1.04); }
+
+    .bvs-brand-info h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 1rem;
+      line-height: 1.25;
+    }
+    .bvs-brand-info h2 span { color: var(--brown); }
+    .bvs-desc {
+      color: #5c4d45;
+      font-size: 0.97rem;
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Tag pills */
+    .bvs-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .bvs-tags span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      border-radius: 50px;
+      background: rgba(139,69,19,0.07);
+      border: 1px solid rgba(139,69,19,0.18);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brown);
+      white-space: nowrap;
+    }
+    .bvs-tags span i { font-size: 0.78rem; }
+    .bvs-cta { min-height: 48px; }
+
+    /* --- Product image panel --- */
+    .bvs-product-panel { position: relative; }
+    .bvs-img-frame {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(139,69,19,0.16);
+      background: var(--off-white, #faf7f5);
+    }
+    .bvs-img-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 55%,
+        rgba(20,10,5,0.55) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+    .bvs-product-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .bvs-img-frame:hover .bvs-product-img {
+      transform: scale(1.04);
+    }
+
+    /* Quality badge */
+    .bvs-img-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 2;
+      background: rgba(255,255,255,0.95);
+      border: 1.5px solid rgba(139,69,19,0.2);
+      border-radius: 12px;
+      padding: 0.55rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brown);
+      line-height: 1.25;
+      backdrop-filter: blur(6px);
+    }
+    .bvs-img-badge i { font-size: 1.1rem; }
+
+    /* Explore CTA overlay */
+    .bvs-img-cta {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      background: var(--brown);
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 0.65rem 1.6rem;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: background 0.25s, transform 0.25s;
+      box-shadow: 0 4px 18px rgba(139,69,19,0.35);
+    }
+    .bvs-img-cta:hover {
+      background: #7a3a0a;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .bvs-identity {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .bvs-logo-wrap { justify-content: center; }
+      .bvs-brand-info { text-align: center; }
+      .bvs-tags { justify-content: center; }
+      .bvs-cta { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .brand-visual-section { padding: 3.5rem 1rem 3rem; }
+      .bvs-img-cta { font-size: 0.82rem; padding: 0.6rem 1.2rem; }
+      .bvs-img-badge { top: 0.75rem; right: 0.75rem; }
+    }
   </style>
 </head>
 <body>
@@ -247,18 +416,50 @@
     </div>
   </section>
 
-  <!-- COMBINED SECTIONS: ABOUT & WHY CHOOSE US -->
-  
-  <!-- ABOUT SECTION -->
-  <section class="about" id="about" style="padding-top: 6rem; padding-bottom: 3rem;">
-    <div class="about-text">
-      <p class="section-tag">About Bunofeed</p>
-      <h2>Born from a Passion for <span>Clean Eating</span></h2>
-      <p>Bunofeed started with a simple observation — finding genuinely good, honest food products isn’t as easy as it should be. Too often, products that appear healthy on the outside don’t reflect the same quality in their ingredients. We began with a clear intention: to offer food products that are straightforward, reliable, and made with a focus on quality. Instead of overcomplicating things, we focus on selecting and developing products that meet practical expectations — clean compositions, consistent taste, and dependable sourcing. As we continue to grow our range across categories, our approach remains the same. Every product is chosen with care, keeping in mind everyday use — whether it’s part of a fitness routine or a regular household staple. At Bunofeed, the goal is simple: to build a brand people can rely on for products that are transparent in what they offer and consistent in what they deliver.</p>
-      <p>Every jar, every bag, every product carries our promise — wholesome ingredients, transparent labels, and a taste that keeps you coming back.</p>
-      <a href="/shop.html" class="btn btn-primary" style="margin-top:1rem;min-height:48px;">
-        <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
-      </a>
+  <!-- BRAND VISUAL SECTION -->
+  <section class="brand-visual-section" id="about" aria-label="About Bunofeed">
+    <div class="bvs-identity">
+
+      <!-- Left: Logo + brand story -->
+      <div class="bvs-logo-panel">
+        <div class="bvs-logo-wrap">
+          <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="bvs-logo" loading="eager"/>
+        </div>
+        <div class="bvs-brand-info">
+          <p class="section-tag">About Bunofeed</p>
+          <h2>Born from a Passion for <span>Clean Eating</span></h2>
+          <p class="bvs-desc">Bunofeed started with a simple observation — finding genuinely good, honest food products isn't as easy as it should be. We began with a clear intention: to offer products that are straightforward, reliable, and made with a focus on quality.</p>
+          <p class="bvs-desc">Every jar, every bag, every product carries our promise — wholesome ingredients, transparent labels, and a taste that keeps you coming back.</p>
+          <div class="bvs-tags">
+            <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
+            <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
+            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+          </div>
+          <a href="/shop.html" class="btn btn-primary bvs-cta">
+            <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Product cover image -->
+      <div class="bvs-product-panel">
+        <div class="bvs-img-frame">
+          <img
+            src="https://bunofeed.in/images/web_cover_image.png"
+            alt="Bunofeed Products — Clean Nutrition Range"
+            class="bvs-product-img"
+            loading="lazy"
+          />
+          <div class="bvs-img-badge">
+            <i class="fas fa-award" aria-hidden="true"></i>
+            <span>Quality<br/>Assured</span>
+          </div>
+          <a href="/shop.html" class="bvs-img-cta" aria-label="Explore all products">
+            <i class="fas fa-arrow-right" aria-hidden="true"></i> Explore Products
+          </a>
+        </div>
+      </div>
+
     </div>
   </section>
 
