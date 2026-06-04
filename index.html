@@ -40,13 +40,20 @@
   <meta property="og:url" content="https://bunofeed.in/">
   <meta property="og:title" content="Bunofeed | Healthy Food & Supplements Online">
   <meta property="og:description" content="Shop premium healthy food products and supplements including Peanut Butter, Oats, Muesli, Whey Protein and more.">
-  <meta property="og:image" content="https://bunofeed.in/og-image.jpg">
+  <meta property="og:image" content="https://bunofeed.in/images/web_cover_image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bunofeed — Clean Nutrition Products">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@bunofeed">
   <meta name="twitter:title" content="Bunofeed | Healthy Food & Supplements Online">
   <meta name="twitter:description" content="Shop premium healthy food products and supplements including Peanut Butter, Oats, Muesli, Whey Protein and more.">
-  <meta name="twitter:image" content="https://bunofeed.in/og-image.jpg">
+  <meta name="twitter:image" content="https://bunofeed.in/images/web_cover_image.png">
+
+  <!-- Keywords -->
+  <meta name="keywords" content="Bunofeed, bunofeed.in, healthy food India, peanut butter online, oats muesli, whey protein, clean nutrition, fitness supplements India">
 
   <!-- Website Schema -->
   <script type="application/ld+json">
@@ -55,7 +62,12 @@
     "@type": "WebSite",
     "name": "Bunofeed",
     "url": "https://bunofeed.in/",
-    "description": "Premium healthy food products and fitness supplements"
+    "description": "Premium healthy food products and fitness supplements — Peanut Butter, Oats, Muesli, Whey Protein delivered across India.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://bunofeed.in/shop.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   }
   </script>
 
@@ -66,7 +78,39 @@
     "@type": "Organization",
     "name": "Bunofeed",
     "url": "https://bunofeed.in/",
-    "logo": "https://bunofeed.in/logo.png"
+    "logo": "https://bunofeed.in/images/logo2.png",
+    "description": "Premium healthy food products and fitness supplements — Peanut Butter, Oats, Muesli, Whey Protein delivered across India.",
+    "foundingDate": "2026",
+    "email": "bunofeedhelpdesk@gmail.com",
+    "areaServed": "IN",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "bunofeedhelpdesk@gmail.com",
+      "contactType": "customer support",
+      "areaServed": "IN",
+      "availableLanguage": "English"
+    },
+    "sameAs": [
+      "https://www.instagram.com/bunofeed",
+      "https://www.youtube.com/@bunofeed",
+      "https://www.x.com/bunofeed",
+      "https://www.facebook.com/bunofeed",
+      "https://www.linkedin.com/in/akash-kumar-995739293"
+    ]
+  }
+  </script>
+
+  <!-- BreadcrumbList Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home",     "item": "https://bunofeed.in/" },
+      { "@type": "ListItem", "position": 2, "name": "Products", "item": "https://bunofeed.in/shop.html" },
+      { "@type": "ListItem", "position": 3, "name": "Blog",     "item": "https://bunofeed.in/blog.html" },
+      { "@type": "ListItem", "position": 4, "name": "About Us", "item": "https://bunofeed.in/about.html" }
+    ]
   }
   </script>
     
