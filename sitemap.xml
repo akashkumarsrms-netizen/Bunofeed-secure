@@ -3,57 +3,69 @@
 
   <url>
     <loc>https://bunofeed.in/</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/shop.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- ── Individual Product Pages (SEO-friendly permanent URLs) ── -->
+  <!-- Individual Product Pages -->
   <url>
     <loc>https://bunofeed.in/product.html?id=creamy-pb</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/about.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/blog.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- Individual Blog Posts (add new entries here as you publish) -->
   <url>
     <loc>https://bunofeed.in/blog-post.html?slug=protein-benefits-peanut-butter</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/protein-calculator.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.65</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/terms.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://bunofeed.in/privacy.html</loc>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
+  <!-- NOTE: orders.html is intentionally excluded (noindex user-facing page) -->
 
 </urlset>
