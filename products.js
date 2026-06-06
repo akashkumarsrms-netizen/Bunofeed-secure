@@ -125,7 +125,7 @@ window.BUNOFEED_DATA = {
   "brand": {
     "email": "bunofeedhelpdesk@gmail.com",
     "feedbackFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSejJAsyZq1snX9gEJr6CTpcVYwEopd34RsTf_pbYvgwz0WFDg/viewform?usp=header",
-    "instagram": "https://www.instagram.com",
+    "instagram": "https://www.instagram.com/bunofeed?igsh=cGFyaXpsbGRzczh0",
     "facebook": "https://www.facebook.com",
     "linkedin": "https://www.linkedin.com/in/akash-kumar-995739293"
   },
