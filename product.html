@@ -454,14 +454,14 @@
             </div>
 
             <!-- Actions -->
-            <div class="pdp-actions">
-              <button class="btn btn-primary" id="pdp-buy-btn" style="min-height:50px;">
-                <i class="fas fa-bolt"></i> Buy Now
-              </button>
-              <a href="/shop.html" class="btn btn-brown">
-                <i class="fas fa-store"></i> All Products
-              </a>
-            </div>
+            <button class="btn btn-primary"
+        id="pdp-buy-btn"
+        style="min-height:50px;"
+        onclick="gtag('event', 'buy_now_click', {
+          'product_name': 'Classic Peanut Butter'
+        });">
+  <i class="fas fa-bolt"></i> Buy Now
+</button>
 
             <!-- Share -->
             <div class="pdp-share">
