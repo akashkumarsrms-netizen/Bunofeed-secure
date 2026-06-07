@@ -380,6 +380,19 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       qty = 1;
       selectedUnitPrice = finalPricing.price;
       selectedVariantLabel = `${hasTextures ? tx + ' ' : ''}${sz}`;
+
+      // ── GA4: Buy Now click from product card ──
+      if (typeof gtag === 'function') {
+        gtag('event', 'buy_now_click', {
+          event_category: 'ecommerce',
+          product_id: product.id,
+          product_name: product.name,
+          variant: selectedVariantLabel,
+          price: finalPricing.price,
+          source: 'product_card'
+        });
+      }
+
       openCheckoutModal();
     });
 
@@ -673,6 +686,19 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     qty                   = q || 1;
     selectedUnitPrice     = price;
     selectedVariantLabel  = label || '';
+
+    // ── GA4: Buy Now click from product detail page ──
+    if (typeof gtag === 'function') {
+      gtag('event', 'buy_now_click', {
+        event_category: 'ecommerce',
+        product_id: product.id,
+        product_name: product.name,
+        variant: label || '',
+        price: price,
+        source: 'product_detail_page'
+      });
+    }
+
     openCheckoutModal();
   });
 
@@ -682,6 +708,19 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     qty                   = q || 1;
     selectedUnitPrice     = price;
     selectedVariantLabel  = label || '';
+
+    // ── GA4: Buy Now click via direct BUNO_OPEN_CHECKOUT call ──
+    if (typeof gtag === 'function') {
+      gtag('event', 'buy_now_click', {
+        event_category: 'ecommerce',
+        product_id: product.id,
+        product_name: product.name,
+        variant: label || '',
+        price: price,
+        source: 'direct_call'
+      });
+    }
+
     openCheckoutModal();
   };
 
