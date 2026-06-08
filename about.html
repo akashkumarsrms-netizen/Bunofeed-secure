@@ -114,130 +114,112 @@
       margin: 0;
     }
 
-    /* ── Brand Visual Section — float layout ── */
+    /* ── Brand / About Section ── */
     .brand-visual-section {
-      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+      padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 2rem);
       background: var(--white);
     }
     .bvs-identity {
       max-width: 1160px;
       margin: 0 auto;
-      /* clearfix */
-      overflow: hidden;
     }
-    .bvs-identity::after {
-      content: '';
-      display: table;
-      clear: both;
+    .bvs-top {
+      margin-bottom: 2.25rem;
     }
-
-    /* Heading sits full-width above the float */
     .bvs-heading {
       font-family: var(--font-head);
-      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
       font-weight: 800;
       color: var(--dark);
-      margin-bottom: 1rem;
-      line-height: 1.25;
-      clear: both;
+      margin: 0.4rem 0 0;
+      line-height: 1.2;
     }
     .bvs-heading span { color: var(--brown); }
 
+    /* Two columns: story | promise card */
+    .bvs-cols {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* Story text */
+    .bvs-story {}
     .bvs-desc {
       color: #5c4d45;
       font-size: clamp(0.88rem, 1.5vw, 0.95rem);
-      line-height: 1.8;
-      margin-bottom: 0.9rem;
+      line-height: 1.85;
+      margin-bottom: 1rem;
       white-space: pre-line;
     }
-
-    /* Tag pills */
     .bvs-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.55rem;
-      margin: 1rem 0 1.5rem;
-      clear: both;
+      gap: 0.5rem;
+      margin: 1.25rem 0 1.5rem;
     }
     .bvs-tags span {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.45rem 1rem;
+      padding: 0.4rem 0.9rem;
       border-radius: 50px;
       background: rgba(139,69,19,0.07);
       border: 1px solid rgba(139,69,19,0.18);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: var(--brown);
       white-space: nowrap;
     }
-    .bvs-tags span i { font-size: 0.78rem; }
+    .bvs-tags span i { font-size: 0.75rem; }
     .bvs-cta { min-height: 48px; }
 
-    /* Image panel — floated right, text wraps left */
-    .bvs-product-panel {
-      float: right;
-      width: 42%;
-      margin: 0.25rem 0 1.5rem 2.5rem;
-    }
-    .bvs-img-frame {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 16px 40px rgba(139,69,19,0.16);
+    /* Promise card */
+    .bvs-promise-card {
       background: var(--off-white, #faf7f5);
-      aspect-ratio: 4/5;   /* portrait — realistic product ratio */
+      border: 1px solid rgba(139,69,19,0.12);
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      position: sticky;
+      top: 5rem;
     }
-    .bvs-img-frame::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 55%, rgba(20,10,5,0.55) 100%);
-      z-index: 1;
-      pointer-events: none;
+    .bvs-promise-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brown);
+      margin-bottom: 1.25rem;
     }
-    .bvs-product-img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      transition: transform 0.6s ease;
+    .bvs-promise-list {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
     }
-    .bvs-img-frame:hover .bvs-product-img { transform: scale(1.04); }
-
-    .bvs-img-badge {
-      position: absolute;
-      top: 1rem; right: 1rem; z-index: 2;
-      background: rgba(255,255,255,0.95);
-      border: 1.5px solid rgba(139,69,19,0.2);
-      border-radius: 12px;
-      padding: 0.55rem 0.85rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      font-size: 0.78rem; font-weight: 700; color: var(--brown);
-      line-height: 1.25; backdrop-filter: blur(6px);
+    .bvs-promise-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      font-size: 0.9rem;
+      color: #4a3c35;
+      line-height: 1.55;
     }
-    .bvs-img-badge i { font-size: 1.1rem; }
-
-    .bvs-img-cta {
-      position: absolute;
-      bottom: 1rem; left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      background: var(--brown); color: #fff;
-      font-size: 0.85rem; font-weight: 700;
-      padding: 0.6rem 1.4rem; border-radius: 50px;
-      text-decoration: none;
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      white-space: nowrap;
-      transition: background 0.25s, transform 0.25s;
-      box-shadow: 0 4px 18px rgba(139,69,19,0.35);
-    }
-    .bvs-img-cta:hover {
-      background: #7a3a0a;
-      transform: translateX(-50%) translateY(-2px);
+    .bvs-promise-list li strong { color: var(--dark); }
+    .bvs-promise-icon {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(139,69,19,0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--brown);
+      font-size: 0.85rem;
+      margin-top: 1px;
     }
 
+    /* ── Mission & Vision ── */
     /* ── Mission & Vision ── */
     .mv-section {
       padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 5vw, 4rem);
@@ -428,31 +410,19 @@
        RESPONSIVE BREAKPOINTS
        ============================================= */
 
-    /* Tablet: narrow float */
+    /* Tablet: collapse promise card below story */
     @media (max-width: 960px) {
-      .bvs-product-panel {
-        width: 48%;
-        margin-left: 2rem;
+      .bvs-cols {
+        grid-template-columns: 1fr;
+        gap: 2rem;
       }
+      .bvs-promise-card { position: static; }
 
-      /* why-us: stack on tablet */
       .why-us {
         grid-template-columns: 1fr;
         max-width: 680px;
       }
       .why-visual { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    /* Mobile: un-float image, stack everything */
-    @media (max-width: 640px) {
-      .bvs-product-panel {
-        float: none;
-        width: 100%;
-        margin: 0 0 1.5rem 0;
-      }
-      .bvs-img-frame { aspect-ratio: 16/9; }
-      .bvs-heading { font-size: 1.5rem; }
-      .bvs-tags { justify-content: center; }
     }
 
     @media (max-width: 700px) {
@@ -463,10 +433,9 @@
     }
 
     @media (max-width: 600px) {
-      .bvs-img-cta { font-size: 0.82rem; padding: 0.6rem 1.2rem; }
-      .bvs-img-badge { top: 0.75rem; right: 0.75rem; }
       .why-visual { grid-template-columns: 1fr 1fr; }
       .mv-header { margin-bottom: 1.5rem; }
+      .bvs-promise-card { padding: 1.5rem 1.25rem; }
     }
 
     @media (max-width: 400px) {
@@ -513,52 +482,62 @@
   <section class="brand-visual-section" id="about" aria-label="About Bunofeed">
     <div class="bvs-identity">
 
-      <!-- Image floated right — text wraps around it -->
-      <div class="bvs-product-panel">
-        <div class="bvs-img-frame">
-          <img
-            src="https://bunofeed.in/images/web_cover_image.png"
-            alt="Bunofeed Products — Clean Nutrition Range"
-            class="bvs-product-img"
-            loading="lazy"
-          />
-          <div class="bvs-img-badge">
-            <i class="fas fa-award" aria-hidden="true"></i>
-            <span>Quality<br/>Assured</span>
-          </div>
-          <a href="/shop.html" class="bvs-img-cta" aria-label="Explore all products">
-            <i class="fas fa-arrow-right" aria-hidden="true"></i> Explore Products
-          </a>
-        </div>
+      <!-- Top: section label + heading -->
+      <div class="bvs-top">
+        <p class="section-tag">About Bunofeed</p>
+        <h2 class="bvs-heading">Born from a Passion for <span>Clean Eating</span></h2>
       </div>
 
-      <!-- Text flows around the floated image -->
-      <p class="section-tag">About Bunofeed</p>
-      <h2 class="bvs-heading">Born from a Passion for <span>Clean Eating</span></h2>
-      <p class="bvs-desc">The idea behind Bunofeed is very simple. Many health and nutritional products sold on the market have a premium cost, but customers still have difficulties finding products that are able to provide consistent satisfaction regarding quality, purity, and reliability.
+      <!-- Two-column: story text left, promise panel right -->
+      <div class="bvs-cols">
+
+        <div class="bvs-story">
+          <p class="bvs-desc">The idea behind Bunofeed is very simple. Many health and nutritional products sold on the market have a premium cost, but customers still have difficulties finding products that are able to provide consistent satisfaction regarding quality, purity, and reliability.
 Being motivated by health, nutrition, and wellness, we aim to create an organization that would produce quality nutritional foods, health products, and supplements which would be affordable and available to all people. Quality, value, and trust are the core values we aim to provide to our clients, while maintaining high standards of integrity.
-Quality products always come first in our company.
-</p>
-      <p class="bvs-desc">All of our goods are sourced and produced carefully following quality standards of safety and quality. Products go through quality checks aiming to make sure that they match the established standards of purity and reliability. Manufacturing sites are compliant with quality control procedures and regulations.
+Quality products always come first in our company.</p>
+
+          <p class="bvs-desc">All of our goods are sourced and produced carefully following quality standards of safety and quality. Products go through quality checks aiming to make sure that they match the established standards of purity and reliability. Manufacturing sites are compliant with quality control procedures and regulations.
 Transparency is one of our key values. We feel that it's important for the customers to know exactly what they buy, which is why we strive to make our products clear in terms of labeling and ingredients. There will be no surprises – you'll get precisely what is stated on the label.
 Each and every jar, each and every bag, as well as each of our products is based on our commitment to providing quality products and making our customers' lives better. No matter how big we become, we promise never to compromise when it comes to offering high-quality products to those who lead healthy lifestyles.</p>
 
-      <p class="bvs-desc">Our Promise:
-• High-quality products using chosen ingredients
-• Complete transparency in terms of labeling and ingredients
-• Safety, purity, and consistency in everything we do
-• Competitive prices and great value for our customers
-• Focus on the customer and building relationships</p>
+          <div class="bvs-tags">
+            <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
+            <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
+            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+          </div>
+          <a href="/shop.html" class="btn btn-primary bvs-cta">
+            <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
+          </a>
+        </div>
 
-      <div class="bvs-tags">
-        <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
-        <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
-        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+        <!-- Right: promise card -->
+        <div class="bvs-promise-card">
+          <p class="bvs-promise-label">Our Promise</p>
+          <ul class="bvs-promise-list">
+            <li>
+              <span class="bvs-promise-icon"><i class="fas fa-seedling"></i></span>
+              <div><strong>High-quality products</strong> using carefully chosen ingredients</div>
+            </li>
+            <li>
+              <span class="bvs-promise-icon"><i class="fas fa-eye"></i></span>
+              <div><strong>Complete transparency</strong> in terms of labeling and ingredients</div>
+            </li>
+            <li>
+              <span class="bvs-promise-icon"><i class="fas fa-shield-halved"></i></span>
+              <div><strong>Safety, purity, and consistency</strong> in everything we do</div>
+            </li>
+            <li>
+              <span class="bvs-promise-icon"><i class="fas fa-tag"></i></span>
+              <div><strong>Competitive prices</strong> and great value for our customers</div>
+            </li>
+            <li>
+              <span class="bvs-promise-icon"><i class="fas fa-handshake"></i></span>
+              <div><strong>Focus on the customer</strong> and building lasting relationships</div>
+            </li>
+          </ul>
+        </div>
+
       </div>
-      <a href="/shop.html" class="btn btn-primary bvs-cta">
-        <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
-      </a>
-
     </div>
   </section>
 
