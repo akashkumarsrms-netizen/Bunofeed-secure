@@ -125,7 +125,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(2rem, 5vw, 4rem);
-      align-items: start;
+      align-items: stretch;
     }
 
     /* Left: text panel */
@@ -189,11 +189,11 @@
     .bvs-tags span i { font-size: 0.78rem; }
     .bvs-cta { min-height: 48px; }
 
-    /* Right: image panel — FIXED oversized image */
+    /* Right: image panel */
     .bvs-product-panel {
       position: relative;
-      /* Stick to top of grid cell, don't stretch */
-      align-self: start;
+      display: flex;
+      flex-direction: column;
     }
     .bvs-img-frame {
       position: relative;
@@ -201,8 +201,9 @@
       overflow: hidden;
       box-shadow: 0 24px 64px rgba(139,69,19,0.16);
       background: var(--off-white, #faf7f5);
-      /* Cap height so image never fills whole viewport */
-      max-height: 480px;
+      /* Fill the full height of the text column */
+      flex: 1;
+      min-height: 400px;
     }
     .bvs-img-frame::before {
       content: '';
@@ -214,9 +215,11 @@
     .bvs-product-img {
       display: block;
       width: 100%;
-      max-height: 480px;
+      height: 100%;
+      position: absolute;
+      inset: 0;
       object-fit: cover;
-      object-position: center top;
+      object-position: center;
       transition: transform 0.6s ease;
     }
     .bvs-img-frame:hover .bvs-product-img { transform: scale(1.04); }
@@ -473,8 +476,7 @@
     }
 
     @media (max-width: 600px) {
-      .bvs-img-frame { max-height: 280px; }
-      .bvs-product-img { max-height: 280px; }
+      .bvs-img-frame { min-height: 260px; }
       .bvs-img-cta { font-size: 0.82rem; padding: 0.6rem 1.2rem; }
       .bvs-img-badge { top: 0.75rem; right: 0.75rem; }
 
@@ -557,7 +559,6 @@ Our Promise:
             <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
           </a>
         </div>
-      </div>
 
       <!-- Right: Product cover image -->
       <div class="bvs-product-panel">
