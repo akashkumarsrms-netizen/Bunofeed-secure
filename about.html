@@ -114,7 +114,7 @@
       margin: 0;
     }
 
-    /* ── Brand Visual Section ── */
+    /* ── Brand Visual Section — float layout ── */
     .brand-visual-section {
       padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
       background: var(--white);
@@ -122,47 +122,32 @@
     .bvs-identity {
       max-width: 1160px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(2rem, 5vw, 4rem);
-      align-items: stretch;
+      /* clearfix */
+      overflow: hidden;
+    }
+    .bvs-identity::after {
+      content: '';
+      display: table;
+      clear: both;
     }
 
-    /* Left: text panel */
-    .bvs-logo-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 1.75rem;
-    }
-    .bvs-logo-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-    .bvs-logo {
-      width: clamp(130px, 22vw, 200px);
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 6px 20px rgba(139,69,19,0.18));
-      transition: transform 0.4s ease;
-    }
-    .bvs-logo:hover { transform: scale(1.04); }
-
-    .bvs-brand-info h2 {
+    /* Heading sits full-width above the float */
+    .bvs-heading {
       font-family: var(--font-head);
       font-size: clamp(1.5rem, 3.2vw, 2.2rem);
       font-weight: 800;
       color: var(--dark);
       margin-bottom: 1rem;
       line-height: 1.25;
+      clear: both;
     }
-    .bvs-brand-info h2 span { color: var(--brown); }
+    .bvs-heading span { color: var(--brown); }
+
     .bvs-desc {
       color: #5c4d45;
-      font-size: clamp(0.88rem, 1.6vw, 0.97rem);
+      font-size: clamp(0.88rem, 1.5vw, 0.95rem);
       line-height: 1.8;
-      margin-bottom: 0.75rem;
-      /* Prevent raw bullet text looking messy */
+      margin-bottom: 0.9rem;
       white-space: pre-line;
     }
 
@@ -172,6 +157,7 @@
       flex-wrap: wrap;
       gap: 0.55rem;
       margin: 1rem 0 1.5rem;
+      clear: both;
     }
     .bvs-tags span {
       display: inline-flex;
@@ -189,21 +175,19 @@
     .bvs-tags span i { font-size: 0.78rem; }
     .bvs-cta { min-height: 48px; }
 
-    /* Right: image panel */
+    /* Image panel — floated right, text wraps left */
     .bvs-product-panel {
-      position: relative;
-      display: flex;
-      flex-direction: column;
+      float: right;
+      width: 42%;
+      margin: 0.25rem 0 1.5rem 2.5rem;
     }
     .bvs-img-frame {
       position: relative;
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(139,69,19,0.16);
+      box-shadow: 0 16px 40px rgba(139,69,19,0.16);
       background: var(--off-white, #faf7f5);
-      /* Fill the full height of the text column */
-      flex: 1;
-      min-height: 400px;
+      aspect-ratio: 4/5;   /* portrait — realistic product ratio */
     }
     .bvs-img-frame::before {
       content: '';
@@ -216,8 +200,6 @@
       display: block;
       width: 100%;
       height: 100%;
-      position: absolute;
-      inset: 0;
       object-fit: cover;
       object-position: center;
       transition: transform 0.6s ease;
@@ -239,12 +221,12 @@
 
     .bvs-img-cta {
       position: absolute;
-      bottom: 1.2rem; left: 50%;
+      bottom: 1rem; left: 50%;
       transform: translateX(-50%);
       z-index: 2;
       background: var(--brown); color: #fff;
-      font-size: 0.88rem; font-weight: 700;
-      padding: 0.65rem 1.6rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 700;
+      padding: 0.6rem 1.4rem; border-radius: 50px;
       text-decoration: none;
       display: inline-flex; align-items: center; gap: 0.5rem;
       white-space: nowrap;
@@ -446,16 +428,12 @@
        RESPONSIVE BREAKPOINTS
        ============================================= */
 
-    /* Tablet: stack brand section, keep M&V side by side */
+    /* Tablet: narrow float */
     @media (max-width: 960px) {
-      .bvs-identity {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+      .bvs-product-panel {
+        width: 48%;
+        margin-left: 2rem;
       }
-      .bvs-logo-wrap { justify-content: center; }
-      .bvs-brand-info { text-align: center; }
-      .bvs-tags { justify-content: center; }
-      .bvs-cta { justify-content: center; }
 
       /* why-us: stack on tablet */
       .why-us {
@@ -465,23 +443,29 @@
       .why-visual { grid-template-columns: repeat(4, 1fr); }
     }
 
-    /* Mobile: everything single column */
-    @media (max-width: 700px) {
-      .mv-cards {
-        grid-template-columns: 1fr;
+    /* Mobile: un-float image, stack everything */
+    @media (max-width: 640px) {
+      .bvs-product-panel {
+        float: none;
+        width: 100%;
+        margin: 0 0 1.5rem 0;
       }
+      .bvs-img-frame { aspect-ratio: 16/9; }
+      .bvs-heading { font-size: 1.5rem; }
+      .bvs-tags { justify-content: center; }
+    }
+
+    @media (max-width: 700px) {
+      .mv-cards { grid-template-columns: 1fr; }
       .mv-ornament { display: none; }
       .mv-values-strip { margin-top: 2rem; padding: 1.25rem; gap: 0.6rem; }
       .mv-value { font-size: 0.82rem; padding: 0.5rem 0.9rem; }
     }
 
     @media (max-width: 600px) {
-      .bvs-img-frame { min-height: 260px; }
       .bvs-img-cta { font-size: 0.82rem; padding: 0.6rem 1.2rem; }
       .bvs-img-badge { top: 0.75rem; right: 0.75rem; }
-
       .why-visual { grid-template-columns: 1fr 1fr; }
-
       .mv-header { margin-bottom: 1.5rem; }
     }
 
@@ -529,38 +513,7 @@
   <section class="brand-visual-section" id="about" aria-label="About Bunofeed">
     <div class="bvs-identity">
 
-      <!-- Left: Logo + brand story -->
-          <div class="bvs-brand-info">
-          <p class="section-tag">About Bunofeed</p>
-          <h2>Born from a Passion for <span>Clean Eating</span></h2>
-          <p class="bvs-desc">The idea behind Bunofeed is very simple. Many health and nutritional products sold on the market have a premium cost, but customers still have difficulties finding products that are able to provide consistent satisfaction regarding quality, purity, and reliability.
-Being motivated by health, nutrition, and wellness, we aim to create an organization that would produce quality nutritional foods, health products, and supplements which would be affordable and available to all people. Quality, value, and trust are the core values we aim to provide to our clients, while maintaining high standards of integrity.
-Quality products always come first in our company. 
-</p>
-          <p class="bvs-desc">All of our goods are sourced and produced carefully following quality standards of safety and quality. Products go through quality checks aiming to make sure that they match the established standards of purity and reliability. Manufacturing sites are compliant with quality control procedures and regulations.
-Transparency is one of our key values. We feel that it’s important for the customers to know exactly what they buy, which is why we strive to make our products clear in terms of labeling and ingredients. There will be no surprises – you’ll get precisely what is stated on the label.
-Each and every jar, each and every bag, as well as each of our products is based on our commitment to providing quality products and making our customers’ lives better. No matter how big we become, we promise never to compromise when it comes to offering high-quality products to those who lead healthy lifestyles.</p>
-          
-
-          <p class="bvs-desc">       
-Our Promise:
-• High-quality products using chosen ingredients
-• Complete transparency in terms of labeling and ingredients
-• Safety, purity, and consistency in everything we do
-• Competitive prices and great value for our customers
-• Focus on the customer and building relationships </p>
-            
-            <div class="bvs-tags">
-            <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
-            <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
-            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
-          </div>
-          <a href="/shop.html" class="btn btn-primary bvs-cta">
-            <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
-          </a>
-        </div>
-
-      <!-- Right: Product cover image -->
+      <!-- Image floated right — text wraps around it -->
       <div class="bvs-product-panel">
         <div class="bvs-img-frame">
           <img
@@ -578,6 +531,33 @@ Our Promise:
           </a>
         </div>
       </div>
+
+      <!-- Text flows around the floated image -->
+      <p class="section-tag">About Bunofeed</p>
+      <h2 class="bvs-heading">Born from a Passion for <span>Clean Eating</span></h2>
+      <p class="bvs-desc">The idea behind Bunofeed is very simple. Many health and nutritional products sold on the market have a premium cost, but customers still have difficulties finding products that are able to provide consistent satisfaction regarding quality, purity, and reliability.
+Being motivated by health, nutrition, and wellness, we aim to create an organization that would produce quality nutritional foods, health products, and supplements which would be affordable and available to all people. Quality, value, and trust are the core values we aim to provide to our clients, while maintaining high standards of integrity.
+Quality products always come first in our company.
+</p>
+      <p class="bvs-desc">All of our goods are sourced and produced carefully following quality standards of safety and quality. Products go through quality checks aiming to make sure that they match the established standards of purity and reliability. Manufacturing sites are compliant with quality control procedures and regulations.
+Transparency is one of our key values. We feel that it's important for the customers to know exactly what they buy, which is why we strive to make our products clear in terms of labeling and ingredients. There will be no surprises – you'll get precisely what is stated on the label.
+Each and every jar, each and every bag, as well as each of our products is based on our commitment to providing quality products and making our customers' lives better. No matter how big we become, we promise never to compromise when it comes to offering high-quality products to those who lead healthy lifestyles.</p>
+
+      <p class="bvs-desc">Our Promise:
+• High-quality products using chosen ingredients
+• Complete transparency in terms of labeling and ingredients
+• Safety, purity, and consistency in everything we do
+• Competitive prices and great value for our customers
+• Focus on the customer and building relationships</p>
+
+      <div class="bvs-tags">
+        <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
+        <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
+        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+      </div>
+      <a href="/shop.html" class="btn btn-primary bvs-cta">
+        <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
+      </a>
 
     </div>
   </section>
