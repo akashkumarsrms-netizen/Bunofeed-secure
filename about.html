@@ -76,13 +76,13 @@
   <link rel="stylesheet" href="/style.css"/>
   <style>
     /* =============================================
-       ABOUT PAGE — Professional Responsive Layout
+       ABOUT PAGE — Fixed Layout, Original Content
        ============================================= */
 
-    /* Hero */
+    /* ── Hero ── */
     .about-page-hero {
       background: var(--brown);
-      padding: clamp(3rem, 8vw, 5rem) 1.25rem clamp(2.5rem, 6vw, 4rem);
+      padding: clamp(3rem, 7vw, 5rem) 1.5rem clamp(2.5rem, 5vw, 4rem);
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -90,50 +90,67 @@
     .about-page-hero::after {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(139,69,19,0.35) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(139,69,19,0.3) 0%, transparent 75%);
       pointer-events: none;
     }
     .about-page-hero-inner { position: relative; z-index: 1; }
     .about-page-hero h1 {
       font-family: var(--font-head);
       font-size: clamp(1.75rem, 5vw, 3rem);
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 0.5rem;
+      font-weight: 800; color: #fff; margin-bottom: 0.5rem;
       line-height: 1.2;
     }
     .about-page-hero p {
-      color: rgba(255,255,255,0.75);
+      color: rgba(255,255,255,0.7);
       font-size: clamp(0.9rem, 2.5vw, 1.05rem);
       max-width: 520px;
       margin: 0 auto;
     }
 
-    /* Divider */
+    /* ── Divider ── */
     .about-divider {
       height: 1px;
       background: linear-gradient(to right, transparent, #e0d4cc, transparent);
       margin: 0;
     }
 
-    /* ── Brand Story Section ── */
+    /* ── Brand Visual Section ── */
     .brand-visual-section {
-      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 5vw, 2rem);
-      background: var(--white, #fff);
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+      background: var(--white);
     }
     .bvs-identity {
-      max-width: 1100px;
+      max-width: 1160px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(2rem, 5vw, 4rem);
-      align-items: center;
+      align-items: start;
     }
 
-    /* Text side */
+    /* Left: text panel */
+    .bvs-logo-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .bvs-logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .bvs-logo {
+      width: clamp(130px, 22vw, 200px);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 20px rgba(139,69,19,0.18));
+      transition: transform 0.4s ease;
+    }
+    .bvs-logo:hover { transform: scale(1.04); }
+
     .bvs-brand-info h2 {
       font-family: var(--font-head);
-      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
       font-weight: 800;
       color: var(--dark);
       margin-bottom: 1rem;
@@ -142,126 +159,94 @@
     .bvs-brand-info h2 span { color: var(--brown); }
     .bvs-desc {
       color: #5c4d45;
-      font-size: clamp(0.88rem, 2vw, 0.97rem);
+      font-size: clamp(0.88rem, 1.6vw, 0.97rem);
       line-height: 1.8;
-      margin-bottom: 1rem;
-    }
-
-    /* Promise list — styled cleanly */
-    .bvs-promise-list {
-      list-style: none;
-      padding: 0;
-      margin: 0.75rem 0 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .bvs-promise-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.6rem;
-      font-size: 0.92rem;
-      color: #4a3c35;
-      line-height: 1.5;
-    }
-    .bvs-promise-list li i {
-      color: var(--brown);
-      font-size: 0.85rem;
-      margin-top: 3px;
-      flex-shrink: 0;
+      margin-bottom: 0.75rem;
+      /* Prevent raw bullet text looking messy */
+      white-space: pre-line;
     }
 
     /* Tag pills */
     .bvs-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.55rem;
       margin: 1rem 0 1.5rem;
     }
     .bvs-tags span {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.4rem 0.9rem;
+      padding: 0.45rem 1rem;
       border-radius: 50px;
       background: rgba(139,69,19,0.07);
       border: 1px solid rgba(139,69,19,0.18);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: var(--brown);
       white-space: nowrap;
     }
-    .bvs-tags span i { font-size: 0.75rem; }
+    .bvs-tags span i { font-size: 0.78rem; }
     .bvs-cta { min-height: 48px; }
 
-    /* Image side — FIXED: constrained size */
-    .bvs-product-panel { position: relative; }
+    /* Right: image panel — FIXED oversized image */
+    .bvs-product-panel {
+      position: relative;
+      /* Stick to top of grid cell, don't stretch */
+      align-self: start;
+    }
     .bvs-img-frame {
       position: relative;
-      border-radius: 16px;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 16px 48px rgba(139,69,19,0.14);
-      background: #faf7f5;
-      /* Constrain height so image doesn't overflow */
-      max-height: 420px;
+      box-shadow: 0 24px 64px rgba(139,69,19,0.16);
+      background: var(--off-white, #faf7f5);
+      /* Cap height so image never fills whole viewport */
+      max-height: 480px;
     }
     .bvs-img-frame::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, transparent 50%, rgba(20,10,5,0.5) 100%);
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 55%, rgba(20,10,5,0.55) 100%);
       z-index: 1;
       pointer-events: none;
     }
     .bvs-product-img {
       display: block;
       width: 100%;
-      height: 100%;
-      max-height: 420px;
+      max-height: 480px;
       object-fit: cover;
-      object-position: center;
+      object-position: center top;
       transition: transform 0.6s ease;
     }
-    .bvs-img-frame:hover .bvs-product-img { transform: scale(1.03); }
+    .bvs-img-frame:hover .bvs-product-img { transform: scale(1.04); }
 
     .bvs-img-badge {
       position: absolute;
-      top: 1rem; right: 1rem;
-      z-index: 2;
+      top: 1rem; right: 1rem; z-index: 2;
       background: rgba(255,255,255,0.95);
       border: 1.5px solid rgba(139,69,19,0.2);
-      border-radius: 10px;
-      padding: 0.5rem 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--brown);
-      line-height: 1.25;
-      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      padding: 0.55rem 0.85rem;
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; font-weight: 700; color: var(--brown);
+      line-height: 1.25; backdrop-filter: blur(6px);
     }
-    .bvs-img-badge i { font-size: 1rem; }
+    .bvs-img-badge i { font-size: 1.1rem; }
 
     .bvs-img-cta {
       position: absolute;
-      bottom: 1rem;
-      left: 50%;
+      bottom: 1.2rem; left: 50%;
       transform: translateX(-50%);
       z-index: 2;
-      background: var(--brown);
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 0.6rem 1.4rem;
-      border-radius: 50px;
+      background: var(--brown); color: #fff;
+      font-size: 0.88rem; font-weight: 700;
+      padding: 0.65rem 1.6rem; border-radius: 50px;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
+      display: inline-flex; align-items: center; gap: 0.5rem;
       white-space: nowrap;
       transition: background 0.25s, transform 0.25s;
-      box-shadow: 0 4px 16px rgba(139,69,19,0.35);
+      box-shadow: 0 4px 18px rgba(139,69,19,0.35);
     }
     .bvs-img-cta:hover {
       background: #7a3a0a;
@@ -270,171 +255,161 @@
 
     /* ── Mission & Vision ── */
     .mv-section {
-      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 5vw, 2rem) clamp(2rem, 5vw, 4rem);
-      background: var(--off-white, #faf7f5);
-    }
-    .mv-section-inner {
-      max-width: 1100px;
-      margin: 0 auto;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 5vw, 4rem);
+      background: var(--white);
     }
     .mv-header {
       text-align: center;
-      margin-bottom: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: clamp(2rem, 4vw, 3.5rem);
+      max-width: 1160px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .mv-header h2 {
       font-family: var(--font-head);
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 800;
-      color: var(--dark);
-      margin-bottom: 0.6rem;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800; color: var(--dark);
+      margin-bottom: 0.75rem;
     }
     .mv-header h2 span { color: var(--brown); }
     .mv-subtitle {
-      color: #6b5c54;
-      font-size: 0.97rem;
-      max-width: 500px;
-      margin: 0 auto;
-      line-height: 1.7;
+      color: #6b5c54; font-size: 1rem;
+      max-width: 560px; margin: 0 auto; line-height: 1.7;
     }
 
-    /* Cards */
+    /* Cards — two columns on desktop */
     .mv-cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: start;
+      max-width: 1160px;
+      margin: 0 auto;
     }
     .mv-card {
-      padding: clamp(1.5rem, 3vw, 2.5rem);
-      border-radius: 14px;
-      background: #fff;
-      border: 1px solid rgba(139,69,19,0.1);
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 2.5vw, 2rem);
+      border-radius: 16px;
+      background: var(--off-white, #faf7f5);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .mv-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(139,69,19,0.09);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(139,69,19,0.10);
     }
     .mv-card-icon {
-      width: 56px; height: 56px;
-      border-radius: 50%;
+      width: 64px; height: 64px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     .mv-card--mission .mv-card-icon { background: rgba(139,69,19,0.10); color: var(--brown); }
     .mv-card--vision  .mv-card-icon { background: rgba(34,139,34,0.08); color: #2c7a2c; }
     .mv-card-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem;
     }
     .mv-card--mission .mv-card-label { color: var(--brown); }
     .mv-card--vision  .mv-card-label { color: #2c7a2c; }
     .mv-card h3 {
       font-family: var(--font-head);
-      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
-      font-weight: 800;
-      color: var(--dark);
-      margin-bottom: 0.85rem;
-      line-height: 1.3;
+      font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+      font-weight: 800; color: var(--dark);
+      margin-bottom: 1rem; line-height: 1.3;
     }
     .mv-card h3 em { font-style: normal; }
     .mv-card--mission h3 em { color: var(--brown); }
     .mv-card--vision  h3 em { color: #2c7a2c; }
     .mv-card > p {
       color: #5c4d45;
-      font-size: clamp(0.85rem, 1.8vw, 0.93rem);
-      line-height: 1.75;
-      margin-bottom: 1.2rem;
+      font-size: clamp(0.88rem, 1.5vw, 0.95rem);
+      line-height: 1.75; margin-bottom: 1.5rem;
     }
     .mv-pillars {
-      list-style: none;
-      padding: 0; margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 0.55rem;
     }
     .mv-pillars li {
-      font-size: 0.88rem;
-      color: #4a3c35;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      font-size: 0.9rem; color: #4a3c35;
+      display: flex; align-items: center; gap: 0.4rem;
     }
     .mv-pillars li::before { content: '—'; font-weight: 700; color: var(--brown); flex-shrink: 0; }
     .mv-card--vision .mv-pillars li::before { color: #2c7a2c; }
     .mv-pillars li span { font-weight: 700; }
 
+    /* Dashed ornament between cards */
+    .mv-ornament {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem;
+      position: relative;
+    }
+    .mv-ornament-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--brown);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
     /* Values strip */
     .mv-values-strip {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-top: 2.5rem;
-      padding: 1.5rem;
-      border-radius: 12px;
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 1rem;
+      margin-top: 3.5rem; padding: 2rem;
+      border-radius: 14px;
       background: linear-gradient(135deg, rgba(139,69,19,0.06) 0%, rgba(139,69,19,0.02) 100%);
       border: 1px solid rgba(139,69,19,0.12);
+      max-width: 1160px;
+      margin-left: auto; margin-right: auto;
     }
     .mv-value {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border-radius: 50px;
-      background: #fff;
-      border: 1px solid rgba(139,69,19,0.15);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--dark);
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.6rem 1.2rem; border-radius: 50px;
+      background: #fff; border: 1px solid rgba(139,69,19,0.15);
+      font-size: 0.88rem; font-weight: 600; color: var(--dark);
       white-space: nowrap;
     }
-    .mv-value i { color: var(--brown); font-size: 0.9rem; }
+    .mv-value i { color: var(--brown); font-size: 0.95rem; }
 
-    /* ── Why Us ── */
+    /* ── Why Choose Bunofeed ── */
     .why-us {
-      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 5vw, 2rem);
-      background: var(--white, #fff);
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 7vw, 6rem);
+      background: var(--off-white, #faf7f5);
     }
-    .why-us-inner {
-      max-width: 1100px;
-      margin: 0 auto;
+    /* Inner wrapper for two-column layout */
+    .why-us > .why-text,
+    .why-us > .why-visual {
+      /* handled by the parent grid below */
+    }
+    /* Wrap why-text + why-visual in a grid via pseudo-container */
+    .why-us {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(2rem, 5vw, 4rem);
       align-items: start;
+      max-width: 1160px;
+      margin-left: auto; margin-right: auto;
+      box-sizing: border-box;
     }
     .why-text h2 {
       font-family: var(--font-head);
-      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-      font-weight: 800;
-      color: var(--dark);
-      margin-bottom: 1rem;
-      line-height: 1.25;
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800; color: var(--dark);
+      margin-bottom: 1rem; line-height: 1.25;
     }
     .why-text h2 span { color: var(--brown); }
     .why-text > p {
-      color: #5c4d45;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      margin-bottom: 1.25rem;
+      color: #5c4d45; font-size: clamp(0.88rem, 1.6vw, 0.97rem);
+      line-height: 1.8; margin-bottom: 1.25rem;
     }
     .why-list {
-      list-style: none;
-      padding: 0; margin: 0 0 1.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
+      list-style: none; padding: 0; margin: 0 0 1.75rem;
+      display: flex; flex-direction: column; gap: 0.65rem;
     }
     .why-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.65rem;
-      font-size: 0.93rem;
-      color: #3a2e28;
-      line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      font-size: clamp(0.88rem, 1.5vw, 0.95rem);
+      color: #3a2e28; line-height: 1.5;
     }
     .why-list li i { color: var(--brown); margin-top: 3px; flex-shrink: 0; }
 
@@ -442,80 +417,73 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
+      align-self: center;
     }
     .why-stat-card {
-      padding: 1.5rem 1.25rem;
-      border-radius: 14px;
-      background: #faf7f5;
-      border: 1px solid rgba(139,69,19,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
+      padding: 1.75rem 1.5rem; border-radius: 14px;
+      background: #fff; border: 1px solid rgba(139,69,19,0.1);
+      display: flex; flex-direction: column; gap: 0.3rem;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .why-stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(139,69,19,0.1);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(139,69,19,0.10);
     }
-    .why-stat-card.accent {
-      background: var(--brown, #8b4513);
-      border-color: var(--brown);
-    }
+    .why-stat-card.accent { background: var(--brown); border-color: var(--brown); }
     .stat-num {
       font-family: var(--font-head);
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      font-weight: 800;
-      color: var(--dark);
-      line-height: 1.1;
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-weight: 800; color: var(--dark); line-height: 1.1;
     }
     .why-stat-card.accent .stat-num { color: #fff; }
-    .stat-label {
-      font-size: 0.8rem;
-      color: #6b5c54;
-      font-weight: 500;
-    }
+    .stat-label { font-size: 0.82rem; color: #6b5c54; font-weight: 500; }
     .why-stat-card.accent .stat-label { color: rgba(255,255,255,0.8); }
 
-    /* ── RESPONSIVE BREAKPOINTS ── */
+    /* =============================================
+       RESPONSIVE BREAKPOINTS
+       ============================================= */
 
-    /* Tablet */
-    @media (max-width: 900px) {
+    /* Tablet: stack brand section, keep M&V side by side */
+    @media (max-width: 960px) {
       .bvs-identity {
         grid-template-columns: 1fr;
         gap: 2rem;
       }
+      .bvs-logo-wrap { justify-content: center; }
       .bvs-brand-info { text-align: center; }
       .bvs-tags { justify-content: center; }
       .bvs-cta { justify-content: center; }
 
-      .mv-cards { grid-template-columns: 1fr; }
+      /* why-us: stack on tablet */
+      .why-us {
+        grid-template-columns: 1fr;
+        max-width: 680px;
+      }
+      .why-visual { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* Mobile: everything single column */
+    @media (max-width: 700px) {
+      .mv-cards {
+        grid-template-columns: 1fr;
+      }
       .mv-ornament { display: none; }
-
-      .why-us-inner { grid-template-columns: 1fr; }
+      .mv-values-strip { margin-top: 2rem; padding: 1.25rem; gap: 0.6rem; }
+      .mv-value { font-size: 0.82rem; padding: 0.5rem 0.9rem; }
     }
 
-    /* Mobile */
     @media (max-width: 600px) {
-      .about-page-hero { padding: 2.5rem 1rem 2rem; }
+      .bvs-img-frame { max-height: 280px; }
+      .bvs-product-img { max-height: 280px; }
+      .bvs-img-cta { font-size: 0.82rem; padding: 0.6rem 1.2rem; }
+      .bvs-img-badge { top: 0.75rem; right: 0.75rem; }
 
-      .bvs-img-frame { max-height: 260px; }
-      .bvs-product-img { max-height: 260px; }
+      .why-visual { grid-template-columns: 1fr 1fr; }
 
-      .mv-cards { gap: 1rem; }
-      .mv-card { padding: 1.25rem; }
-
-      .mv-values-strip { gap: 0.5rem; padding: 1.2rem 1rem; }
-      .mv-value { font-size: 0.78rem; padding: 0.4rem 0.75rem; }
-
-      .why-visual { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-      .why-stat-card { padding: 1.1rem 1rem; }
-
-      .bvs-img-cta { font-size: 0.8rem; padding: 0.55rem 1.1rem; }
-      .bvs-img-badge { font-size: 0.7rem; }
+      .mv-header { margin-bottom: 1.5rem; }
     }
 
-    /* Very small mobile */
-    @media (max-width: 380px) {
+    @media (max-width: 400px) {
       .why-visual { grid-template-columns: 1fr; }
     }
   </style>
@@ -556,35 +524,39 @@
   </section>
 
   <!-- BRAND VISUAL SECTION -->
-
-  <!-- BRAND VISUAL SECTION -->
   <section class="brand-visual-section" id="about" aria-label="About Bunofeed">
     <div class="bvs-identity">
 
-      <!-- Left: Brand story -->
-      <div class="bvs-brand-info">
-        <p class="section-tag">About Bunofeed</p>
-        <h2>Born from a Passion for <span>Clean Eating</span></h2>
-        <p class="bvs-desc">Many health products carry a premium price tag, yet fall short on quality, purity, and reliability. Bunofeed was built to change that — delivering nutritional foods and supplements that are genuinely affordable and accessible to everyone.</p>
-        <p class="bvs-desc">Every product is sourced and manufactured to strict quality standards. Our labels mean exactly what they say — no hidden additives, no surprises. Just clean ingredients, honest nutrition, and products you can trust.</p>
+      <!-- Left: Logo + brand story -->
+          <div class="bvs-brand-info">
+          <p class="section-tag">About Bunofeed</p>
+          <h2>Born from a Passion for <span>Clean Eating</span></h2>
+          <p class="bvs-desc">The idea behind Bunofeed is very simple. Many health and nutritional products sold on the market have a premium cost, but customers still have difficulties finding products that are able to provide consistent satisfaction regarding quality, purity, and reliability.
+Being motivated by health, nutrition, and wellness, we aim to create an organization that would produce quality nutritional foods, health products, and supplements which would be affordable and available to all people. Quality, value, and trust are the core values we aim to provide to our clients, while maintaining high standards of integrity.
+Quality products always come first in our company. 
+</p>
+          <p class="bvs-desc">All of our goods are sourced and produced carefully following quality standards of safety and quality. Products go through quality checks aiming to make sure that they match the established standards of purity and reliability. Manufacturing sites are compliant with quality control procedures and regulations.
+Transparency is one of our key values. We feel that it’s important for the customers to know exactly what they buy, which is why we strive to make our products clear in terms of labeling and ingredients. There will be no surprises – you’ll get precisely what is stated on the label.
+Each and every jar, each and every bag, as well as each of our products is based on our commitment to providing quality products and making our customers’ lives better. No matter how big we become, we promise never to compromise when it comes to offering high-quality products to those who lead healthy lifestyles.</p>
+          
 
-        <p style="font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--brown);margin:1rem 0 0.6rem;">Our Promise</p>
-        <ul class="bvs-promise-list">
-          <li><i class="fas fa-check-circle" aria-hidden="true"></i> High-quality products with carefully chosen ingredients</li>
-          <li><i class="fas fa-check-circle" aria-hidden="true"></i> Complete transparency in labeling and ingredients</li>
-          <li><i class="fas fa-check-circle" aria-hidden="true"></i> Safety, purity, and consistency in every batch</li>
-          <li><i class="fas fa-check-circle" aria-hidden="true"></i> Competitive prices and genuine value</li>
-          <li><i class="fas fa-check-circle" aria-hidden="true"></i> Customer-first approach, always</li>
-        </ul>
-
-        <div class="bvs-tags">
-          <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
-          <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
-          <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+          <p class="bvs-desc">       
+Our Promise:
+• High-quality products using chosen ingredients
+• Complete transparency in terms of labeling and ingredients
+• Safety, purity, and consistency in everything we do
+• Competitive prices and great value for our customers
+• Focus on the customer and building relationships </p>
+            
+            <div class="bvs-tags">
+            <span><i class="fas fa-leaf" aria-hidden="true"></i> Clean Label</span>
+            <span><i class="fas fa-seedling" aria-hidden="true"></i> Est. 2026</span>
+            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made in India</span>
+          </div>
+          <a href="/shop.html" class="btn btn-primary bvs-cta">
+            <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
+          </a>
         </div>
-        <a href="/shop.html" class="btn btn-primary bvs-cta">
-          <i class="fas fa-shopping-bag" aria-hidden="true"></i> Shop Products
-        </a>
       </div>
 
       <!-- Right: Product cover image -->
@@ -614,7 +586,6 @@
 
   <!-- MISSION & VISION SECTION -->
   <section class="mv-section" aria-label="Mission and Vision">
-  <div class="mv-section-inner">
     <div class="mv-header">
       <p class="section-tag">What Drives Us</p>
       <h2>Mission &amp; <span>Vision</span></h2>
@@ -679,13 +650,11 @@
       <div class="mv-value"><i class="fas fa-handshake" aria-hidden="true"></i><span>Customer First</span></div>
       <div class="mv-value"><i class="fas fa-shield-halved" aria-hidden="true"></i><span>Quality Assured</span></div>
     </div>
-  </div>
   </section>
   <div class="about-divider"></div>
 
   <!-- WHY CHOOSE BUNOFEED -->
-  <section class="why-us" aria-label="Why choose Bunofeed">
-  <div class="why-us-inner">
+  <section class="why-us" aria-label="Why choose Bunofeed" >
     <div class="why-text">
       <p class="section-tag">Why Choose Us</p>
       <h2>Clean Label.<br/><span>Real Ingredients.</span></h2>
@@ -718,7 +687,6 @@
         <span class="stat-label">Transparency</span>
       </div>
     </div>
-  </div>
   </section>
 
    <!-- FOOTER -->
