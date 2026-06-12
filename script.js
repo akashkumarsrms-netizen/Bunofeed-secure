@@ -317,13 +317,12 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         ${imgHTML}
       </div>
       <div class="product-info">
-        <div class="card-name-block">
-          <h3>${product.name}</h3>
-          ${product.tagline ? `<p class="card-tagline">${product.tagline}</p>` : ''}
+        <div class="card-name-block" style="margin-bottom:0.5rem;">
+          <h3 style="font-size:1.05rem;line-height:1.3;">${product.name}</h3>
         </div>
 
         <!-- Real-Time Selectors Grid directly on card -->
-        <div class="card-selectors-row">
+        <div class="card-selectors-row" style="margin-bottom:0.45rem;">
           <select class="card-select size-card-select" aria-label="Select packing size">
             ${sizeOptions}
           </select>
@@ -332,7 +331,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
           </select>
         </div>
 
-        <div class="card-price-row">
+        <div class="card-price-row" style="margin-bottom:0.5rem;">
           <div class="product-weight card-computed-weight">${hasTextures ? firstTexture + ' ' : ''}${firstSize || product.weight || ''}</div>
           <div class="price-sale card-computed-pricing">
             ${getPriceMarkup(initialPricing.price, initialPricing.mrp)}
@@ -340,8 +339,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         </div>
 
         <div class="product-card-btns">
-          <a href="/product.html?id=${product.id}" class="btn-view-detail c-view-btn">View Details</a>
-          <button class="btn-buy c-buy-btn" data-id="${product.id}">Buy Now</button>
+          <button class="btn-buy c-buy-btn" data-id="${product.id}" style="width:100%;flex:1;">Buy Now</button>
         </div>
       </div>`;
 
@@ -365,7 +363,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
 
     // Clicking the card body navigates to the product page
     card.addEventListener('click', (e) => {
-      if (!e.target.closest('.c-buy-btn') && !e.target.closest('.c-view-btn') && !e.target.closest('.card-select')) {
+      if (!e.target.closest('.c-buy-btn') && !e.target.closest('.card-select')) {
         window.location.href = `/product.html?id=${encodeURIComponent(product.id)}`;
       }
     });
