@@ -246,7 +246,30 @@ gtag('config', 'G-GJ6EV9SN7Q', { debug_mode: true });
        font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; color: var(--dark);
     }
     .reco-text p { font-size: 0.78rem; color: var(--gray); }
-
+    /* Shop CTA card at bottom of result card */
+.result-card .post-cta {
+  margin-top: 1.5rem;
+  background: var(--brown);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+.result-card .post-cta-text h3 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+.result-card .post-cta-text p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+}
     @media (max-width: 800px) {
       .calc-container { grid-template-columns: 1fr; gap: 1.5rem; }
       .result-card { position: static; }
@@ -363,9 +386,7 @@ gtag('config', 'G-GJ6EV9SN7Q', { debug_mode: true });
         <div class="result-desc">
           Protein is the cornerstone of cellular block repair, muscle accretion, and immune health. Let Bunofeed help fuel your goals with high quality, natural snacks.
         </div>
-                  </div>
-        </div>
-<!-- Shop CTA -->
+        <!-- Shop CTA -->
             <div class="post-cta">
               <div class="post-cta-text">
                 <h3>Fuel Your Goals with Bunofeed</h3>
@@ -375,6 +396,9 @@ gtag('config', 'G-GJ6EV9SN7Q', { debug_mode: true });
                 Shop Now →
               </a>
             </div>
+                  </div>
+        </div>
+
                 </div>
               </div>
         </div>
