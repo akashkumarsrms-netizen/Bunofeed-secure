@@ -242,6 +242,45 @@
     }
     .hp-blog-read-more:hover { gap: 0.7rem; }
     @keyframes hpSpin { to { transform: rotate(360deg); } }
+
+    /* ── Homepage FAQ Preview Section ── */
+    .faq-preview-section {
+      padding: 5rem 1.5rem;
+      background: var(--off-white);
+    }
+    .faq-preview-grid {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .faq-preview-item {
+      border: 1px solid rgba(139,69,19,0.1);
+      border-radius: 12px;
+      background: var(--white);
+      box-shadow: 0 2px 10px rgba(107,45,14,0.04);
+      padding: 1.1rem 1.3rem;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      text-decoration: none;
+      transition: box-shadow 0.25s ease, color 0.2s ease;
+    }
+    .faq-preview-item:hover {
+      color: var(--orange);
+      box-shadow: 0 8px 24px rgba(107,45,14,0.1);
+    }
+    .faq-preview-item i {
+      color: var(--orange);
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -386,6 +425,40 @@
         </a>
         <p class="form-note">* We may feature your review on our website (with your permission).</p>
       </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FAQ PREVIEW SECTION
+       ========================================================= -->
+  <section class="faq-preview-section" id="faq">
+    <div class="section-header">
+      <p class="section-tag">Need Help?</p>
+      <h2>Frequently Asked <span>Questions</span></h2>
+      <p class="section-desc">Quick answers about our products, orders, shipping & returns.</p>
+    </div>
+    <div class="faq-preview-grid">
+      <a href="/faq.html" class="faq-preview-item">
+        What types of products do you offer?
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="/faq.html" class="faq-preview-item">
+        How do I place an order?
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="/faq.html" class="faq-preview-item">
+        What is your return policy?
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="/faq.html" class="faq-preview-item">
+        How can I track my order?
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem;">
+      <a href="/faq.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
+        <i class="fas fa-circle-question" aria-hidden="true"></i> View All FAQs
+      </a>
     </div>
   </section>
 
