@@ -428,7 +428,38 @@
     </div>
   </section>
 
+  
   <!-- =========================================================
+       BLOG PREVIEW SECTION — Latest Articles
+       (correctly placed: after feedback, before footer)
+       ========================================================= -->
+  <section class="blog-preview-section" id="blog">
+    <div class="section-header">
+      <p class="section-tag">Bunofeed Journal</p>
+      <h2>Latest <span>Wellness Insights</span></h2>
+         </div>
+
+    <!-- Loading spinner -->
+    <div id="hp-blog-loading" style="text-align:center;padding:2rem 0;">
+      <div style="display:inline-block;width:36px;height:36px;border:3px solid #e0d4cc;border-top-color:var(--orange);border-radius:50%;animation:hpSpin 0.7s linear infinite;"></div>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="hp-blog-grid" id="hp-blog-grid" style="display:none;"></div>
+
+    <!-- Empty / error state -->
+    <div id="hp-blog-empty" style="display:none;text-align:center;padding:2rem;color:var(--gray);font-size:.9rem;">
+      No articles published yet. Check back soon!
+    </div>
+
+    <div style="text-align:center;margin-top:2.5rem;">
+      <a href="/blog.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
+        <i class="fas fa-newspaper" aria-hidden="true"></i> View All Articles
+      </a>
+    </div>
+  </section>
+
+        <!-- =========================================================
        FAQ PREVIEW SECTION
        ========================================================= -->
   <section class="faq-preview-section" id="faq">
@@ -458,36 +489,6 @@
     <div style="text-align:center;margin-top:2.5rem;">
       <a href="/faq.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
         <i class="fas fa-circle-question" aria-hidden="true"></i> View All FAQs
-      </a>
-    </div>
-  </section>
-
-  <!-- =========================================================
-       BLOG PREVIEW SECTION — Latest Articles
-       (correctly placed: after feedback, before footer)
-       ========================================================= -->
-  <section class="blog-preview-section" id="blog">
-    <div class="section-header">
-      <p class="section-tag">Bunofeed Journal</p>
-      <h2>Latest <span>Wellness Insights</span></h2>
-         </div>
-
-    <!-- Loading spinner -->
-    <div id="hp-blog-loading" style="text-align:center;padding:2rem 0;">
-      <div style="display:inline-block;width:36px;height:36px;border:3px solid #e0d4cc;border-top-color:var(--orange);border-radius:50%;animation:hpSpin 0.7s linear infinite;"></div>
-    </div>
-
-    <!-- Cards grid -->
-    <div class="hp-blog-grid" id="hp-blog-grid" style="display:none;"></div>
-
-    <!-- Empty / error state -->
-    <div id="hp-blog-empty" style="display:none;text-align:center;padding:2rem;color:var(--gray);font-size:.9rem;">
-      No articles published yet. Check back soon!
-    </div>
-
-    <div style="text-align:center;margin-top:2.5rem;">
-      <a href="/blog.html" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;min-height:48px;display:inline-flex;">
-        <i class="fas fa-newspaper" aria-hidden="true"></i> View All Articles
       </a>
     </div>
   </section>
