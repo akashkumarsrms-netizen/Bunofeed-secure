@@ -977,13 +977,17 @@ ul { list-style: none; }
 }
 .footer-col a,
 .footer-col p {
-  display: inline;
+  display: block;
   font-size: 0.9rem;
   color: rgba(255,255,255,0.65);
   margin-bottom: 0.7rem;
   transition: color var(--transition);
   min-height: 32px;
 }
+.footer-col p a {
+  display: inline;
+}
+
 .footer-col a:hover { color: var(--orange); }
 .footer-col p i { margin-right: 8px; color: var(--orange); }
 .footer-bottom {
