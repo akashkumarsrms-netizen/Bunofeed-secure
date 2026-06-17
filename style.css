@@ -984,9 +984,6 @@ ul { list-style: none; }
   transition: color var(--transition);
   min-height: 32px;
 }
-.footer-col p a {
-  display: inline;
-}
 
 .footer-col a:hover { color: var(--orange); }
 .footer-col p i { margin-right: 8px; color: var(--orange); }
