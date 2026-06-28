@@ -139,24 +139,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const gst      = parseFloat(combo.gst)       || 0;
       const discount = parseFloat(combo.discount)  || 0;
 
-      // Selling Price = Base Price + GST on Base Price
-      const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
+      // ── CORRECT pricing order (matches admin engine & checkout) ──
+      // 1. Apply product-level discount to base price first
+      const discountedBase = parseFloat((base * (1 - discount / 100)).toFixed(4));
+      // 2. Apply GST on the discounted base → this is the selling price (incl. GST)
+      const sellingPrice   = parseFloat((discountedBase * (1 + gst / 100)).toFixed(2));
+      // 3. MRP = base + GST on base (undiscounted price, shown as strikethrough)
+      const mrp = discount > 0
+        ? parseFloat((base * (1 + gst / 100)).toFixed(2))
+        : null;
 
-      // MRP back-calculated so that: MRP × (1 − discount/100) = Selling Price
-      // → MRP = Selling Price / (1 − discount/100)
-      const mrp = discount < 100
-        ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
-        : sellingPrice;
+      // GST amount on the discounted base (before any coupon)
+      const gstAmount = parseFloat((discountedBase * (gst / 100)).toFixed(2));
 
-      // GST amount included in the selling price (on full base, no coupon yet)
-      const gstAmount = parseFloat((base * (gst / 100)).toFixed(2));
-
-      // Expose basePrice and gstRate so checkout can apply: discount-on-base → GST-on-discounted-base
-      return { price: sellingPrice, mrp: mrp, gstRate: gst, gstAmount: gstAmount, basePrice: base };
+      return {
+        price:     sellingPrice,   // selling price incl. GST (after product discount)
+        mrp:       mrp,            // undiscounted price incl. GST (for strikethrough)
+        gstRate:   gst,
+        gstAmount: gstAmount,      // GST on discounted base
+        basePrice: base,           // raw base price (excl. GST, excl. discount)
+        discountedBase: discountedBase  // base after product discount, before GST
+      };
     }
 
     // Default configuration fallback
-    return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0, basePrice: product.price || 0 };
+    return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0, basePrice: product.price || 0, discountedBase: product.price || 0 };
   }
 
   /**
@@ -167,10 +174,25 @@ document.addEventListener('DOMContentLoaded', () => {
    *   3. Re-apply GST on the discounted base
    * Returns { discountedUnitPrice, unitGstAmount, unitDiscount }
    */
+  /**
+   * applyDiscountThenGst
+   *  sellingPricePerUnit = price AFTER product-level discount, incl. GST
+   *                        (output of parseComboPrice().price)
+   *  gstRate             = GST % for this variant
+   *  coupon              = coupon object (or null)
+   *  qty                 = quantity
+   *
+   *  Coupon applies on the ALREADY-DISCOUNTED base (product discount already baked
+   *  into sellingPricePerUnit).  Flow:
+   *    1. Extract discounted-base per unit  = sellingPrice / (1 + gstRate/100)
+   *    2. Multiply by qty for total discounted-base
+   *    3. Apply coupon on that total discounted-base
+   *    4. Re-apply GST on final base after coupon
+   */
   function applyDiscountThenGst(sellingPricePerUnit, gstRate, coupon, qty) {
-    // Back-calculate base (pre-GST) from the stored selling price
-    const basePerUnit = parseFloat((sellingPricePerUnit / (1 + gstRate / 100)).toFixed(4));
-    const baseSubtotal = parseFloat((basePerUnit * qty).toFixed(2));
+    // Back-calculate product-discounted base (pre-GST, pre-coupon) from selling price
+    const basePerUnit  = parseFloat((sellingPricePerUnit / (1 + gstRate / 100)).toFixed(4));
+    const baseSubtotal = parseFloat((basePerUnit * qty).toFixed(2));  // discounted base × qty
 
     let discountOnBase = 0;
     if (coupon) {
@@ -181,15 +203,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const discountedBase = parseFloat((baseSubtotal - discountOnBase).toFixed(2));
+    const discountedBase  = parseFloat((baseSubtotal - discountOnBase).toFixed(2));
     const gstOnDiscounted = parseFloat((discountedBase * (gstRate / 100)).toFixed(2));
     const payableSubtotal = parseFloat((discountedBase + gstOnDiscounted).toFixed(2));
 
     return {
-      baseSubtotal,          // base price × qty (pre-GST, pre-discount)
-      discountOnBase,        // coupon savings
+      baseSubtotal,          // product-discounted base × qty (pre-coupon, pre-GST)
+      discountOnBase,        // coupon savings (in rupees, on base)
       discountedBase,        // base after coupon
-      gstOnDiscounted,       // GST on discounted base
+      gstOnDiscounted,       // GST on base after all discounts (actual GST charged)
       payableSubtotal,       // what customer pays (excl. shipping)
       gstRate,
     };
@@ -651,10 +673,22 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     // Shipping note for the user
     const freeAbove = (D.shipping && D.shipping.freeShippingAbove) || 499;
 
+    // Extract gstRate for display in summary
+    let gstRateDisplay = 0;
+    if (currentProduct && selectedVariantLabel) {
+      const _dp = selectedVariantLabel.split(' ');
+      const _ds = _dp[_dp.length - 1];
+      const _dt = _dp.length > 1 ? _dp.slice(0, _dp.length - 1).join(' ') : 'Default';
+      gstRateDisplay = (parseComboPrice(currentProduct, _ds, _dt).gstRate) || 0;
+    }
+
     let rows = '';
-    rows += '<div class="os-row"><span>Product' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row"><span>Price per unit (incl. GST)' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
     rows += '<div class="os-row"><span>Quantity</span><span>× ' + qty + '</span></div>';
-    rows += '<div class="os-row os-subtotal"><span>Subtotal (before discount)</span><span>₹' + subtotalVal.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row os-subtotal"><span>Subtotal (incl. GST)</span><span>₹' + subtotalVal.toFixed(2) + '</span></div>';
+    if (gstRateDisplay > 0) {
+      rows += '<div class="os-row" style="font-size:.76rem;color:#999;"><span>GST included (' + gstRateDisplay + '%)</span><span>₹' + gstAmountTotal.toFixed(2) + '</span></div>';
+    }
     if (promoDiscount > 0 && activeCoupon) {
       const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
       rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') <span class="os-tag">' + dLabel + '</span></span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
@@ -858,6 +892,15 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         amt:  parseFloat(_submitCalc.gstOnDiscounted.toFixed(2))
       };
 
+      // Resolve base price (excl. GST, excl. any discount) for invoice column L
+      let _rawBasePerUnit = baseVal;  // fallback
+      if (selectedVariantLabel) {
+        const _pb = selectedVariantLabel.split(' ');
+        const _sb = _pb[_pb.length - 1];
+        const _tb = _pb.length > 1 ? _pb.slice(0, _pb.length - 1).join(' ') : 'Default';
+        _rawBasePerUnit = parseComboPrice(currentProduct, _sb, _tb).basePrice || baseVal;
+      }
+
       const orderPayload = {
         order_id: orderId,
         date_time: new Date().toLocaleString('en-IN'),
@@ -869,7 +912,8 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         product_id: currentProduct.id,
         product_name: chosenTag,
         quantity: qty,
-        product_price: baseVal,
+        product_price: baseVal,          // selling price per unit (incl. GST, after product discount)
+        base_price: _rawBasePerUnit,     // raw base per unit (excl. GST, excl. all discounts)
         total_amount: grandTotalCombined,
         promo_code: activeCoupon ? activeCoupon.code : '',
         promo_discount_amount: promotionalDiscountValue,
@@ -877,7 +921,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         payment_status: 'Pending',
         // ── Invoice fields ──
         hsn_code: currentProduct.hsnCode || '',
-        discount: 0,                              // product-level discount already in price
+        discount: 0,                              // product-level discount already baked into product_price
         coupon_discount: promotionalDiscountValue,
         shipping_charges: shippingAmt,
         gst_rate: _gstForPayload.rate,

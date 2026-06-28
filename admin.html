@@ -940,8 +940,9 @@
         
         <p class="form-hint" style="margin-bottom:0.6rem; color: var(--brown);">
           <i class="fas fa-info-circle"></i>
-          <strong>How it works:</strong> Set Base Price + GST% → gives <em>Selling Price</em> (incl. GST).
-          Then set Discount% → MRP is back-calculated so that <em>Discount% of MRP = discount amount</em>, meaning <em>MRP − discount = Selling Price</em>.
+          <strong>How it works:</strong> Discount% is subtracted from Base Price first, then GST is applied on the discounted base.<br/>
+          <code>Selling Price = Base × (1 − Discount%) × (1 + GST%)</code><br/>
+          MRP is back-calculated: <code>MRP = Selling Price / (1 − Discount%)</code> so the displayed saving is accurate.
         </p>
         <div style="overflow-x: auto; max-width: 100%;">
           <table class="pricing-combo-table">
@@ -1310,21 +1311,20 @@ window.recalculateComboRow = function(inputEl) {
   const gst      = parseFloat(tr.querySelector('.combo-gst').value)      || 0;
   const discount = parseFloat(tr.querySelector('.combo-discount').value) || 0;
 
-  // Selling Price = Base Price + GST on Base Price
-  const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
-
-  // MRP is back-calculated so that: MRP × (discount/100) = discount amount
-  // and MRP − discount_amount = Selling Price
-  // → MRP × (1 − discount/100) = Selling Price
-  // → MRP = Selling Price / (1 − discount/100)
-  const mrp = discount < 100
-    ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
-    : 0;
+  // ── CORRECT pricing order (matches website checkout) ──────
+  // 1. Apply discount% to base price first
+  const discountedBase = parseFloat((base * (1 - discount / 100)).toFixed(4));
+  // 2. Apply GST on the discounted base
+  const sellingPrice   = parseFloat((discountedBase * (1 + gst / 100)).toFixed(2));
+  // 3. MRP = base + GST on base (what customer would pay with NO discount)
+  const mrp = discount > 0
+    ? parseFloat((base * (1 + gst / 100)).toFixed(2))
+    : sellingPrice;
 
   tr.querySelector('.combo-calculated-price').textContent = `₹${sellingPrice.toFixed(2)}`;
   tr.querySelector('.combo-calculated-mrp').textContent   = `₹${mrp.toFixed(2)}`;
 
-  // Sync internal reference (keep profit=0 for backward compat with google_appscript.js)
+  // Sync internal reference
   const comboKey = tr.dataset.combo;
   currentProductPricingMapRef[comboKey] = {
     basePrice: base,

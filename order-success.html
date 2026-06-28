@@ -148,7 +148,7 @@
       <div class="price-summary" id="price-summary" style="display:none;">
         <h3><i class="fas fa-receipt"></i> Price Breakdown</h3>
         <div class="ps-row"><span>Item Price × Qty (incl. GST)</span><span id="ps-subtotal">—</span></div>
-        <div class="ps-row ps-gst" id="ps-gst-row" style="display:none;"><span id="ps-gst-label">GST</span><span id="ps-gst-val">—</span></div>
+        <div class="ps-row ps-gst" id="ps-gst-row" style="display:none;"><span id="ps-gst-label">GST included</span><span id="ps-gst-val">—</span></div>
         <div class="ps-row ps-discount" id="ps-coupon-row" style="display:none;"><span id="ps-coupon-label">Coupon Discount</span><span id="ps-coupon-val">—</span></div>
         <div class="ps-row" id="ps-ship-row"><span>Shipping</span><span id="ps-shipping">—</span></div>
         <div class="ps-row ps-total"><span>Total Charged</span><span id="ps-grand">—</span></div>
@@ -179,15 +179,24 @@
     const gstRateParam    = params.get('gst_rate');
     const gstAmtParam     = params.get('gst_amount');
     if (subtotalParam !== null) {
-      const subtotal       = parseFloat(subtotalParam);
+      const subtotal       = parseFloat(subtotalParam);   // selling price × qty (incl. GST)
       const shipping       = parseFloat(shippingParam) || 0;
       const promoDiscount  = parseFloat(promoParam) || 0;
-      const qty            = parseInt(params.get('qty')) || 1;
       const gstRate        = parseFloat(gstRateParam) || 0;
       const gstAmt         = parseFloat(gstAmtParam)  || 0;
 
+      // Show item subtotal (selling price × qty, incl. GST)
       document.getElementById('ps-subtotal').textContent  = '₹' + subtotal.toFixed(2);
 
+      // Show GST breakdown if applicable
+      if (gstRate > 0 && gstAmt > 0) {
+        const gstRow = document.getElementById('ps-gst-row');
+        gstRow.style.display = 'flex';
+        document.getElementById('ps-gst-label').textContent = 'GST (' + gstRate + '%) included';
+        document.getElementById('ps-gst-val').textContent   = '₹' + gstAmt.toFixed(2);
+      }
+
+      // Show coupon discount
       if (promoDiscount > 0 && couponCode) {
         const couponRow = document.getElementById('ps-coupon-row');
         couponRow.style.display = 'flex';
