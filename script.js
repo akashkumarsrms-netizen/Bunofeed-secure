@@ -673,27 +673,48 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     // Shipping note for the user
     const freeAbove = (D.shipping && D.shipping.freeShippingAbove) || 499;
 
-    // Extract gstRate for display in summary
+    // Extract pricing combo details: gstRate, product-level discount %, raw base price
     let gstRateDisplay = 0;
+    let productDiscountPct = 0;
+    let rawBasePerUnit = baseVal;
     if (currentProduct && selectedVariantLabel) {
       const _dp = selectedVariantLabel.split(' ');
       const _ds = _dp[_dp.length - 1];
       const _dt = _dp.length > 1 ? _dp.slice(0, _dp.length - 1).join(' ') : 'Default';
-      gstRateDisplay = (parseComboPrice(currentProduct, _ds, _dt).gstRate) || 0;
+      const comboData    = parseComboPrice(currentProduct, _ds, _dt);
+      gstRateDisplay     = comboData.gstRate    || 0;
+      rawBasePerUnit     = comboData.basePrice   || baseVal;
+      const discBase     = comboData.discountedBase || rawBasePerUnit;
+      productDiscountPct = rawBasePerUnit > 0 ? Math.round((1 - discBase / rawBasePerUnit) * 100) : 0;
     }
 
+    // Discounted base per unit (excl. GST) — back-calculated from selling price
+    const discountedBasePerUnit = gstRateDisplay > 0
+      ? parseFloat((baseVal / (1 + gstRateDisplay / 100)).toFixed(2))
+      : baseVal;
+    const productDiscSavingTotal = parseFloat(((rawBasePerUnit - discountedBasePerUnit) * qty).toFixed(2));
+    const mrpSubtotalExclGst     = parseFloat((rawBasePerUnit * qty).toFixed(2));
+    const baseSubtotalExclGst    = parseFloat((discountedBasePerUnit * qty).toFixed(2));
+
     let rows = '';
-    rows += '<div class="os-row"><span>Price per unit (incl. GST)' + varLabel + '</span><span>₹' + baseVal.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row"><span>MRP per unit (excl. GST)' + varLabel + '</span><span>₹' + rawBasePerUnit.toFixed(2) + '</span></div>';
     rows += '<div class="os-row"><span>Quantity</span><span>× ' + qty + '</span></div>';
-    rows += '<div class="os-row os-subtotal"><span>Subtotal (incl. GST)</span><span>₹' + subtotalVal.toFixed(2) + '</span></div>';
-    if (gstRateDisplay > 0) {
-      rows += '<div class="os-row" style="font-size:.76rem;color:#999;"><span>GST included (' + gstRateDisplay + '%)</span><span>₹' + gstAmountTotal.toFixed(2) + '</span></div>';
+    rows += '<div class="os-row os-subtotal"><span>Item Total (excl. GST)</span><span>₹' + mrpSubtotalExclGst.toFixed(2) + '</span></div>';
+
+    if (productDiscountPct > 0 && productDiscSavingTotal > 0) {
+      rows += '<div class="os-row os-discount"><span>Product Discount <span class="os-tag">' + productDiscountPct + '% off</span></span><span>− ₹' + productDiscSavingTotal.toFixed(2) + '</span></div>';
+      rows += '<div class="os-row"><span>After Discount (excl. GST)</span><span>₹' + baseSubtotalExclGst.toFixed(2) + '</span></div>';
     }
+
+    if (gstRateDisplay > 0) {
+      rows += '<div class="os-row" style="font-size:.82rem;"><span>GST (' + gstRateDisplay + '%)</span><span>+ ₹' + gstAmountTotal.toFixed(2) + '</span></div>';
+    }
+
     if (promoDiscount > 0 && activeCoupon) {
       const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
       rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') <span class="os-tag">' + dLabel + '</span></span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
     }
-    if (shipPending) {
+        if (shipPending) {
       rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span style="color:#999;font-style:italic;">Enter pincode</span></div>';
     } else {
       rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
@@ -972,7 +993,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         closeCheckoutModal();
         launchSuccessFullscreenOverlay();
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${orderPayload.payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}&mrp_unit=${orderPayload.base_price}`;
         }, 1200);
       });
       return;
@@ -1011,7 +1032,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         }
 
         setTimeout(() => {
-          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}`;
+          window.location.href = `/order-success.html?order_id=${orderPayload.order_id}&payment_id=${response.razorpay_payment_id}&product=${encodeURIComponent(displayTitle)}&qty=${quantity}&coupon=${orderPayload.promo_code}&total=${grandTotal}&subtotal=${orderPayload.product_price * quantity}&shipping=${shippingAmt}&promo_discount=${orderPayload.promo_discount_amount}&gst_rate=${gstInfo.rate}&gst_amount=${gstInfo.amt}&mrp_unit=${orderPayload.base_price}`;
         }, 1200);
       },
       modal: {
