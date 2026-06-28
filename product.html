@@ -641,7 +641,7 @@
       renderProduct(product, D);
     }
 
-    /* ── Price engine (mirrors script.js parseComboPrice) ── */
+    /* ── Price engine (mirrors script.js parseComboPrice exactly) ── */
     function parseComboPrice(product, sizeLabel, textureLabel) {
       const pricing  = product.pricing;
       const comboKey = (textureLabel && textureLabel !== 'Default')
@@ -653,13 +653,28 @@
         const base     = parseFloat(combo.basePrice) || 0;
         const gst      = parseFloat(combo.gst)       || 0;
         const discount = parseFloat(combo.discount)  || 0;
-        const sellingPrice = parseFloat((base * (1 + gst / 100)).toFixed(2));
-        const mrp = discount < 100
-          ? parseFloat((sellingPrice / (1 - discount / 100)).toFixed(2))
-          : sellingPrice;
-        return { price: sellingPrice, mrp, gstRate: gst, gstAmount: parseFloat((base * gst / 100).toFixed(2)) };
+
+        // 1. Apply product-level discount to base price first
+        const discountedBase = parseFloat((base * (1 - discount / 100)).toFixed(4));
+        // 2. Apply GST on the discounted base → this is the selling price (incl. GST)
+        const sellingPrice   = parseFloat((discountedBase * (1 + gst / 100)).toFixed(2));
+        // 3. MRP = base + GST on base (undiscounted price, shown as strikethrough)
+        const mrp = discount > 0
+          ? parseFloat((base * (1 + gst / 100)).toFixed(2))
+          : null;
+
+        const gstAmount = parseFloat((discountedBase * (gst / 100)).toFixed(2));
+
+        return {
+          price:          sellingPrice,
+          mrp:            mrp,
+          gstRate:        gst,
+          gstAmount:      gstAmount,
+          basePrice:      base,
+          discountedBase: discountedBase
+        };
       }
-      return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0 };
+      return { price: product.price || 0, mrp: product.mrp || null, gstRate: 0, gstAmount: 0, basePrice: product.price || 0, discountedBase: product.price || 0 };
     }
 
     /* ── Render ── */
