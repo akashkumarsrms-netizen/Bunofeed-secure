@@ -102,6 +102,8 @@
     .ps-row.ps-total span:first-child { color: var(--dark) !important; font-weight: 700; }
     .ps-row.ps-total span:last-child { color: var(--brown-dark, #6B2D0E) !important; font-size: 1.08rem !important; font-weight: 800 !important; }
     .ps-free { color: #28a745; font-weight: 700; }
+    .ps-subtotal-row span:first-child { color: #333 !important; font-weight: 600; }
+    .ps-subtotal-row span:last-child  { color: var(--brown, #6B2D0E) !important; font-weight: 800; }
   </style>
 </head>
 <body>
@@ -131,11 +133,13 @@
 
       <!-- Price Breakdown -->
       <div class="price-summary" id="price-summary" style="display:none;">
-        <div class="ps-row"><span>Price</span><span id="ps-subtotal">—</span></div>
-        <div class="ps-row ps-discount" id="ps-discount-row" style="display:none;"><span>Discount</span><span id="ps-discount-val">—</span></div>
-        <div class="ps-row" id="ps-ship-row"><span>Shipping</span><span id="ps-shipping">—</span></div>
+        <div class="ps-row"><span id="ps-product-label">Product</span><span id="ps-subtotal">—</span></div>
+        <div class="ps-row ps-discount" id="ps-prod-disc-row" style="display:none;"><span id="ps-prod-disc-label">Product Discount</span><span id="ps-prod-disc-val">—</span></div>
+        <div class="ps-row ps-discount" id="ps-coupon-row" style="display:none;"><span id="ps-coupon-label">Coupon</span><span id="ps-coupon-val">—</span></div>
+        <div class="ps-row ps-subtotal-row"><span>Product Total</span><span id="ps-product-total">—</span></div>
+        <div class="ps-row" id="ps-ship-row"><span>Shipping (Incl. GST)</span><span id="ps-shipping">—</span></div>
         <hr class="ps-divider"/>
-        <div class="ps-row ps-total"><span>Pay</span><span id="ps-grand">—</span></div>
+        <div class="ps-row ps-total"><span>Total Payable</span><span id="ps-grand">—</span></div>
       </div>
 
       <div class="success-actions">
@@ -182,12 +186,30 @@
       // Price shown = MRP total incl. GST (before any discount)
       const priceToShow     = mrpTotalIncl > 0 ? mrpTotalIncl : subtotal;
 
-      document.getElementById('ps-subtotal').textContent = '₹' + priceToShow.toFixed(2);
+      // Line 1: Product name + variant
+      const productLabel = params.get('product') || 'Product';
+      document.getElementById('ps-product-label').textContent = productLabel;
+      document.getElementById('ps-subtotal').textContent      = '₹' + priceToShow.toFixed(2);
 
-      if (totalDiscIncl > 0) {
-        document.getElementById('ps-discount-row').style.display = 'flex';
-        document.getElementById('ps-discount-val').textContent   = '− ₹' + totalDiscIncl.toFixed(2);
+      // Line 2: Product Discount (if any)
+      if (productDiscIncl > 0) {
+        const discPct = (mrpTotalIncl > 0) ? Math.round((productDiscIncl / mrpTotalIncl) * 100) : 0;
+        document.getElementById('ps-prod-disc-row').style.display = 'flex';
+        document.getElementById('ps-prod-disc-label').textContent = 'Product Discount (' + discPct + '%)';
+        document.getElementById('ps-prod-disc-val').textContent   = '− ₹' + productDiscIncl.toFixed(2);
       }
+
+      // Line 3: Coupon (if any) — format: Coupon (CODE)
+      if (promoDiscIncl > 0) {
+        const couponCode = params.get('coupon') || '';
+        document.getElementById('ps-coupon-row').style.display  = 'flex';
+        document.getElementById('ps-coupon-label').textContent  = 'Coupon (' + couponCode.toUpperCase() + ')';
+        document.getElementById('ps-coupon-val').textContent    = '− ₹' + promoDiscIncl.toFixed(2);
+      }
+
+      // Line 4: Product Total (after all discounts, before shipping)
+      const productTotalIncl = parseFloat((priceToShow - productDiscIncl - promoDiscIncl).toFixed(2));
+      document.getElementById('ps-product-total').textContent = '₹' + productTotalIncl.toFixed(2);
 
       const shipEl = document.getElementById('ps-shipping');
       if (shipping <= 0) {

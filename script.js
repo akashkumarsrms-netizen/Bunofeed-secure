@@ -690,27 +690,37 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
 
     let rows = '';
 
-    // Line 1: Price
-    rows += '<div class="os-row"><span>Price</span><span>₹' + itemTotalIncl.toFixed(2) + '</span></div>';
+    // Line 1: Product name + variant (MRP incl. GST × qty)
+    const priceLineVal   = parseFloat(((mrpInclGst > 0 ? mrpInclGst : baseVal) * qty).toFixed(2));
+    const productName    = currentProduct.name || 'Product';
+    const variantSuffix  = selectedVariantLabel ? ' (' + selectedVariantLabel + ')' : '';
+    rows += '<div class="os-row"><span>' + productName + variantSuffix + '</span><span>\u20b9' + priceLineVal.toFixed(2) + '</span></div>';
 
-    // Line 2: Discount (combined, only if any)
-    if (totalDiscIncl > 0) {
-      rows += '<div class="os-row os-discount"><span>Discount</span><span>− ₹' + totalDiscIncl.toFixed(2) + '</span></div>';
+    // Line 2: Product Discount (if any)
+    if (productDiscIncl > 0) {
+      rows += '<div class="os-row os-discount"><span>Product Discount (' + productDiscountPct + '%)</span><span>\u2212 \u20b9' + productDiscIncl.toFixed(2) + '</span></div>';
     }
 
-    // Line 3: Shipping
+    // Line 3: Coupon (if any) — format: Coupon (CODE)
+    if (promoDiscIncl > 0 && activeCoupon) {
+      rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ')</span><span>\u2212 \u20b9' + promoDiscIncl.toFixed(2) + '</span></div>';
+    }
+
+    // Line 4: Product Total (after all discounts, incl. GST, before shipping)
+    rows += '<div class="os-row os-subtotal"><span>Product Total</span><span>\u20b9' + productTotalIncl.toFixed(2) + '</span></div>';
+
+    // Line 5: Shipping (Incl. GST)
     if (shipPending) {
-      rows += '<div class="os-row"><span>Shipping</span><span style="color:#999;font-style:italic;font-size:.8rem;font-weight:400;">Enter pincode</span></div>';
+      rows += '<div class="os-row"><span>Shipping (Incl. GST)</span><span style="color:#999;font-style:italic;font-size:.8rem;font-weight:400;">Enter pincode</span></div>';
     } else {
-      rows += '<div class="os-row"><span>Shipping</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
+      rows += '<div class="os-row"><span>Shipping (Incl. GST)</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '\u20b9' + shipAmt.toFixed(2)) + '</span></div>';
     }
 
     // Divider
     rows += '<hr class="os-divider"/>';
 
-    // Line 4: Pay
-    rows += '<div class="os-row os-total"><span>Pay</span><span>₹' + grand.toFixed(2) + (shipPending ? '<span style="font-size:.75rem;font-weight:400;color:#999;"> + shipping</span>' : '') + '</span></div>';
-
+    // Line 6: Total Payable
+    rows += '<div class="os-row os-total"><span>Total Payable</span><span>\u20b9' + grand.toFixed(2) + (shipPending ? '<span style="font-size:.75rem;font-weight:400;color:#999;"> + shipping</span>' : '') + '</span></div>';
         return '<div class="order-summary-box" id="order-summary-box">' + rows + '</div>';
   }
 
