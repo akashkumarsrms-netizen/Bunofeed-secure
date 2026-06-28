@@ -188,12 +188,6 @@
 
       document.getElementById('ps-subtotal').textContent  = '₹' + subtotal.toFixed(2);
 
-      if (gstRate > 0 && gstAmt > 0) {
-        document.getElementById('ps-gst-row').style.display = 'flex';
-        document.getElementById('ps-gst-label').textContent = 'GST (' + gstRate + '%) included above';
-        document.getElementById('ps-gst-val').textContent   = '₹' + gstAmt.toFixed(2);
-      }
-
       if (promoDiscount > 0 && couponCode) {
         const couponRow = document.getElementById('ps-coupon-row');
         couponRow.style.display = 'flex';
