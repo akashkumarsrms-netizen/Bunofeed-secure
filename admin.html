@@ -788,6 +788,11 @@
             <label class="form-label">Free Shipping Above (₹)</label>
             <input type="number" class="form-input" id="ship-free-above" placeholder="e.g. 499"/>
           </div>
+          <div class="form-group">
+            <label class="form-label">Shipping GST (%)</label>
+            <input type="number" class="form-input" id="ship-gst-rate" min="0" max="28" step="0.5" placeholder="e.g. 18"/>
+            <span class="form-hint">GST applied on shipping charge. Set 0 if shipping is GST-exempt.</span>
+          </div>
         </div>
       </div>
 
@@ -940,10 +945,9 @@
         
         <p class="form-hint" style="margin-bottom:0.6rem; color: var(--brown);">
           <i class="fas fa-info-circle"></i>
-          <strong>How it works:</strong> All discounts are subtracted from Base Price first, then GST is applied only on what remains.<br/>
-          <code>After Discount = Base × (1 − Discount%)</code><br/>
-          <code>Selling Price = After Discount × (1 + GST%)</code><br/>
-          MRP (strikethrough) = Base × (1 + GST%) — the undiscounted price shown to customers.
+          <strong>How it works:</strong> Discount% is subtracted from Base Price first, then GST is applied on the discounted base.<br/>
+          <code>Selling Price = Base × (1 − Discount%) × (1 + GST%)</code><br/>
+          MRP is back-calculated: <code>MRP = Selling Price / (1 − Discount%)</code> so the displayed saving is accurate.
         </p>
         <div style="overflow-x: auto; max-width: 100%;">
           <table class="pricing-combo-table">
@@ -951,9 +955,8 @@
               <tr>
                 <th>Combo Option</th>
                 <th>Base Price (₹)</th>
-                <th>Discount (%)</th>
-                <th>After Discount (₹)</th>
                 <th>GST (%)</th>
+                <th>Discount (%)</th>
                 <th>Selling Price</th>
                 <th>MRP (strike)</th>
               </tr>
@@ -1295,9 +1298,8 @@ function regeneratePricingCombinationsGrid() {
       tr.innerHTML = `
         <td style="font-weight:700;color:var(--brown);">${tx} — ${sz}</td>
         <td><input type="number" class="pricing-input combo-base"     value="${defBase}" min="0" oninput="recalculateComboRow(this)"/></td>
-        <td><input type="number" class="pricing-input combo-discount" value="${defDisc}" min="0" max="99"  step="0.5" oninput="recalculateComboRow(this)"/></td>
-        <td class="combo-after-discount" style="font-weight:700;color:var(--brown);">₹0</td>
         <td><input type="number" class="pricing-input combo-gst"      value="${defGst}"  min="0" max="100" step="0.5" oninput="recalculateComboRow(this)"/></td>
+        <td><input type="number" class="pricing-input combo-discount" value="${defDisc}" min="0" max="99"  step="0.5" oninput="recalculateComboRow(this)"/></td>
         <td class="combo-calculated-price" style="font-weight:700;color:#1a6e2e;">₹0</td>
         <td class="combo-calculated-mrp"   style="font-weight:700;color:#dc3545;text-decoration:line-through;">₹0</td>
       `;
@@ -1314,19 +1316,18 @@ window.recalculateComboRow = function(inputEl) {
   const gst      = parseFloat(tr.querySelector('.combo-gst').value)      || 0;
   const discount = parseFloat(tr.querySelector('.combo-discount').value) || 0;
 
-  // ── CORRECT pricing order ──────────────────────────────────
+  // ── CORRECT pricing order (matches website checkout) ──────
   // 1. Apply discount% to base price first
-  const discountedBase = parseFloat((base * (1 - discount / 100)).toFixed(2));
-  // 2. Apply GST on the discounted base only
+  const discountedBase = parseFloat((base * (1 - discount / 100)).toFixed(4));
+  // 2. Apply GST on the discounted base
   const sellingPrice   = parseFloat((discountedBase * (1 + gst / 100)).toFixed(2));
-  // 3. MRP = base + GST on base (what customer pays with NO discount)
+  // 3. MRP = base + GST on base (what customer would pay with NO discount)
   const mrp = discount > 0
     ? parseFloat((base * (1 + gst / 100)).toFixed(2))
     : sellingPrice;
 
-  tr.querySelector('.combo-after-discount').textContent    = `₹${discountedBase.toFixed(2)}`;
-  tr.querySelector('.combo-calculated-price').textContent  = `₹${sellingPrice.toFixed(2)}`;
-  tr.querySelector('.combo-calculated-mrp').textContent    = `₹${mrp.toFixed(2)}`;
+  tr.querySelector('.combo-calculated-price').textContent = `₹${sellingPrice.toFixed(2)}`;
+  tr.querySelector('.combo-calculated-mrp').textContent   = `₹${mrp.toFixed(2)}`;
 
   // Sync internal reference
   const comboKey = tr.dataset.combo;
@@ -1773,6 +1774,7 @@ function loadOffersForm() {
   document.getElementById('sale-label').value           = s.label   || 'SALE';
   document.getElementById('sale-end').value             = s.endDate || '';
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
+  document.getElementById('ship-gst-rate').value        = h.gstRate !== undefined ? h.gstRate : 18;
   const pincodes = (adminData.shipping && adminData.shipping.serviceablePincodes) || adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
 }
@@ -1796,8 +1798,10 @@ function saveOffers(silent = false) {
   };
   const _freeAbove  = document.getElementById('ship-free-above').value;
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
+  const _shipGst = document.getElementById('ship-gst-rate').value;
   adminData.shipping = {
     freeShippingAbove:    _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
+    gstRate:              _shipGst !== '' ? parseFloat(_shipGst) : 0,
     serviceablePincodes:  rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p)),
   };
   // Remove stale top-level key if it exists from old admin versions
@@ -1921,6 +1925,7 @@ function buildCleanExportData() {
   const sh = d.shipping || {};
   const cleanShipping = {
     freeShippingAbove:   sh.freeShippingAbove || 499,
+    gstRate:             sh.gstRate !== undefined ? sh.gstRate : 0,
     serviceablePincodes: sh.serviceablePincodes || d.serviceablePincodes || [],
   };
 
@@ -2003,6 +2008,7 @@ function renderShippingMatrix() {
         <div style="font-family:var(--font-h);font-size:.95rem;font-weight:800;color:${r.charge===0?'var(--success)':'var(--orange)'};">
           ${r.charge === 0 ? 'FREE' : '₹' + r.charge}
         </div>
+        ${(function(){const gst=adminData.shipping&&adminData.shipping.gstRate;return gst>0&&r.charge>0?`<div style="font-size:.72rem;color:var(--gray);margin-top:2px;">+GST ${gst}% = ₹${(r.charge*(1+gst/100)).toFixed(2)} incl.</div>`:''})()}
       </div>
       <button onclick="deleteShippingRule(${i})"
               style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:.9rem;

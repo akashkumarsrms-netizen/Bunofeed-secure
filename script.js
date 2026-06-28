@@ -20,54 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
         background: #fffaf7;
         border: 1px solid #e0d4cc;
         border-radius: 12px;
-        padding: 1rem 1.2rem;
+        padding: .9rem 1.2rem;
         margin-bottom: 1.5rem;
-      }
-      .os-header {
-        font-family: var(--font-head, 'Montserrat', sans-serif);
-        font-size: .78rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: #6B2D0E;
-        margin-bottom: .7rem;
-        display: flex;
-        align-items: center;
-        gap: .4rem;
       }
       .os-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: .38rem 0;
-        border-bottom: 1px dashed #f0e8e0;
-        font-size: .83rem;
+        padding: .42rem 0;
+        font-size: .9rem;
         gap: .5rem;
       }
-      .os-row:last-child { border-bottom: none; }
-      .os-row span:first-child { color: #666; flex: 1; }
+      .os-row span:first-child { color: #555; flex: 1; }
       .os-row span:last-child { font-family: var(--font-head, 'Montserrat', sans-serif); font-weight: 700; color: #1a1a1a; white-space: nowrap; }
-      .os-subtotal span:last-child { color: #6B2D0E; }
-      .os-discount span { color: #28a745 !important; }
-      .os-tag {
-        background: #e8f5e9;
-        color: #28a745;
-        font-size: .7rem;
-        font-weight: 700;
-        padding: 1px 6px;
-        border-radius: 4px;
-        margin-left: .3rem;
-      }
+      .os-discount span:first-child { color: #28a745 !important; }
+      .os-discount span:last-child  { color: #28a745 !important; }
       .os-free { color: #28a745; font-weight: 700; }
-      .os-saving { font-size: .75rem; color: #28a745; }
-      .os-saving span:first-child { color: #28a745; }
+      .os-divider { border: none; border-top: 1.5px solid #d4c4b8; margin: .35rem 0; }
       .os-total {
-        border-top: 2px solid #e0d4cc !important;
-        border-bottom: none !important;
-        margin-top: .3rem;
-        padding-top: .6rem !important;
+        padding-top: .5rem !important;
       }
-      .os-total span { font-size: .95rem !important; color: #4a1e08 !important; }
+      .os-total span:first-child { color: #1a1a1a !important; font-weight: 700; font-size: .95rem; }
+      .os-total span:last-child   { color: #6B2D0E !important; font-size: 1.08rem !important; font-weight: 800 !important; }
     `;
     document.head.appendChild(styleEl);
   }
@@ -313,10 +287,15 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     if (score > bestScore) { bestScore = score; bestMatch = rule; }
   }
 
-  if (bestMatch) return Number(bestMatch.charge) || 0;
+  const baseCharge = bestMatch ? (Number(bestMatch.charge) || 0) : (() => {
+    const flatFallback = (D.shipping && D.shipping.flatShippingCharge);
+    return typeof flatFallback === 'number' ? flatFallback : 49;
+  })();
 
-  const flatFallback = (D.shipping && D.shipping.flatShippingCharge);
-  return typeof flatFallback === 'number' ? flatFallback : 49;
+  // Apply shipping GST if set
+  const shipGst = (D.shipping && D.shipping.gstRate) ? Number(D.shipping.gstRate) : 0;
+  if (baseCharge === 0 || shipGst === 0) return baseCharge;
+  return parseFloat((baseCharge * (1 + shipGst / 100)).toFixed(2));
 }
 
   
@@ -696,48 +675,43 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     const mrpSubtotalExclGst     = parseFloat((rawBasePerUnit * qty).toFixed(2));
     const baseSubtotalExclGst    = parseFloat((discountedBasePerUnit * qty).toFixed(2));
 
-    // All discounts (product + coupon) apply on the pre-GST base; GST is only on the net base
-    // baseSubtotalExclGst  = after product discount, before coupon, before GST (= discountedBasePerUnit × qty)
-    // promoDiscount        = coupon saving on that base (already computed by applyDiscountThenGst)
-    // netBaseAfterAllDisc  = base after BOTH discounts, before GST
-    const netBaseAfterAllDisc = parseFloat((baseSubtotalExclGst - promoDiscount).toFixed(2));
-    // gstAmountTotal is already computed on netBaseAfterAllDisc inside applyDiscountThenGst — use it as-is
-    const anyDiscount = productDiscSavingTotal > 0 || promoDiscount > 0;
+    // ── Simple GST-inclusive 4-line summary ──────────────────────
+    const itemTotalIncl     = parseFloat((baseVal * qty).toFixed(2));
+    const mrpInclGst        = rawBasePerUnit > 0 && gstRateDisplay > 0
+      ? parseFloat((rawBasePerUnit * (1 + gstRateDisplay / 100)).toFixed(2))
+      : rawBasePerUnit;
+    // All discount savings in GST-inclusive terms
+    const productDiscIncl   = productDiscountPct > 0
+      ? parseFloat(((mrpInclGst - baseVal) * qty).toFixed(2)) : 0;
+    const promoDiscIncl     = promoDiscount > 0
+      ? parseFloat((promoDiscount * (1 + gstRateDisplay / 100)).toFixed(2)) : 0;
+    const totalDiscIncl     = parseFloat((productDiscIncl + promoDiscIncl).toFixed(2));
+    const productTotalIncl  = parseFloat((itemTotalIncl - totalDiscIncl).toFixed(2));
 
     let rows = '';
-    // Row 1: Base Price (excl. GST, excl. discounts)
-    rows += '<div class="os-row"><span>Base Price' + varLabel + '</span><span>₹' + mrpSubtotalExclGst.toFixed(2) + '</span></div>';
 
-    // Row 2: Product discount
-    if (productDiscountPct > 0 && productDiscSavingTotal > 0) {
-      rows += '<div class="os-row os-discount"><span>Product Discount (' + productDiscountPct + '% off)</span><span>− ₹' + productDiscSavingTotal.toFixed(2) + '</span></div>';
+    // Line 1: Price
+    rows += '<div class="os-row"><span>Price</span><span>₹' + itemTotalIncl.toFixed(2) + '</span></div>';
+
+    // Line 2: Discount (combined, only if any)
+    if (totalDiscIncl > 0) {
+      rows += '<div class="os-row os-discount"><span>Discount</span><span>− ₹' + totalDiscIncl.toFixed(2) + '</span></div>';
     }
 
-    // Row 3: Coupon discount
-    if (promoDiscount > 0 && activeCoupon) {
-      const dLabel = activeCoupon.discountType === 'percent' ? activeCoupon.discountValue + '% off' : 'Flat ₹' + activeCoupon.discountValue;
-      rows += '<div class="os-row os-discount"><span>Coupon (' + activeCoupon.code + ') [' + dLabel + ']</span><span>− ₹' + promoDiscount.toFixed(2) + '</span></div>';
-    }
-
-    // Row 4: Price After All Discounts (excl. GST) — always show so customer sees net taxable amount
-    rows += '<div class="os-row os-subtotal"><span>Price After All Discounts (excl. GST)</span><span>₹' + netBaseAfterAllDisc.toFixed(2) + '</span></div>';
-
-    // Row 5: GST on net discounted base
-    if (gstRateDisplay > 0) {
-      rows += '<div class="os-row"><span>GST (' + gstRateDisplay + '%)</span><span>+ ₹' + gstAmountTotal.toFixed(2) + '</span></div>';
-    }
-
-            if (shipPending) {
-      rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span style="color:#999;font-style:italic;">Enter pincode</span></div>';
+    // Line 3: Shipping
+    if (shipPending) {
+      rows += '<div class="os-row"><span>Shipping</span><span style="color:#999;font-style:italic;font-size:.8rem;font-weight:400;">Enter pincode</span></div>';
     } else {
-      rows += '<div class="os-row"><span>Shipping' + (packSize ? ' (' + packSize + ')' : '') + '</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
-      if (freeShip && discountedTotal < freeAbove) {
-        rows += '<div class="os-row os-saving"><span>Free shipping on orders ≥ ₹' + freeAbove + '</span><span></span></div>';
-      }
+      rows += '<div class="os-row"><span>Shipping</span><span>' + (freeShip ? '<span class="os-free">FREE</span>' : '₹' + shipAmt.toFixed(2)) + '</span></div>';
     }
-    rows += '<div class="os-row os-total"><span>Total Payable</span><span>₹' + grand.toFixed(2) + (shipPending ? ' + shipping' : '') + '</span></div>';
 
-    return '<div class="order-summary-box" id="order-summary-box"><div class="os-header"><i class="fas fa-receipt" aria-hidden="true"></i> Order Summary</div>' + rows + '</div>';
+    // Divider
+    rows += '<hr class="os-divider"/>';
+
+    // Line 4: Pay
+    rows += '<div class="os-row os-total"><span>Pay</span><span>₹' + grand.toFixed(2) + (shipPending ? '<span style="font-size:.75rem;font-weight:400;color:#999;"> + shipping</span>' : '') + '</span></div>';
+
+        return '<div class="order-summary-box" id="order-summary-box">' + rows + '</div>';
   }
 
   function injectOrUpdateOrderSummary() {
