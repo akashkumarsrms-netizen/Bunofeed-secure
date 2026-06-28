@@ -904,47 +904,88 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       const orderId = generateOrderId();
       const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
-      // Compute GST for invoice fields — already calculated in _submitCalc above
-      const _gstForPayload = {
-        rate: _gstRateForSubmit,
-        amt:  parseFloat(_submitCalc.gstOnDiscounted.toFixed(2))
-      };
+      // ── Pre-compute all invoice column values here so Apps Script does zero re-derivation ──
 
-      // Resolve base price (excl. GST, excl. any discount) for invoice column L
-      let _rawBasePerUnit = baseVal;  // fallback
+      // Get combo pricing data for this variant (same source used by checkout UI)
+      let _rawBasePerUnit      = baseVal;  // fallback: selling price per unit (incl. GST)
+      let _discountedBasePerUnit = baseVal;
+      let _productDiscountPct  = 0;
       if (selectedVariantLabel) {
         const _pb = selectedVariantLabel.split(' ');
         const _sb = _pb[_pb.length - 1];
         const _tb = _pb.length > 1 ? _pb.slice(0, _pb.length - 1).join(' ') : 'Default';
-        _rawBasePerUnit = parseComboPrice(currentProduct, _sb, _tb).basePrice || baseVal;
+        const _combo = parseComboPrice(currentProduct, _sb, _tb);
+        _rawBasePerUnit       = _combo.basePrice       || baseVal;
+        _discountedBasePerUnit = _combo.discountedBase || _rawBasePerUnit;
+        _productDiscountPct   = _combo.gstRate > 0
+          ? parseFloat(((1 - _discountedBasePerUnit / _rawBasePerUnit) * 100).toFixed(4))
+          : 0;
       }
 
+      const _gstRateInv   = _gstRateForSubmit;
+
+      // col L — Base Price excl. GST × qty  (raw, before any discount)
+      const _inv_basePriceTotal   = parseFloat((_rawBasePerUnit * qty).toFixed(2));
+
+      // col M — Product Discount amount (rupees, excl. GST)
+      const _inv_productDisc      = parseFloat(((_rawBasePerUnit - _discountedBasePerUnit) * qty).toFixed(2));
+
+      // col N — Coupon Discount (rupees, on discounted base, pre-GST) = what _submitCalc gives
+      const _inv_couponDisc       = parseFloat(promotionalDiscountValue.toFixed(2));
+
+      // col O — Net Taxable Value = discounted base × qty − coupon discount
+      const _inv_netTaxable       = parseFloat((_discountedBasePerUnit * qty - _inv_couponDisc).toFixed(2));
+
+      // col P — GST Amount on product = GST on net taxable value
+      const _inv_gstAmt           = parseFloat((_inv_netTaxable * _gstRateInv / 100).toFixed(2));
+
+      // col Q — Product Total = net taxable + GST
+      const _inv_productTotal     = parseFloat((_inv_netTaxable + _inv_gstAmt).toFixed(2));
+
+      // Shipping split
+      const _shipGstRate    = (D.shipping && D.shipping.gstRate !== undefined) ? Number(D.shipping.gstRate) : 0;
+      const _inv_shipExclGst = _shipGstRate > 0
+        ? parseFloat((shippingAmt / (1 + _shipGstRate / 100)).toFixed(2))
+        : shippingAmt;
+      const _inv_shipGstAmt  = parseFloat((shippingAmt - _inv_shipExclGst).toFixed(2));
+
+      const _gstForPayload = {
+        rate: _gstRateInv,
+        amt:  _inv_gstAmt,
+      };
+
       const orderPayload = {
-        order_id: orderId,
-        date_time: new Date().toLocaleString('en-IN'),
-        customer_name: name,
-        phone_number: phone,
-        email: email,
-        address: address,
-        pincode: pincode,
-        product_id: currentProduct.id,
-        product_name: chosenTag,
-        quantity: qty,
-        product_price: baseVal,          // selling price per unit (incl. GST, after product discount)
-        base_price: _rawBasePerUnit,     // raw base per unit (excl. GST, excl. all discounts)
-        total_amount: grandTotalCombined,
-        promo_code: activeCoupon ? activeCoupon.code : '',
+        order_id:       orderId,
+        date_time:      new Date().toLocaleString('en-IN'),
+        customer_name:  name,
+        phone_number:   phone,
+        email:          email,
+        address:        address,
+        pincode:        pincode,
+        product_id:     currentProduct.id,
+        product_name:   chosenTag,
+        quantity:       qty,
+        product_price:  baseVal,              // selling price per unit (incl. GST, after product discount)
+        base_price:     _rawBasePerUnit,      // raw base per unit (excl. GST, excl. all discounts)
+        total_amount:   grandTotalCombined,
+        promo_code:     activeCoupon ? activeCoupon.code : '',
         promo_discount_amount: promotionalDiscountValue,
-        payment_id: '',
+        payment_id:     '',
         payment_status: 'Pending',
-        // ── Invoice fields ──
-        hsn_code: currentProduct.hsnCode || '',
-        discount: 0,                              // product-level discount already baked into product_price
-        coupon_discount: promotionalDiscountValue,
-        shipping_charges: shippingAmt,
-        shipping_gst_rate: (D.shipping && D.shipping.gstRate !== undefined) ? Number(D.shipping.gstRate) : 0,
-        gst_rate: _gstForPayload.rate,
-        gst_amount: _gstForPayload.amt,
+
+        // ── Pre-computed invoice columns (Apps Script writes these directly) ──
+        hsn_code:             currentProduct.hsnCode || '',
+        gst_rate:             _gstRateInv,
+        gst_amount:           _inv_gstAmt,            // col P
+        base_price_total:     _inv_basePriceTotal,    // col L — base × qty
+        product_discount_amt: _inv_productDisc,       // col M — product disc rupees
+        coupon_discount:      _inv_couponDisc,        // col N — coupon disc rupees (pre-GST)
+        net_taxable_value:    _inv_netTaxable,        // col O
+        product_total:        _inv_productTotal,      // col Q
+        shipping_charges:     shippingAmt,            // col T — shipping incl. GST
+        shipping_excl_gst:    _inv_shipExclGst,       // col R
+        shipping_gst_amt:     _inv_shipGstAmt,        // col S
+        shipping_gst_rate:    _shipGstRate,
       };
 
       // Create Order Entry Statically or locally on Express database file
