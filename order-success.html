@@ -147,11 +147,11 @@
       <!-- Price Breakdown Summary -->
       <div class="price-summary" id="price-summary" style="display:none;">
         <h3><i class="fas fa-receipt"></i> Price Breakdown</h3>
-        <div class="ps-row"><span>MRP × Qty (excl. GST)</span><span id="ps-subtotal">—</span></div>
+        <div class="ps-row"><span>Base Price</span><span id="ps-subtotal">—</span></div>
         <div class="ps-row ps-discount" id="ps-product-disc-row" style="display:none;"><span id="ps-product-disc-label">Product Discount</span><span id="ps-product-disc-val">—</span></div>
-        <div class="ps-row" id="ps-after-disc-row" style="display:none;"><span>After Discount (excl. GST)</span><span id="ps-after-disc-val">—</span></div>
+        <div class="ps-row ps-discount" id="ps-coupon-row" style="display:none;"><span id="ps-coupon-label">Coupon</span><span id="ps-coupon-val">—</span></div>
+        <div class="ps-row" id="ps-after-disc-row" style="display:none;"><span>Price After All Discounts (excl. GST)</span><span id="ps-after-disc-val">—</span></div>
         <div class="ps-row ps-gst" id="ps-gst-row" style="display:none;"><span id="ps-gst-label">GST</span><span id="ps-gst-val">—</span></div>
-        <div class="ps-row ps-discount" id="ps-coupon-row" style="display:none;"><span id="ps-coupon-label">Coupon Discount</span><span id="ps-coupon-val">—</span></div>
         <div class="ps-row" id="ps-ship-row"><span>Shipping</span><span id="ps-shipping">—</span></div>
         <div class="ps-row ps-total"><span>Total Charged</span><span id="ps-grand">—</span></div>
       </div>
@@ -189,10 +189,10 @@
       const gstAmt         = parseFloat(gstAmtParam)  || 0;
       const qty            = parseFloat(params.get('qty')) || 1;
 
-      // Derive discounted base subtotal (excl. GST) from the GST amount
+      // baseSubtotal = after product discount, before coupon, before GST
       const baseSubtotal = parseFloat((subtotal - gstAmt).toFixed(2));
 
-      // Product-level discount (from mrp_unit param)
+      // Product-level discount (from mrp_unit param = raw base per unit excl. GST, excl. discount)
       const mrpUnit = mrpUnitParam ? parseFloat(mrpUnitParam) : 0;
       const mrpSubtotal = mrpUnit > 0 ? parseFloat((mrpUnit * qty).toFixed(2)) : 0;
       const productDiscSaving = (mrpUnit > 0 && mrpSubtotal > baseSubtotal)
@@ -202,20 +202,36 @@
         ? Math.round((productDiscSaving / mrpSubtotal) * 100)
         : 0;
 
-      // Show MRP × qty (excl. GST)
+      // Net base after ALL discounts (product + coupon), before GST
+      const netBase = parseFloat((baseSubtotal - promoDiscount).toFixed(2));
+      const anyDiscount = productDiscSaving > 0 || promoDiscount > 0;
+
+      // Row 1: Base Price (excl. GST, excl. discounts)
       const displayMrpSubtotal = mrpSubtotal > 0 ? mrpSubtotal : baseSubtotal;
       document.getElementById('ps-subtotal').textContent = '₹' + displayMrpSubtotal.toFixed(2);
 
-      // Show product discount row
+      // Row 2: Product discount (if any)
       if (productDiscSaving > 0) {
         document.getElementById('ps-product-disc-row').style.display = 'flex';
         document.getElementById('ps-product-disc-label').textContent = 'Product Discount (' + productDiscPct + '% off)';
         document.getElementById('ps-product-disc-val').textContent   = '− ₹' + productDiscSaving.toFixed(2);
-        document.getElementById('ps-after-disc-row').style.display   = 'flex';
-        document.getElementById('ps-after-disc-val').textContent     = '₹' + baseSubtotal.toFixed(2);
       }
 
-      // Show GST as a separate line
+      // Row 3: Coupon discount (if any) — before GST
+      if (promoDiscount > 0 && couponCode) {
+        const couponRow = document.getElementById('ps-coupon-row');
+        couponRow.style.display = 'flex';
+        const cVal = params.get('coupon_val'); const cType = params.get('coupon_type');
+        const cLabel = cVal ? (cType === 'flat' ? 'Flat ₹' + parseFloat(cVal) : parseFloat(cVal) + '% off') : '';
+        document.getElementById('ps-coupon-label').textContent = 'Coupon (' + couponCode.toUpperCase() + ')' + (cLabel ? ' [' + cLabel + ']' : '');
+        document.getElementById('ps-coupon-val').textContent   = '− ₹' + promoDiscount.toFixed(2);
+      }
+
+      // Row 4: Price After All Discounts (excl. GST) — always shown
+      document.getElementById('ps-after-disc-row').style.display = 'flex';
+      document.getElementById('ps-after-disc-val').textContent   = '₹' + netBase.toFixed(2);
+
+      // Row 5: GST on net discounted base
       if (gstRate > 0 && gstAmt > 0) {
         const gstRow = document.getElementById('ps-gst-row');
         gstRow.style.display = 'flex';
@@ -223,15 +239,7 @@
         document.getElementById('ps-gst-val').textContent   = '+ ₹' + gstAmt.toFixed(2);
       }
 
-      // Show coupon discount
-      if (promoDiscount > 0 && couponCode) {
-        const couponRow = document.getElementById('ps-coupon-row');
-        couponRow.style.display = 'flex';
-        document.getElementById('ps-coupon-label').textContent = 'Coupon (' + couponCode.toUpperCase() + ')';
-        document.getElementById('ps-coupon-val').textContent   = '− ₹' + promoDiscount.toFixed(2);
-      }
-
-      const shipEl = document.getElementById('ps-shipping');
+            const shipEl = document.getElementById('ps-shipping');
       if (shipping <= 0) {
         shipEl.innerHTML = '<span class="ps-free">FREE</span>';
       } else {
