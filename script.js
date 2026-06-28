@@ -942,6 +942,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         discount: 0,                              // product-level discount already baked into product_price
         coupon_discount: promotionalDiscountValue,
         shipping_charges: shippingAmt,
+        shipping_gst_rate: (D.shipping && D.shipping.gstRate !== undefined) ? Number(D.shipping.gstRate) : 0,
         gst_rate: _gstForPayload.rate,
         gst_amount: _gstForPayload.amt,
       };
