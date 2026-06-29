@@ -954,14 +954,6 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         amt:  _inv_gstAmt,
       };
 
-     // ============================================================
-//  SCRIPT.JS — PATCH for orderPayload (lines ~957–989)
-//  Replace the existing orderPayload block with this version.
-//  The only additions are: promo_coupon_type and promo_coupon_value
-//  (so the Apps Script server-side fallback can re-derive coupon
-//  discount if frontend values arrive as 0).
-// ============================================================
-
       const orderPayload = {
         order_id:       orderId,
         date_time:      new Date().toLocaleString('en-IN'),
@@ -978,9 +970,6 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         total_amount:   grandTotalCombined,
         promo_code:     activeCoupon ? activeCoupon.code : '',
         promo_discount_amount: promotionalDiscountValue,
-        // ── Coupon metadata — needed by Apps Script server-side fallback ──
-        promo_coupon_type:  activeCoupon ? activeCoupon.discountType  : '',   // 'percent' or 'flat'
-        promo_coupon_value: activeCoupon ? activeCoupon.discountValue : 0,    // e.g. 10 for 10%
         payment_id:     '',
         payment_status: 'Pending',
 
@@ -989,7 +978,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         gst_rate:             _gstRateInv,
         gst_amount:           _inv_gstAmt,            // col P
         base_price_total:     _inv_basePriceTotal,    // col L — base × qty
-        product_discount_amt: _inv_productDisc,       // col M — product disc rupees (excl. GST)
+        product_discount_amt: _inv_productDisc,       // col M — product disc rupees
         coupon_discount:      _inv_couponDisc,        // col N — coupon disc rupees (pre-GST)
         net_taxable_value:    _inv_netTaxable,        // col O
         product_total:        _inv_productTotal,      // col Q
@@ -998,6 +987,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         shipping_gst_amt:     _inv_shipGstAmt,        // col S
         shipping_gst_rate:    _shipGstRate,
       };
+
       // Create Order Entry Statically or locally on Express database file
       try {
         await window.BUNOFEED_API.post('createOrder', orderPayload);
