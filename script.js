@@ -976,18 +976,20 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         payment_status: 'Pending',
 
         // ── Pre-computed invoice columns (Apps Script writes these directly) ──
-        hsn_code:             currentProduct.hsnCode || '',
-        gst_rate:             _gstRateInv,
-        gst_amount:           _inv_gstAmt,            // col P
-        base_price_total:     _inv_basePriceTotal,    // col L — base × qty
-        product_discount_amt: _inv_productDisc,       // col M — product disc rupees
-        coupon_discount:      _inv_couponDisc,        // col N — coupon disc rupees (pre-GST)
-        net_taxable_value:    _inv_netTaxable,        // col O
-        product_total:        _inv_productTotal,      // col Q
-        shipping_charges:     shippingAmt,            // col T — shipping incl. GST
-        shipping_excl_gst:    _inv_shipExclGst,       // col R
-        shipping_gst_amt:     _inv_shipGstAmt,        // col S
-        shipping_gst_rate:    _shipGstRate,
+        hsn_code:              currentProduct.hsnCode || '',
+        gst_rate:              _gstRateInv,
+        gst_amount:            _inv_gstAmt,            // GST on net taxable (product)
+        base_price_total:      _inv_basePriceTotal,    // base × qty (excl. GST, excl. discounts)
+        product_discount_pct:  parseFloat(_productDiscountPct.toFixed(2)),  // % label for invoice row
+        product_discount_amt:  _inv_productDisc,       // product disc rupees (excl. GST)
+        coupon_code:           activeCoupon ? activeCoupon.code : '',        // coupon label for invoice row
+        coupon_discount:       _inv_couponDisc,        // coupon disc rupees (pre-GST)
+        net_taxable_value:     _inv_netTaxable,        // taxable value after all discounts
+        product_total:         _inv_productTotal,      // net taxable + GST (product)
+        shipping_charges:      shippingAmt,            // shipping incl. GST (grand total line)
+        shipping_excl_gst:     _inv_shipExclGst,       // shipping taxable base
+        shipping_gst_amt:      _inv_shipGstAmt,        // GST on shipping
+        shipping_gst_rate:     _shipGstRate,
       };
 
       // Create Order Entry Statically or locally on Express database file
