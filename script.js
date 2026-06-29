@@ -975,21 +975,24 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         payment_id:     '',
         payment_status: 'Pending',
 
-        // ── Pre-computed invoice columns (Apps Script writes these directly) ──
+        // ── Pre-computed invoice columns ────────────────────────────────────────
+      // These map 1-to-1 to the invoices sheet columns (A–AC).
+      // The Worker passes them through unchanged; Apps Script writes them directly.
+      // Column letters are noted for reference (see GAS writeInvoiceRow).
         hsn_code:              currentProduct.hsnCode || '',
-        gst_rate:              _gstRateInv,
-        gst_amount:            _inv_gstAmt,            // GST on net taxable (product)
-        base_price_total:      _inv_basePriceTotal,    // base × qty (excl. GST, excl. discounts)
-        product_discount_pct:  parseFloat(_productDiscountPct.toFixed(2)),  // % label for invoice row
-        product_discount_amt:  _inv_productDisc,       // product disc rupees (excl. GST)
-        coupon_code:           activeCoupon ? activeCoupon.code : '',        // coupon label for invoice row
-        coupon_discount:       _inv_couponDisc,        // coupon disc rupees (pre-GST)
-        net_taxable_value:     _inv_netTaxable,        // taxable value after all discounts
-        product_total:         _inv_productTotal,      // net taxable + GST (product)
-        shipping_charges:      shippingAmt,            // shipping incl. GST (grand total line)
-        shipping_excl_gst:     _inv_shipExclGst,       // shipping taxable base
-        shipping_gst_amt:      _inv_shipGstAmt,        // GST on shipping
-        shipping_gst_rate:     _shipGstRate,
+        gst_rate:              _gstRateInv,            // R — Product GST Rate %
+        gst_amount:            _inv_gstAmt,            // (total product GST, for orders sheet compat)
+        base_price_total:      _inv_basePriceTotal,    // L — base × qty (excl. GST, excl. discounts)
+        product_discount_pct:  parseFloat(_productDiscountPct.toFixed(2)),  // M — numeric %, GAS appends "%" sign
+        product_discount_amt:  _inv_productDisc,       // N — product disc ₹ (excl. GST)
+        coupon_code:           activeCoupon ? activeCoupon.code : '',        // O — coupon label e.g. "SAVE10"
+        coupon_discount:       _inv_couponDisc,        // P — coupon disc ₹ (pre-GST)
+        net_taxable_value:     _inv_netTaxable,        // Q — taxable value after all discounts
+        product_total:         _inv_productTotal,      // U — net taxable + product GST
+        shipping_charges:      shippingAmt,            // Z — shipping incl. GST
+        shipping_excl_gst:     _inv_shipExclGst,       // V — shipping taxable base
+        shipping_gst_amt:      _inv_shipGstAmt,        // (shipping GST total, for reference)
+        shipping_gst_rate:     _shipGstRate,           // W — shipping GST Rate %
       };
 
       // Create Order Entry Statically or locally on Express database file
