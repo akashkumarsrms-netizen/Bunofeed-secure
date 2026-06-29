@@ -917,7 +917,9 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         const _combo = parseComboPrice(currentProduct, _sb, _tb);
         _rawBasePerUnit       = _combo.basePrice       || baseVal;
         _discountedBasePerUnit = _combo.discountedBase || _rawBasePerUnit;
-        _productDiscountPct   = _combo.gstRate > 0
+        // Compute product discount % from the actual base/discountedBase values,
+        // regardless of whether GST is applied (fixes incorrect 0% when gstRate was 0)
+        _productDiscountPct   = (_rawBasePerUnit > 0 && _discountedBasePerUnit < _rawBasePerUnit)
           ? parseFloat(((1 - _discountedBasePerUnit / _rawBasePerUnit) * 100).toFixed(4))
           : 0;
       }
