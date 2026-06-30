@@ -1798,11 +1798,15 @@ function saveOffers(silent = false) {
   };
   const _freeAbove  = document.getElementById('ship-free-above').value;
   const rawPincodes = document.getElementById('serviceable-pincodes').value;
-  const _shipGst = document.getElementById('ship-gst-rate').value;
+  const _shipGst    = document.getElementById('ship-gst-rate').value;
+  // Preserve shippingMatrix rules — only overwrite the scalar settings
+  const existingMatrix = (adminData.shipping && Array.isArray(adminData.shipping.shippingMatrix))
+    ? adminData.shipping.shippingMatrix : [];
   adminData.shipping = {
-    freeShippingAbove:    _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
-    gstRate:              _shipGst !== '' ? parseFloat(_shipGst) : 0,
-    serviceablePincodes:  rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p)),
+    freeShippingAbove:   _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
+    gstRate:             _shipGst   !== '' ? parseFloat(_shipGst)   : 0,
+    serviceablePincodes: rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p)),
+    shippingMatrix:      existingMatrix,   // keep matrix rules intact
   };
   // Remove stale top-level key if it exists from old admin versions
   delete adminData.serviceablePincodes;
@@ -1921,12 +1925,22 @@ function buildCleanExportData() {
     };
   });
 
-  // ── Shipping: clean object only (no source, shippingCharge, shippingMatrix) ──
+  // ── Shipping: export all settings including pincode/size matrix rules ──
   const sh = d.shipping || {};
+  // Normalise matrix: accept both legacy 'pincodes' key and correct 'pincode' key
+  const rawMatrix = Array.isArray(sh.shippingMatrix) ? sh.shippingMatrix : [];
+  const cleanMatrix = rawMatrix
+    .filter(r => (r.pincode || r.pincodes) && r.packSize !== undefined)
+    .map(r => ({
+      pincode:  String(r.pincode || r.pincodes || '').trim(),  // normalise legacy key
+      packSize: String(r.packSize || '').trim(),
+      charge:   parseFloat(r.charge) || 0,
+    }));
   const cleanShipping = {
-    freeShippingAbove:   sh.freeShippingAbove || 499,
-    gstRate:             sh.gstRate !== undefined ? sh.gstRate : 0,
+    freeShippingAbove:   sh.freeShippingAbove !== undefined ? sh.freeShippingAbove : 499,
+    gstRate:             sh.gstRate           !== undefined ? sh.gstRate           : 0,
     serviceablePincodes: sh.serviceablePincodes || d.serviceablePincodes || [],
+    shippingMatrix:      cleanMatrix,  // ← exported so script.js can use it as fallback
   };
 
   return {
@@ -1997,7 +2011,7 @@ function renderShippingMatrix() {
          onmouseleave="this.style.borderColor='transparent'">
       <div>
         <div style="font-size:.7rem;font-family:var(--font-h);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:2px;">Pincode(s)</div>
-        <div style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--dark);">${r.pincodes}</div>
+        <div style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--dark);">${r.pincode}</div>
       </div>
       <div>
         <div style="font-size:.7rem;font-family:var(--font-h);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:2px;">Pack Size</div>
@@ -2033,7 +2047,7 @@ function addShippingRule() {
 
   const matrix = getShippingMatrix();
   matrix.push({
-    pincodes: pincodesRaw,
+    pincode:  pincodesRaw,   // matches script.js rule.pincode and GAS sheet column A
     packSize,
     charge:   parseFloat(chargeVal)
   });

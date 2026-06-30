@@ -244,7 +244,15 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
   const freeAbove = Number((D.shipping && D.shipping.freeShippingAbove) || 499);
   if (orderTotal >= freeAbove) return 0;
 
-  const rules = _shippingRules || [];
+  // Merge rules: GAS sheet rules (live) + products.js matrix (admin-set, fallback).
+  // GAS sheet rules take precedence (higher specificity scores win naturally).
+  // This means changes in admin panel take effect via exported products.js immediately,
+  // while the GAS sheet can override per-order at runtime.
+  const gasRules     = Array.isArray(_shippingRules) ? _shippingRules : [];
+  const staticMatrix = (D.shipping && Array.isArray(D.shipping.shippingMatrix))
+    ? D.shipping.shippingMatrix : [];
+  // Use GAS rules when loaded; fall back to products.js matrix when GAS is empty/loading
+  const rules = gasRules.length > 0 ? gasRules : staticMatrix;
 
   // Normalise size: lowercase, no spaces, unify unit suffixes, then ALSO
   // strip the unit entirely so "400g" matches a sheet entry of just "400"
@@ -261,7 +269,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     return s.replace(/[a-z]+$/, '');
   }
 
-  const pinStr  = String(pincode || '').trim();
+  const pinStr   = String(pincode || '').trim();
   const sizeNorm = normSize(packSize);           // e.g. "400g"
   const sizeNum  = numericPart(sizeNorm);        // e.g. "400"
 
@@ -269,7 +277,8 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
   let bestScore = -1;
 
   for (const rule of rules) {
-    const rPin  = String(rule.pincode || '').trim();
+    // Accept both 'pincode' (correct) and legacy 'pincodes' key from old exports
+    const rPin      = String(rule.pincode || rule.pincodes || '').trim();
     const rSizeNorm = normSize(rule.packSize);   // e.g. "400" or "500g"
     const rSizeNum  = numericPart(rSizeNorm);    // e.g. "400" or "500"
 
@@ -292,8 +301,9 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     return typeof flatFallback === 'number' ? flatFallback : 49;
   })();
 
-  // Apply shipping GST if set
-  const shipGst = (D.shipping && D.shipping.gstRate) ? Number(D.shipping.gstRate) : 0;
+  // GST rate always comes from D.shipping.gstRate (set via admin panel → products.js).
+  // Never hardcoded here — change it in admin and re-export products.js.
+  const shipGst = (D.shipping && D.shipping.gstRate != null) ? Number(D.shipping.gstRate) : 0;
   if (baseCharge === 0 || shipGst === 0) return baseCharge;
   return parseFloat((baseCharge * (1 + shipGst / 100)).toFixed(2));
 }
@@ -575,7 +585,11 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     const packSize       = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
 
     let shippingAmt  = 0;
-    let shipPending  = !pinComplete || !_shippingFetchDone;
+    // shipPending only if pincode is incomplete.
+    // If GAS rules aren't loaded yet, resolveShippingCharge falls back to
+    // D.shipping.shippingMatrix (exported from admin panel), so we can resolve immediately.
+    const hasStaticMatrix = D.shipping && Array.isArray(D.shipping.shippingMatrix) && D.shipping.shippingMatrix.length > 0;
+    let shipPending  = !pinComplete || (!_shippingFetchDone && !hasStaticMatrix);
     if (!shipPending) {
       shippingAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
     }
@@ -634,13 +648,15 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     const packSizeParts  = selectedVariantLabel ? selectedVariantLabel.split(' ') : [];
     const packSize       = packSizeParts.length > 0 ? packSizeParts[packSizeParts.length - 1] : '';
 
-    // Only resolve if pincode is complete AND rules have loaded
+    // Only resolve if pincode is complete.
+    // If GAS rules haven't loaded yet, fall back to D.shipping.shippingMatrix (from products.js).
+    const _hasStaticMatrix = D.shipping && Array.isArray(D.shipping.shippingMatrix) && D.shipping.shippingMatrix.length > 0;
     let shipAmt = 0;
     let shipPending = false;
     if (!pinComplete) {
       shipPending = true; // Waiting for customer to finish entering pincode
-    } else if (!_shippingFetchDone) {
-      shipPending = true; // Rules still loading from sheet
+    } else if (!_shippingFetchDone && !_hasStaticMatrix) {
+      shipPending = true; // Rules still loading from sheet and no static fallback available
     } else {
       shipAmt = resolveShippingCharge(enteredPincode, packSize, discountedTotal);
     }
