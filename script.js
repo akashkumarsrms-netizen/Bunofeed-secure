@@ -672,6 +672,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     let gstRateDisplay = 0;
     let productDiscountPct = 0;
     let rawBasePerUnit = baseVal;
+    let discBaseUnit = baseVal; // discounted base per unit (excl. GST), full precision (not pre-rounded to 2dp)
     if (currentProduct && selectedVariantLabel) {
       const _dp = selectedVariantLabel.split(' ');
       const _ds = _dp[_dp.length - 1];
@@ -679,8 +680,8 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       const comboData    = parseComboPrice(currentProduct, _ds, _dt);
       gstRateDisplay     = comboData.gstRate    || 0;
       rawBasePerUnit     = comboData.basePrice   || baseVal;
-      const discBase     = comboData.discountedBase || rawBasePerUnit;
-      productDiscountPct = rawBasePerUnit > 0 ? Math.round((1 - discBase / rawBasePerUnit) * 100) : 0;
+      discBaseUnit       = comboData.discountedBase || rawBasePerUnit;
+      productDiscountPct = rawBasePerUnit > 0 ? Math.round((1 - discBaseUnit / rawBasePerUnit) * 100) : 0;
     }
 
     // Discounted base per unit (excl. GST) — back-calculated from selling price
@@ -696,13 +697,21 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     const mrpInclGst        = rawBasePerUnit > 0 && gstRateDisplay > 0
       ? parseFloat((rawBasePerUnit * (1 + gstRateDisplay / 100)).toFixed(2))
       : rawBasePerUnit;
-    // All discount savings in GST-inclusive terms
+    // Product discount in GST-inclusive terms — computed directly from FULL-PRECISION
+    // raw/discounted base values (not by subtracting two already-rounded display
+    // numbers like mrpInclGst and baseVal). Subtracting two independently-rounded
+    // 2-decimal figures can be off by a paisa from the true mathematical discount
+    // (e.g. showing ₹12.10 when the accurate figure is ₹12.09), so we round once,
+    // at the very end, on the unrounded difference instead.
     const productDiscIncl   = productDiscountPct > 0
-      ? parseFloat(((mrpInclGst - baseVal) * qty).toFixed(2)) : 0;
+      ? parseFloat(((rawBasePerUnit - discBaseUnit) * (1 + gstRateDisplay / 100) * qty).toFixed(2)) : 0;
     const promoDiscIncl     = promoDiscount > 0
       ? parseFloat((promoDiscount * (1 + gstRateDisplay / 100)).toFixed(2)) : 0;
     const totalDiscIncl     = parseFloat((productDiscIncl + promoDiscIncl).toFixed(2));
-    const productTotalIncl  = parseFloat((itemTotalIncl - totalDiscIncl).toFixed(2));
+    // Product Total computed from the (rounded-once) MRP line minus the two discount
+    // lines, so the four displayed numbers always foot exactly — no separate rounding
+    // path that can drift a paisa away from "price − discounts" as shown to the customer.
+    const productTotalIncl  = parseFloat(((mrpInclGst * qty) - productDiscIncl - promoDiscIncl).toFixed(2));
 
     let rows = '';
 
