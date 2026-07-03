@@ -192,6 +192,80 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ----------------------------------------------------------
+     INVOICE PRECISION ENGINE (full precision, no display rounding)
+     ------------------------------------------------------------
+     These mirror parseComboPrice() / applyDiscountThenGst() above,
+     but never round any intermediate value. Every step keeps full
+     floating-point precision; the result is only rounded (to a
+     minimum of 4 decimal places) at the very last moment, when the
+     invoice payload is assembled for Google Apps Script.
+     Display calculations (parseComboPrice, applyDiscountThenGst,
+     buildOrderSummaryHTML, refreshCheckoutCalculation) are NOT
+     touched and keep behaving exactly as before.
+  ---------------------------------------------------------- */
+  function parseComboPriceFullPrecision(product, sizeLabel, textureLabel) {
+    const pricing = product.pricing;
+    const comboKey = textureLabel ? `${textureLabel}_${sizeLabel}` : `Default_${sizeLabel}`;
+    const combo = pricing && pricing[comboKey];
+
+    if (combo) {
+      const base     = parseFloat(combo.basePrice) || 0;
+      const gst      = parseFloat(combo.gst)       || 0;
+      const discount = parseFloat(combo.discount)  || 0;
+
+      // No .toFixed() anywhere here — full precision carried forward.
+      const discountedBase = base * (1 - discount / 100);
+
+      return {
+        basePrice: base,                 // raw base price (excl. GST, excl. discount)
+        discountedBase: discountedBase,  // base after product discount, before GST — full precision
+        gstRate: gst,
+      };
+    }
+
+    return { basePrice: product.price || 0, discountedBase: product.price || 0, gstRate: 0 };
+  }
+
+  /**
+   * applyDiscountThenGstFullPrecision
+   *  discountedBasePerUnit = FULL-PRECISION product-discounted base per unit
+   *                          (excl. GST), i.e. straight from
+   *                          parseComboPriceFullPrecision().discountedBase —
+   *                          never a rounded/display value.
+   *  gstRate                = GST % for this variant
+   *  coupon                 = coupon object (or null)
+   *  qty                    = quantity
+   *
+   *  Same coupon-then-GST order as the display engine, but with zero
+   *  intermediate rounding.
+   */
+  function applyDiscountThenGstFullPrecision(discountedBasePerUnit, gstRate, coupon, qty) {
+    const baseSubtotal = discountedBasePerUnit * qty; // full precision, no rounding
+
+    let discountOnBase = 0;
+    if (coupon) {
+      if (coupon.discountType === 'percent') {
+        discountOnBase = baseSubtotal * (coupon.discountValue / 100);
+      } else {
+        discountOnBase = Math.min(baseSubtotal, coupon.discountValue);
+      }
+    }
+
+    const netTaxable   = baseSubtotal - discountOnBase;  // full precision
+    const gstAmount    = netTaxable * (gstRate / 100);   // full precision
+    const productTotal = netTaxable + gstAmount;         // full precision
+
+    return {
+      baseSubtotal,      // discounted base × qty (pre-coupon, pre-GST), full precision
+      discountOnBase,    // coupon savings (rupees, on base), full precision
+      netTaxable,        // base after coupon, full precision
+      gstAmount,         // GST on net taxable value, full precision
+      productTotal,      // net taxable + GST, full precision
+      gstRate,
+    };
+  }
+
+  /* ----------------------------------------------------------
      SHIPPING RULES — fetched from Google Sheets on page load
      Sheet: "Pin code and Shipping Charges"
      Columns: A=Pin Code | B=Weight/Pack size | C=Shipping charges
@@ -930,51 +1004,60 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
       // ── Pre-compute all invoice column values here so Apps Script does zero re-derivation ──
+      // IMPORTANT: these use the FULL-PRECISION invoice engine (parseComboPriceFullPrecision /
+      // applyDiscountThenGstFullPrecision) so nothing here is derived from an already-rounded
+      // display value (e.g. baseVal / promotionalDiscountValue, which are 2-decimal display
+      // figures). Every intermediate stays at full floating-point precision and is only
+      // rounded — to a minimum of 4 decimal places — right here, at the moment each value is
+      // written out for the invoice payload.
 
-      // Get combo pricing data for this variant (same source used by checkout UI)
-      let _rawBasePerUnit      = baseVal;  // fallback: selling price per unit (incl. GST)
-      let _discountedBasePerUnit = baseVal;
-      let _productDiscountPct  = 0;
+      // Get FULL-PRECISION combo pricing data for this variant (separate from the display combo)
+      let _rawBasePerUnitInv        = baseVal;  // fallback: selling price per unit (incl. GST)
+      let _discountedBasePerUnitInv = baseVal;
+      let _productDiscountPct       = 0;
       if (selectedVariantLabel) {
         const _pb = selectedVariantLabel.split(' ');
         const _sb = _pb[_pb.length - 1];
         const _tb = _pb.length > 1 ? _pb.slice(0, _pb.length - 1).join(' ') : 'Default';
-        const _combo = parseComboPrice(currentProduct, _sb, _tb);
-        _rawBasePerUnit       = _combo.basePrice       || baseVal;
-        _discountedBasePerUnit = _combo.discountedBase || _rawBasePerUnit;
-        // Compute product discount % from the actual base/discountedBase values,
+        const _comboInv = parseComboPriceFullPrecision(currentProduct, _sb, _tb);
+        _rawBasePerUnitInv        = _comboInv.basePrice        || baseVal;
+        _discountedBasePerUnitInv = _comboInv.discountedBase   || _rawBasePerUnitInv;
+        // Compute product discount % from the actual full-precision base/discountedBase values,
         // regardless of whether GST is applied (fixes incorrect 0% when gstRate was 0)
-        _productDiscountPct   = (_rawBasePerUnit > 0 && _discountedBasePerUnit < _rawBasePerUnit)
-          ? parseFloat(((1 - _discountedBasePerUnit / _rawBasePerUnit) * 100).toFixed(4))
+        _productDiscountPct   = (_rawBasePerUnitInv > 0 && _discountedBasePerUnitInv < _rawBasePerUnitInv)
+          ? parseFloat(((1 - _discountedBasePerUnitInv / _rawBasePerUnitInv) * 100).toFixed(4))
           : 0;
       }
 
       const _gstRateInv   = _gstRateForSubmit;
 
+      // Full-precision coupon + GST breakdown for the invoice (coupon applied fresh here on
+      // the unrounded discounted base — never on the display-rounded promotionalDiscountValue)
+      const _invCalc = applyDiscountThenGstFullPrecision(_discountedBasePerUnitInv, _gstRateInv, activeCoupon, qty);
+
       // col L — Base Price excl. GST × qty  (raw, before any discount)
-      const _inv_basePriceTotal   = parseFloat((_rawBasePerUnit * qty).toFixed(2));
+      const _inv_basePriceTotal   = parseFloat((_rawBasePerUnitInv * qty).toFixed(4));
 
       // col M — Product Discount amount (rupees, excl. GST)
-      const _inv_productDisc      = parseFloat(((_rawBasePerUnit - _discountedBasePerUnit) * qty).toFixed(2));
+      const _inv_productDisc      = parseFloat(((_rawBasePerUnitInv - _discountedBasePerUnitInv) * qty).toFixed(4));
 
-      // col N — Coupon Discount (rupees, on discounted base, pre-GST) = what _submitCalc gives
-      const _inv_couponDisc       = parseFloat(promotionalDiscountValue.toFixed(2));
+      // col N — Coupon Discount (rupees, on discounted base, pre-GST), full precision
+      const _inv_couponDisc       = parseFloat(_invCalc.discountOnBase.toFixed(4));
 
       // col O — Net Taxable Value = discounted base × qty − coupon discount
-      const _inv_netTaxable       = parseFloat((_discountedBasePerUnit * qty - _inv_couponDisc).toFixed(2));
+      const _inv_netTaxable       = parseFloat(_invCalc.netTaxable.toFixed(4));
 
       // col P — GST Amount on product = GST on net taxable value
-      const _inv_gstAmt           = parseFloat((_inv_netTaxable * _gstRateInv / 100).toFixed(2));
+      const _inv_gstAmt           = parseFloat(_invCalc.gstAmount.toFixed(4));
 
       // col Q — Product Total = net taxable + GST
-      const _inv_productTotal     = parseFloat((_inv_netTaxable + _inv_gstAmt).toFixed(2));
+      const _inv_productTotal     = parseFloat(_invCalc.productTotal.toFixed(4));
 
-      // Shipping split
-      const _shipGstRate    = (D.shipping && D.shipping.gstRate !== undefined) ? Number(D.shipping.gstRate) : 0;
-      const _inv_shipExclGst = _shipGstRate > 0
-        ? parseFloat((shippingAmt / (1 + _shipGstRate / 100)).toFixed(2))
-        : shippingAmt;
-      const _inv_shipGstAmt  = parseFloat((shippingAmt - _inv_shipExclGst).toFixed(2));
+      // Shipping split — same full-precision-until-the-end approach
+      const _shipGstRate         = (D.shipping && D.shipping.gstRate !== undefined) ? Number(D.shipping.gstRate) : 0;
+      const _inv_shipExclGstFull = _shipGstRate > 0 ? (shippingAmt / (1 + _shipGstRate / 100)) : shippingAmt;
+      const _inv_shipExclGst     = parseFloat(_inv_shipExclGstFull.toFixed(4));
+      const _inv_shipGstAmt      = parseFloat((shippingAmt - _inv_shipExclGstFull).toFixed(4));
 
       const _gstForPayload = {
         rate: _gstRateInv,
@@ -993,7 +1076,7 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         product_name:   chosenTag,
         quantity:       qty,
         product_price:  baseVal,              // selling price per unit (incl. GST, after product discount)
-        base_price:     _rawBasePerUnit,      // raw base per unit (excl. GST, excl. all discounts)
+        base_price:     _rawBasePerUnitInv,    // raw base per unit (excl. GST, excl. all discounts)
         total_amount:   grandTotalCombined,
         promo_code:     activeCoupon ? activeCoupon.code : '',
         promo_discount_amount: promotionalDiscountValue,
