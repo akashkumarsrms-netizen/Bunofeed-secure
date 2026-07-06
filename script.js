@@ -276,6 +276,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let _shippingFetchDone    = false;
   let _shippingFetchPromise = null;   // prevents duplicate parallel fetches
 
+  /* ----------------------------------------------------------
+     LAST DISPLAYED CHECKOUT BREAKDOWN
+     Captures the exact numbers already rendered in the on-screen
+     order summary box (buildOrderSummaryHTML), so the order
+     payload can send the SAME customer-visible values to Apps
+     Script — no separate/duplicate calculation is performed.
+  ---------------------------------------------------------- */
+  let _lastDisplayedBreakdown = null;
+
   async function fetchShippingRules() {
     if (_shippingFetchDone) return _shippingRules;
     if (_shippingFetchPromise) return _shippingFetchPromise;
@@ -820,6 +829,18 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
 
     // Line 6: Total Payable
     rows += '<div class="os-row os-total"><span>Total Payable</span><span>\u20b9' + grand.toFixed(2) + (shipPending ? '<span style="font-size:.75rem;font-weight:400;color:#999;"> + shipping</span>' : '') + '</span></div>';
+
+    // ── Capture the exact values just displayed above (no new calculation) ──
+    // These are the SAME numbers already rendered into the rows above, saved
+    // so the checkout submit handler can send them to Apps Script unchanged.
+    _lastDisplayedBreakdown = {
+      productPrice:    priceLineVal,
+      productDiscount: productDiscIncl,
+      promoDiscount:   promoDiscIncl,
+      shipping:        shipPending ? null : (freeShip ? 0 : shipAmt),
+      totalPaid:       shipPending ? null : grand,
+    };
+
         return '<div class="order-summary-box" id="order-summary-box">' + rows + '</div>';
   }
 
@@ -1000,6 +1021,13 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
       // Round to 2 decimal places first, then ensure integer paise for Razorpay (no floating-point drift)
       const grandTotalCombined = Math.round((discountedTotal + shippingAmt) * 100) / 100;
 
+      // Refresh the checkout display breakdown (_lastDisplayedBreakdown) now that
+      // pincode/shipping are finally resolved, by re-running the SAME display
+      // function used to render the on-screen order summary. This performs no
+      // new calculation — it just re-evaluates the existing display formula so
+      // the captured values reflect the final, submitted order.
+      buildOrderSummaryHTML();
+
       const orderId = generateOrderId();
       const chosenTag = selectedVariantLabel ? `${currentProduct.name} - ${selectedVariantLabel}` : currentProduct.name;
 
@@ -1101,6 +1129,17 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
         shipping_excl_gst:     _inv_shipExclGst,       // V — shipping taxable base
         shipping_gst_amt:      _inv_shipGstAmt,        // (shipping GST total, for reference)
         shipping_gst_rate:     _shipGstRate,           // W — shipping GST Rate %
+
+        // ── Website checkout price breakdown (Orders sheet ONLY) ────────────────
+        // These are the EXACT values already shown to the customer in the
+        // checkout order-summary box and on the order-success page — captured
+        // from buildOrderSummaryHTML(), not recalculated here. Do NOT confuse
+        // these with the invoice-only fields above (used solely for GST invoices).
+        product_price_display:    _lastDisplayedBreakdown ? _lastDisplayedBreakdown.productPrice    : null, // Product Price (as shown)
+        product_discount_display: _lastDisplayedBreakdown ? _lastDisplayedBreakdown.productDiscount  : null, // Product Discount (as shown)
+        promo_discount_display:   _lastDisplayedBreakdown ? _lastDisplayedBreakdown.promoDiscount    : null, // Promo/Coupon Discount (as shown)
+        shipping_display:         _lastDisplayedBreakdown ? _lastDisplayedBreakdown.shipping         : null, // Shipping (as shown)
+        total_paid_display:       _lastDisplayedBreakdown ? _lastDisplayedBreakdown.totalPaid        : null, // Total Payable (as shown)
       };
 
       // Create Order Entry Statically or locally on Express database file
