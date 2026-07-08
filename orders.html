@@ -445,10 +445,6 @@
               <span class="info-value" id="r-qty">—</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Unit Price</span>
-              <span class="info-value" id="r-price">—</span>
-            </div>
-            <div class="info-row">
               <span class="info-label">Total Paid</span>
               <span class="info-value" id="r-total">—</span>
             </div>
@@ -812,7 +808,6 @@
       document.getElementById('r-phone').textContent          = o.phone         || '—';
       document.getElementById('r-product').textContent        = o.productName   || '—';
       document.getElementById('r-qty').textContent            = o.qty           || '—';
-      document.getElementById('r-price').textContent          = o.price   ? `₹${o.price}`  : '—';
       document.getElementById('r-total').textContent          = o.total   ? `₹${o.total}`  : '—';
       document.getElementById('r-payment-id').textContent     = o.paymentId     || '—';
       document.getElementById('r-payment-status').textContent = o.paymentStatus || '—';
