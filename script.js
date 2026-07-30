@@ -430,12 +430,24 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     // Sizes elements configuration
     const sizes = product.allowedSizes || (product.variants ? product.variants.map(v => v.label) : [product.weight || '500g']);
     const textures = product.allowedTextures || ["Default"];
-    const hasTextures = textures.some(t => t.toLowerCase() !== 'default') && textures.length > 1;
 
-    // Initial default calculation values
+    // isRealTexture: does this product have a named texture (e.g. "Smooth") as opposed
+    // to the literal placeholder "Default"? Used only for LABEL DISPLAY (should we
+    // prefix the weight text with the texture name).
+    const isRealTexture = textures.some(t => t.toLowerCase() !== 'default');
+    // showTextureSelector: should the dropdown be shown to the user? Only when there's
+    // an actual choice to make (2+ options). A single texture — real or "Default" —
+    // doesn't need a selector.
+    const showTextureSelector = textures.length > 1;
+
+    // Initial default calculation values.
+    // IMPORTANT: firstTexture is ALWAYS the real value from allowedTextures, whether or
+    // not the selector is shown/whether there's 1 or many options. This is what keeps
+    // single-variant and multi-variant products both resolving the correct pricing key
+    // (e.g. "Smooth_500g"), instead of collapsing single-texture products to "Default_*".
     const firstSize = sizes[0] || '';
-    const firstTexture = hasTextures ? textures[0] : 'Default';
-    const initialPricing = parseComboPrice(product, firstSize, hasTextures ? firstTexture : 'Default');
+    const firstTexture = textures[0] || 'Default';
+    const initialPricing = parseComboPrice(product, firstSize, firstTexture);
 
     // Build Select menus string
     let sizeOptions = sizes.map(sz => `<option value="${sz}">${sz}</option>`).join('');
@@ -456,13 +468,13 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
           <select class="card-select size-card-select" aria-label="Select packing size">
             ${sizeOptions}
           </select>
-          <select class="card-select texture-card-select" aria-label="Select texture" style="${hasTextures ? '' : 'display:none;'}">
+          <select class="card-select texture-card-select" aria-label="Select texture" style="${showTextureSelector ? '' : 'display:none;'}">
             ${textureOptions}
           </select>
         </div>
 
         <div class="card-price-row" style="margin-bottom:0.5rem;">
-          <div class="product-weight card-computed-weight">${hasTextures ? firstTexture + ' ' : ''}${firstSize || product.weight || ''}</div>
+          <div class="product-weight card-computed-weight">${isRealTexture ? firstTexture + ' ' : ''}${firstSize || product.weight || ''}</div>
           <div class="price-sale card-computed-pricing">
             ${getPriceMarkup(initialPricing.price, initialPricing.mrp)}
           </div>
@@ -481,11 +493,13 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
 
     function executePriceRecalculation() {
       const sz = sSelect.value;
-      const tx = hasTextures ? tSelect.value : 'Default';
+      // tSelect always holds the correct texture value (even when hidden because
+      // showTextureSelector is false), so we can use it directly here.
+      const tx = tSelect.value;
       const recalculated = parseComboPrice(product, sz, tx);
 
       priceDisplay.innerHTML = getPriceMarkup(recalculated.price, recalculated.mrp);
-      weightDisplay.textContent = `${hasTextures ? tx + ' ' : ''}${sz}`;
+      weightDisplay.textContent = `${isRealTexture ? tx + ' ' : ''}${sz}`;
     }
 
     sSelect.addEventListener('change', executePriceRecalculation);
@@ -501,13 +515,13 @@ function resolveShippingCharge(pincode, packSize, orderTotal) {
     card.querySelector('.c-buy-btn').addEventListener('click', (e) => {
       e.stopPropagation();
       const sz = sSelect.value;
-      const tx = hasTextures ? tSelect.value : 'Default';
+      const tx = tSelect.value;
       const finalPricing = parseComboPrice(product, sz, tx);
 
       currentProduct = product;
       qty = 1;
       selectedUnitPrice = finalPricing.price;
-      selectedVariantLabel = `${hasTextures ? tx + ' ' : ''}${sz}`;
+      selectedVariantLabel = `${isRealTexture ? tx + ' ' : ''}${sz}`;
 
       // ── GA4: Buy Now click from product card ──
       if (typeof gtag === 'function') {
