@@ -460,6 +460,7 @@ ul { list-style: none; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.8rem;
+  align-items: stretch; /* every card in a row matches the tallest one */
 }
 .product-card {
   background: var(--white);
@@ -471,7 +472,16 @@ ul { list-style: none; }
   flex-direction: column;
   position: relative;
   border: 1px solid rgba(107,45,14,0.04);
-  height: 480px;
+  /* Height is intentionally NOT fixed. The card grows to fit whatever
+     content a product has (extra selector rows, longer names, badges,
+     discount tags, etc.) so the Buy button is never clipped or pushed
+     off-card — this applies automatically to any product added later.
+     CSS Grid's default align-items:stretch still keeps every card in
+     the same row visually equal-height, matched to the tallest card. */
+  height: 100%;
+  min-height: 0;
+  min-width: 0; /* prevents long product names/content from stretching
+                   the card wider than its grid column on narrow phones */
 }
 .product-card:hover {
   transform: translateY(-8px);
@@ -512,10 +522,13 @@ ul { list-style: none; }
   z-index: 2;
 }
 
-/* Product image area — exactly 50% of fixed card height */
+/* Product image area — fixed 1:1 aspect ratio instead of a % of a
+   fixed card height, so it stays a consistent, predictable size no
+   matter how tall the info section below it ends up being. */
 .product-img {
-  flex: 0 0 50%;
-  height: 50%;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   padding: 12px;
   display: flex;
   align-items: center;
@@ -548,14 +561,17 @@ ul { list-style: none; }
 .choco-bg   { background: linear-gradient(135deg, #473229, #7c584c); }
 
 .product-info {
-  flex: 0 0 50%;
-  height: 50%;
+  /* Grows to fit its content (name, selectors, price, button) instead
+     of being squeezed into a fixed 50% share of a fixed-height card.
+     overflow is no longer hidden here — that was the direct cause of
+     the Buy button getting clipped/hidden whenever a card had extra
+     content (e.g. the texture dropdown on peanut butter variants). */
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 0.7rem 0.9rem 0.7rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 0;
-  overflow: hidden;
+  gap: 0.45rem;
   box-sizing: border-box;
 }
 
@@ -593,6 +609,7 @@ ul { list-style: none; }
   grid-template-columns: 1fr 1fr;
   gap: 0.3rem;
   flex-shrink: 0;
+  min-width: 0;
 }
 .card-select {
   padding: 0 8px;
@@ -608,6 +625,8 @@ ul { list-style: none; }
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 .card-select:focus {
   border-color: var(--orange);
@@ -664,15 +683,20 @@ ul { list-style: none; }
   border-radius: 50px;
 }
 
-/* Buttons — full width row at very bottom */
+/* Buttons — always pinned to the bottom of the card and always fully
+   visible, regardless of how much content sits above them. */
 .product-card-btns {
   display: flex;
   gap: 0.4rem;
   flex-shrink: 0;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.15rem;
 }
 .btn-view-detail {
-  flex: 1;
-  padding: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 6px;
   height: 32px;
   font-size: 0.72rem;
   border-radius: 50px;
@@ -686,9 +710,12 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 .btn-view-detail:hover {
   background: var(--brown);
@@ -698,8 +725,9 @@ ul { list-style: none; }
 .btn-view-detail:active { transform: translateY(0); }
 
 .btn-buy {
-  flex: 1;
-  padding: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 6px;
   height: 32px;
   font-size: 0.72rem;
   border-radius: 50px;
@@ -713,9 +741,12 @@ ul { list-style: none; }
   -webkit-appearance: none;
   appearance: none;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 .btn-buy:hover {
   background: var(--orange);
@@ -1098,7 +1129,6 @@ ul { list-style: none; }
 
   /* Products */
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .product-card { height: 400px; }
   .product-emoji { font-size: 3.2rem; }
   .product-info { padding: 0.6rem 0.7rem; }
   .product-info h3 { font-size: 0.8rem; }
@@ -1128,7 +1158,6 @@ ul { list-style: none; }
    ============================================================ */
 @media (max-width: 480px) {
   .products-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .product-card { height: 340px; }
   .product-emoji { font-size: 2.6rem; }
   .product-info { padding: 0.45rem 0.55rem; }
   .product-info h3 { font-size: 0.66rem; line-height: 1.25; }
@@ -1162,6 +1191,25 @@ ul { list-style: none; }
   .feedback-section { padding: 4rem 1rem; }
   .hero-image { max-width: 100%; }
   .hero-photo { max-height: 280px; }
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile Extra Small (≤360px, e.g. iPhone SE)
+   Product cards get a touch more room so the Buy button and
+   selector dropdowns never feel cramped on the smallest screens.
+   ============================================================ */
+@media (max-width: 360px) {
+  .products-grid { gap: 0.5rem; }
+  .product-info { padding: 0.4rem 0.5rem; gap: 0.35rem; }
+  .card-selectors-row { gap: 0.25rem; }
+  .card-select { padding: 0 4px; font-size: 0.58rem; }
+  .product-card-btns { gap: 0.3rem; }
+  .product-card-btns .btn-view-detail,
+  .product-card-btns .btn-buy {
+    height: 25px;
+    font-size: 0.56rem;
+    padding: 0 3px;
+  }
 }
 
 /* ============================================================
