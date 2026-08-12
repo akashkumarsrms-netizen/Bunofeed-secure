@@ -793,6 +793,11 @@
             <input type="number" class="form-input" id="ship-gst-rate" min="0" max="28" step="0.5" placeholder="e.g. 18"/>
             <span class="form-hint">GST applied on shipping charge. Set 0 if shipping is GST-exempt.</span>
           </div>
+          <div class="form-group">
+            <label class="form-label">Default Shipping Charge (₹)</label>
+            <input type="number" class="form-input" id="ship-default-charge" min="0" step="1" placeholder="e.g. 49"/>
+            <span class="form-hint">Applied when the order doesn't qualify for free shipping AND the customer's pincode isn't found in the Google Sheet or in your Shipping Matrix rules below. This is the final fallback charge.</span>
+          </div>
         </div>
       </div>
 
@@ -1775,6 +1780,7 @@ function loadOffersForm() {
   document.getElementById('sale-end').value             = s.endDate || '';
   document.getElementById('ship-free-above').value      = h.freeShippingAbove || 499;
   document.getElementById('ship-gst-rate').value        = h.gstRate !== undefined ? h.gstRate : 18;
+  document.getElementById('ship-default-charge').value  = h.flatShippingCharge !== undefined ? h.flatShippingCharge : 49;
   const pincodes = (adminData.shipping && adminData.shipping.serviceablePincodes) || adminData.serviceablePincodes || [];
   document.getElementById('serviceable-pincodes').value = pincodes.join('\n');
 }
@@ -1796,15 +1802,17 @@ function saveOffers(silent = false) {
     label:          document.getElementById('sale-label').value.trim() || 'SALE',
     endDate:        document.getElementById('sale-end').value,
   };
-  const _freeAbove  = document.getElementById('ship-free-above').value;
-  const rawPincodes = document.getElementById('serviceable-pincodes').value;
-  const _shipGst    = document.getElementById('ship-gst-rate').value;
+  const _freeAbove     = document.getElementById('ship-free-above').value;
+  const rawPincodes    = document.getElementById('serviceable-pincodes').value;
+  const _shipGst       = document.getElementById('ship-gst-rate').value;
+  const _defaultCharge = document.getElementById('ship-default-charge').value;
   // Preserve shippingMatrix rules — only overwrite the scalar settings
   const existingMatrix = (adminData.shipping && Array.isArray(adminData.shipping.shippingMatrix))
     ? adminData.shipping.shippingMatrix : [];
   adminData.shipping = {
-    freeShippingAbove:   _freeAbove !== '' ? parseFloat(_freeAbove) : 499,
-    gstRate:             _shipGst   !== '' ? parseFloat(_shipGst)   : 0,
+    freeShippingAbove:   _freeAbove     !== '' ? parseFloat(_freeAbove)     : 499,
+    gstRate:             _shipGst       !== '' ? parseFloat(_shipGst)       : 0,
+    flatShippingCharge:  _defaultCharge !== '' ? parseFloat(_defaultCharge) : 49,
     serviceablePincodes: rawPincodes.split('\n').map(p => p.trim()).filter(p => /^\d{6}$/.test(p)),
     shippingMatrix:      existingMatrix,   // keep matrix rules intact
   };
@@ -1937,8 +1945,9 @@ function buildCleanExportData() {
       charge:   parseFloat(r.charge) || 0,
     }));
   const cleanShipping = {
-    freeShippingAbove:   sh.freeShippingAbove !== undefined ? sh.freeShippingAbove : 499,
-    gstRate:             sh.gstRate           !== undefined ? sh.gstRate           : 0,
+    freeShippingAbove:   sh.freeShippingAbove  !== undefined ? sh.freeShippingAbove  : 499,
+    gstRate:             sh.gstRate            !== undefined ? sh.gstRate            : 0,
+    flatShippingCharge:  sh.flatShippingCharge !== undefined ? parseFloat(sh.flatShippingCharge) : 49,
     serviceablePincodes: sh.serviceablePincodes || d.serviceablePincodes || [],
     shippingMatrix:      cleanMatrix,  // ← exported so script.js can use it as fallback
   };
