@@ -683,22 +683,26 @@ ul { list-style: none; }
   border-radius: 50px;
 }
 
-/* Buttons — always pinned to the bottom of the card and always fully
-   visible, regardless of how much content sits above them. */
+/* Buttons — sits in the leftover vertical space at the bottom of the
+   card. Centered in that space (rather than pinned hard to the very
+   bottom) so a bigger, more prominent button visually fills the gap
+   that used to sit empty between the price and the button. */
 .product-card-btns {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex-shrink: 0;
   width: 100%;
   margin-top: auto;
-  padding-top: 0.15rem;
+  margin-bottom: auto;
+  padding-top: 0.5rem;
 }
 .btn-view-detail {
   flex: 1 1 0;
   min-width: 0;
-  padding: 0 6px;
-  height: 32px;
-  font-size: 0.72rem;
+  padding: 0 8px;
+  height: 44px;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
   border-radius: 50px;
   background: transparent;
   color: var(--brown);
@@ -727,9 +731,10 @@ ul { list-style: none; }
 .btn-buy {
   flex: 1 1 0;
   min-width: 0;
-  padding: 0 6px;
-  height: 32px;
-  font-size: 0.72rem;
+  padding: 0 8px;
+  height: 44px;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
   border-radius: 50px;
   background: var(--brown);
   color: var(--white);
@@ -1134,11 +1139,11 @@ ul { list-style: none; }
   .product-info h3 { font-size: 0.8rem; }
   .card-tagline { font-size: 0.65rem; font-weight: 600; color: var(--brown-dark, #4a1a05); }
   .card-select { height: 24px; font-size: 0.68rem; }
-  .product-card-btns { gap: 0.3rem; }
+  .product-card-btns { gap: 0.4rem; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
-    height: 28px;
-    font-size: 0.66rem;
+    height: 38px;
+    font-size: 0.8rem;
   }
 
   /* Why / About */
@@ -1172,8 +1177,8 @@ ul { list-style: none; }
   .sale-ribbon { top: 7px; right: 7px; font-size: 0.55rem; padding: 3px 7px; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
-    height: 26px;
-    font-size: 0.6rem;
+    height: 36px;
+    font-size: 0.76rem;
     border-width: 1.5px;
   }
   .why-visual       { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
@@ -1203,12 +1208,12 @@ ul { list-style: none; }
   .product-info { padding: 0.4rem 0.5rem; gap: 0.35rem; }
   .card-selectors-row { gap: 0.25rem; }
   .card-select { padding: 0 4px; font-size: 0.58rem; }
-  .product-card-btns { gap: 0.3rem; }
+  .product-card-btns { gap: 0.35rem; }
   .product-card-btns .btn-view-detail,
   .product-card-btns .btn-buy {
-    height: 25px;
-    font-size: 0.56rem;
-    padding: 0 3px;
+    height: 34px;
+    font-size: 0.72rem;
+    padding: 0 6px;
   }
 }
 
