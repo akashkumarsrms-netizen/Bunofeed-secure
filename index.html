@@ -305,9 +305,13 @@ src="https://www.facebook.com/tr?id=1556539716263110&ev=PageView&noscript=1"
   <a href="https://www.amazon.in/l/27943762031?me=A3PX2HS9RDHR7D&tag=ShopReferral_3b733bd7-b7f9-405c-997c-deae67987b26&ref=ls_srb_sn"
      target="_blank" rel="noopener noreferrer" id="amazon-float-badge" aria-label="Also available on Amazon">
     <i class="fab fa-amazon" aria-hidden="true"></i>
-    <span>Also available on Amazon</span>
+    <span>Available on Amazon</span>
   </a>
   <style>
+    @keyframes amazonBadgePulse {
+      0%, 100% { box-shadow: 0 8px 24px rgba(255, 153, 0, 0.35), 0 0 0 0 rgba(255, 153, 0, 0.4); }
+      50% { box-shadow: 0 8px 24px rgba(255, 153, 0, 0.35), 0 0 0 8px rgba(255, 153, 0, 0); }
+    }
     #amazon-float-badge {
       position: fixed;
       bottom: 22px;
@@ -315,37 +319,50 @@ src="https://www.facebook.com/tr?id=1556539716263110&ev=PageView&noscript=1"
       z-index: 9999;
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: #232F3E;
-      color: #ffffff;
-      padding: 12px 18px;
+      gap: 9px;
+      background: linear-gradient(135deg, #FF9900 0%, #FF7A00 55%, #E85D04 100%);
+      color: #131921;
+      padding: 13px 20px;
       border-radius: 50px;
       text-decoration: none;
       font-family: 'Open Sans', sans-serif;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.85rem;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      letter-spacing: 0.2px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      box-shadow: 0 8px 24px rgba(255, 153, 0, 0.35);
+      animation: amazonBadgePulse 2.6s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
     #amazon-float-badge i {
-      color: #FF9900;
-      font-size: 1.15rem;
+      color: #131921;
+      font-size: 1.2rem;
     }
     #amazon-float-badge:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.3);
-      background: #37475A;
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 12px 30px rgba(255, 153, 0, 0.5);
+      background: linear-gradient(135deg, #FFA724 0%, #FF8C1A 55%, #F06400 100%);
+      animation-play-state: paused;
     }
     @media (max-width: 480px) {
       #amazon-float-badge {
-        bottom: 16px;
-        right: 16px;
-        padding: 10px 14px;
-        font-size: 0.75rem;
+        bottom: 14px;
+        right: 14px;
+        padding: 8px 12px;
+        gap: 5px;
+        border-radius: 40px;
+        max-width: 42vw;
       }
-      #amazon-float-badge span { display: none; }
-      #amazon-float-badge i { font-size: 1.3rem; }
-      #amazon-float-badge { border-radius: 50%; width: 48px; height: 48px; justify-content: center; padding: 0; }
+      #amazon-float-badge span {
+        display: inline;
+        font-size: 0.62rem;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+      #amazon-float-badge i { font-size: 0.95rem; }
+    }
+    @media (max-width: 340px) {
+      #amazon-float-badge span { font-size: 0.56rem; }
     }
   </style>
 
