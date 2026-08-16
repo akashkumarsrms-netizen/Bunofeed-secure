@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ---------------------------------------------------------- */
   const banner = document.getElementById('campaign-banner');
   if (banner && D.campaign && D.campaign.active) {
-    const expired = D.campaign.expiryDate && new Date() > new Date(D.campaign.expiryDate);
+    const expired = D.campaign.expiryDate && new Date() > new Date(D.campaign.expiryDate + 'T23:59:59');
     if (!expired) {
       banner.style.display = 'block';
       banner.style.background = D.campaign.bgColor || '#FF6B00';
