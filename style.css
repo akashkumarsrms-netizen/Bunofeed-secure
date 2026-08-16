@@ -23,6 +23,7 @@
   --radius:       16px;
   --transition:   0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --nav-height:   72px;
+  --banner-height: 0px;
 }
 
 /* ---- Reset ---- */
@@ -45,6 +46,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-top: var(--banner-height);
+  transition: padding-top 0.25s ease;
 }
 img {
   max-width: 100%;
@@ -74,8 +77,11 @@ ul { list-style: none; }
   font-weight: 600;
   font-size: 0.88rem;
   letter-spacing: 0.02em;
-  position: relative;
-  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
 }
 #campaign-banner a {
   text-decoration: underline;
@@ -206,10 +212,11 @@ ul { list-style: none; }
    ============================================================ */
 .navbar {
   position: sticky;
-  top: 0;
+  top: var(--banner-height);
   z-index: 1000;
   background: var(--white);
   box-shadow: 0 2px 20px rgba(107,45,14,0.06);
+  transition: top 0.25s ease;
 }
 .nav-container {
   max-width: 1280px;

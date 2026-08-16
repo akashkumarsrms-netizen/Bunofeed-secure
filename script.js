@@ -67,8 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
       html += `<button id="banner-close" style="color:${D.campaign.textColor||'#fff'}" aria-label="Close banner">✕</button>`;
       banner.innerHTML = html;
 
+      // Banner is now fixed/floating, so reserve its real height for the
+      // navbar (sticky offset) and body (top padding) via a CSS variable.
+      const syncBannerHeight = () => {
+        const h = banner.style.display === 'none' ? 0 : banner.offsetHeight;
+        document.documentElement.style.setProperty('--banner-height', h + 'px');
+      };
+      syncBannerHeight();
+      window.addEventListener('resize', syncBannerHeight);
+
       document.getElementById('banner-close').addEventListener('click', () => {
         banner.style.display = 'none';
+        document.documentElement.style.setProperty('--banner-height', '0px');
+        window.removeEventListener('resize', syncBannerHeight);
       });
     }
   }
