@@ -429,14 +429,9 @@
     </div>
   </footer>
 
+  <script src="/api.js"></script>
   <script>
   (function () {
-    /* =========================================================
-       IMPORTANT — set this to your deployed Cloudflare Worker URL
-       (the same base URL used by api.js for your other endpoints,
-       e.g. "https://bunofeed-worker.yourname.workers.dev")
-    ========================================================= */
-    const WORKER_API_BASE = "https://bunofeed-api.bunofeedbaheri.workers.dev";
     const SESSION_KEY = "buno_referral_session";
 
     const loginSection   = document.getElementById('ref-login-section');
@@ -506,12 +501,7 @@
     }
 
     async function fetchReferralData(couponCode, password) {
-      const res = await fetch(`${WORKER_API_BASE}/api/referral/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ couponCode, password }),
-      });
-      return res.json();
+      return window.BUNOFEED_API.post('referralLogin', { couponCode, password });
     }
 
     async function doLogin(couponCode, password, remember) {
