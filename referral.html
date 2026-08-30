@@ -88,6 +88,22 @@
     background: #fff;
   }
   .ref-form-group input#ref-coupon { text-transform: uppercase; }
+  .ref-password-wrap { position: relative; }
+  .ref-password-wrap input { padding-right: 2.6rem; }
+  .ref-toggle-pw {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: .95rem;
+    padding: .25rem;
+    line-height: 1;
+  }
+  .ref-toggle-pw:hover { color: var(--orange); }
   .ref-login-btn {
     width: 100%;
     margin-top: .4rem;
@@ -290,7 +306,12 @@
           </div>
           <div class="ref-form-group">
             <label for="ref-password">Password</label>
-            <input type="password" id="ref-password" placeholder="Enter your password" autocomplete="off" required>
+            <div class="ref-password-wrap">
+              <input type="password" id="ref-password" placeholder="Enter your password" autocomplete="off" required>
+              <button type="button" class="ref-toggle-pw" id="ref-toggle-pw" aria-label="Show password" tabindex="-1">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
           </div>
           <button type="submit" class="ref-login-btn" id="ref-login-btn">Log In</button>
         </form>
@@ -424,6 +445,8 @@
     const loginBtn       = document.getElementById('ref-login-btn');
     const errorMsg       = document.getElementById('ref-error-msg');
     const logoutBtn      = document.getElementById('ref-logout-btn');
+    const togglePwBtn    = document.getElementById('ref-toggle-pw');
+    const passwordInput  = document.getElementById('ref-password');
 
     const nameEl        = document.getElementById('ref-name');
     const codePillEl     = document.getElementById('ref-code-pill');
@@ -512,6 +535,13 @@
         loginBtn.textContent = 'Log In';
       }
     }
+
+    togglePwBtn.addEventListener('click', function () {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      togglePwBtn.innerHTML = isHidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+      togglePwBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
 
     loginForm.addEventListener('submit', function (e) {
       e.preventDefault();
