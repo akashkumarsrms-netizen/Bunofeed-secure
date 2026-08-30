@@ -10,12 +10,9 @@
  *  ✅ The Worker holds all secrets (GAS_URL, GAS_SECRET).
  * ============================================================
  */
-
 window.BUNOFEED_API = {
-
   // ── Replace this with your Cloudflare Worker URL after deploying ──
   BASE_URL: 'https://bunofeed-api.bunofeedbaheri.workers.dev',
-
   // ── API Endpoints ──
   endpoints: {
     createOrder:      '/api/order/create',       // POST — save new order
@@ -27,13 +24,13 @@ window.BUNOFEED_API = {
     blogPosts:        '/api/blog/posts',          // GET  — list published posts (?category=&limit=)
     blogPost:         '/api/blog/post',           // GET  — single post content (?slug= or ?blogId=)
     blogCategories:   '/api/blog/categories',     // GET  — unique categories
+    // ── Referral portal ──
+    referralLogin:    '/api/referral/login',      // POST — referrer login (couponCode + password)
   },
-
   // ── Helper: full URL builder ──
   url(endpoint) {
     return this.BASE_URL + this.endpoints[endpoint];
   },
-
   // ── Helper: POST JSON ──
   async post(endpoint, body) {
     const res = await fetch(this.url(endpoint), {
@@ -43,7 +40,6 @@ window.BUNOFEED_API = {
     });
     return res.json();
   },
-
   // ── Helper: GET with query params ──
   async get(endpoint, params = {}) {
     const qs  = new URLSearchParams(params).toString();
