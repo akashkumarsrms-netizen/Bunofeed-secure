@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ6EV9SN7Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GJ6EV9SN7Q');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>Refer & Earn | Bunofeed</title>
+<meta name="description" content="Bunofeed Referral Partner Portal — log in with your coupon code to track your referral orders, sales and earnings.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Bunofeed">
+
+<link rel="canonical" href="https://bunofeed.in/referral.html">
+<meta name="theme-color" content="#ffffff">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/images/favicon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<link rel="stylesheet" href="/style.css"/>
+
+<style>
+  /* ===== Referral Portal — page-specific styles ===== */
+  .ref-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 5rem;
+    min-height: 60vh;
+  }
+  .ref-header { text-align: center; margin-bottom: 2.2rem; }
+  .ref-header h1 {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    color: var(--brown-dark);
+    margin-bottom: .5rem;
+  }
+  .ref-header h1 span { color: var(--orange); }
+  .ref-header p { color: #666; font-size: .95rem; max-width: 480px; margin: 0 auto; }
+
+  /* --- Login card --- */
+  .ref-login-card {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #eee0d6;
+    border-radius: 16px;
+    padding: 2rem 1.75rem;
+    box-shadow: 0 8px 28px rgba(107,45,14,.08);
+  }
+  .ref-form-group { margin-bottom: 1.1rem; text-align: left; }
+  .ref-form-group label {
+    display: block;
+    font-family: var(--font-head);
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: .4rem;
+    letter-spacing: .02em;
+  }
+  .ref-form-group input {
+    width: 100%;
+    padding: .75rem .9rem;
+    border: 1.5px solid #e0d4cc;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: .92rem;
+    background: #fffaf7;
+    transition: border-color .2s;
+  }
+  .ref-form-group input:focus {
+    outline: none;
+    border-color: var(--orange);
+    background: #fff;
+  }
+  .ref-form-group input#ref-coupon { text-transform: uppercase; }
+  .ref-login-btn {
+    width: 100%;
+    margin-top: .4rem;
+    padding: .85rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--orange);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+  }
+  .ref-login-btn:hover { background: var(--orange-light); }
+  .ref-login-btn:disabled { opacity: .65; cursor: not-allowed; }
+  .ref-error-msg {
+    color: #c0392b;
+    background: #fdecea;
+    border: 1px solid #f5c6c1;
+    border-radius: 8px;
+    padding: .6rem .8rem;
+    font-size: .82rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .ref-error-msg.show { display: block; }
+
+  /* --- Dashboard --- */
+  .ref-dashboard { display: none; }
+  .ref-dashboard.show { display: block; }
+  .ref-welcome-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.75rem;
+  }
+  .ref-welcome-row h2 {
+    font-family: var(--font-head);
+    font-size: 1.3rem;
+    color: var(--brown-dark);
+  }
+  .ref-welcome-row h2 span { color: var(--orange); }
+  .ref-code-pill {
+    display: inline-block;
+    background: #fff3ea;
+    color: var(--orange);
+    border: 1.5px solid var(--orange);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .78rem;
+    letter-spacing: .04em;
+    padding: .25rem .7rem;
+    border-radius: 20px;
+    margin-left: .5rem;
+  }
+  .ref-logout-btn {
+    background: transparent;
+    border: 1.5px solid var(--brown);
+    color: var(--brown);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .8rem;
+    padding: .55rem 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .ref-logout-btn:hover { background: var(--brown); color: #fff; }
+
+  .ref-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.2rem;
+  }
+  .ref-stat-card {
+    background: #fff;
+    border: 1px solid #eee0d6;
+    border-radius: 14px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(107,45,14,.06);
+  }
+  .ref-stat-card .ref-stat-icon {
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff3ea;
+    color: var(--orange);
+    border-radius: 50%;
+    margin: 0 auto .6rem;
+    font-size: 1.05rem;
+  }
+  .ref-stat-card .ref-stat-value {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--brown-dark);
+  }
+  .ref-stat-card .ref-stat-label {
+    font-size: .75rem;
+    color: #888;
+    margin-top: .15rem;
+  }
+
+  .ref-orders-section h3 {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    color: var(--brown-dark);
+    margin-bottom: 1rem;
+  }
+  .ref-table-wrap {
+    background: #fff;
+    border: 1px solid #eee0d6;
+    border-radius: 14px;
+    overflow-x: auto;
+  }
+  table.ref-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+    font-size: .86rem;
+  }
+  table.ref-orders-table thead th {
+    background: var(--brown);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    text-align: left;
+    padding: .8rem 1rem;
+    white-space: nowrap;
+  }
+  table.ref-orders-table tbody td {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid #f2e9e2;
+    color: #333;
+    white-space: nowrap;
+  }
+  table.ref-orders-table tbody tr:last-child td { border-bottom: none; }
+  table.ref-orders-table tbody tr:nth-child(even) { background: #fffaf7; }
+  .ref-empty-orders {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #999;
+    font-size: .9rem;
+  }
+  .ref-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-size: .9rem;
+  }
+  .ref-loading i { margin-right: .4rem; }
+
+  @media (max-width: 640px) {
+    .ref-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .ref-header h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="logo" aria-label="Bunofeed Home">
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img"/>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="/index.html"    class="nav-link">Home</a>
+        <a href="/shop.html"     class="nav-link">Products</a>
+        <a href="/blog.html"     class="nav-link">Blog</a>
+        <a href="/orders.html"   class="nav-link">My Orders</a>
+        <a href="/about.html"    class="nav-link">About Us</a>
+        <a href="/referral.html" class="nav-link active">Refer & Earn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="ref-page">
+    <div class="ref-header">
+      <h1>Referral <span>Partner Portal</span></h1>
+      <p>Log in with your coupon code and password to track your referral orders, sales and earnings.</p>
+    </div>
+
+    <!-- LOGIN CARD -->
+    <section id="ref-login-section">
+      <div class="ref-login-card">
+        <div class="ref-error-msg" id="ref-error-msg"></div>
+        <form id="ref-login-form">
+          <div class="ref-form-group">
+            <label for="ref-coupon">Coupon Code</label>
+            <input type="text" id="ref-coupon" placeholder="e.g. SAVE10" autocomplete="off" required>
+          </div>
+          <div class="ref-form-group">
+            <label for="ref-password">Password</label>
+            <input type="password" id="ref-password" placeholder="Enter your password" autocomplete="off" required>
+          </div>
+          <button type="submit" class="ref-login-btn" id="ref-login-btn">Log In</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="ref-dashboard" class="ref-dashboard">
+      <div class="ref-welcome-row">
+        <h2>Welcome, <span id="ref-name"></span><span class="ref-code-pill" id="ref-code-pill"></span></h2>
+        <button class="ref-logout-btn" id="ref-logout-btn">Log Out</button>
+      </div>
+
+      <div class="ref-stats-grid">
+        <div class="ref-stat-card">
+          <div class="ref-stat-icon"><i class="fas fa-box"></i></div>
+          <div class="ref-stat-value" id="ref-stat-orders">0</div>
+          <div class="ref-stat-label">No. of Orders</div>
+        </div>
+        <div class="ref-stat-card">
+          <div class="ref-stat-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+          <div class="ref-stat-value" id="ref-stat-sale">₹0</div>
+          <div class="ref-stat-label">Total Sale</div>
+        </div>
+        <div class="ref-stat-card">
+          <div class="ref-stat-icon"><i class="fas fa-percent"></i></div>
+          <div class="ref-stat-value" id="ref-stat-commission">0%</div>
+          <div class="ref-stat-label">Commission %</div>
+        </div>
+        <div class="ref-stat-card">
+          <div class="ref-stat-icon"><i class="fas fa-wallet"></i></div>
+          <div class="ref-stat-value" id="ref-stat-earning">₹0</div>
+          <div class="ref-stat-label">Your Earning</div>
+        </div>
+      </div>
+
+      <div class="ref-orders-section">
+        <h3>Orders Placed Through Your Code</h3>
+        <div class="ref-table-wrap">
+          <table class="ref-orders-table" id="ref-orders-table">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Sale Price</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody id="ref-orders-body"></tbody>
+          </table>
+          <div class="ref-empty-orders" id="ref-empty-orders" style="display:none;">
+            No orders have used your coupon code yet.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="https://bunofeed.in/images/logo2.png" alt="Bunofeed Logo" class="logo-img footer-logo-img"/>
+        <p>Your companion in healthy living. Honest food for real people.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/bunofeed?igsh=cGFyaXpsbGRzczh0" data-social="instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <i class="fab fa-instagram" aria-hidden="true"></i>
+          </a>
+          <a href="https://www.facebook.com" data-social="facebook" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <i class="fab fa-facebook" aria-hidden="true"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/akash-kumar-995739293" data-social="linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <i class="fab fa-linkedin" aria-hidden="true"></i>
+          </a>
+          <a href="https://www.youtube.com/channel/UC1f1x5hzWl1hBn3tpF--vnQ" data-social="youtube" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <i class="fab fa-youtube" aria-hidden="true"></i>
+          </a>
+          <a href="https://x.com/bunofeed" data-social="twitter" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+            <i class="fab fa-x-twitter" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="/index.html">Home</a>
+        <a href="/shop.html">Products</a>
+        <a href="/orders.html">My Orders</a>
+      </div>
+      <div class="footer-col">
+        <h4></h4>
+        <a href="/blog.html">Blog</a>
+        <a href="/faq.html">FAQs</a>
+        <a href="/about.html">About Us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <p>
+          <a href="mailto:bunofeedhelpdesk@gmail.com" data-email>Mail to: bunofeedhelpdesk@gmail.com</a>
+          <a>Call us at: 9457436741</a>
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Bunofeed. All rights reserved. |
+        <a href="/terms.html">Terms of Service</a> |
+        <a href="/privacy.html">Privacy Policy</a>
+      </p>
+      <span class="footer-highlight">Made with ❤️ for healthy 💪 living.</span>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* =========================================================
+       IMPORTANT — set this to your deployed Cloudflare Worker URL
+       (the same base URL used by api.js for your other endpoints,
+       e.g. "https://bunofeed-worker.yourname.workers.dev")
+    ========================================================= */
+    const WORKER_API_BASE = "bunofeed-api.bunofeedbaheri.workers.dev";
+
+    const SESSION_KEY = "buno_referral_session";
+
+    const loginSection   = document.getElementById('ref-login-section');
+    const dashboard      = document.getElementById('ref-dashboard');
+    const loginForm      = document.getElementById('ref-login-form');
+    const loginBtn       = document.getElementById('ref-login-btn');
+    const errorMsg       = document.getElementById('ref-error-msg');
+    const logoutBtn      = document.getElementById('ref-logout-btn');
+
+    const nameEl        = document.getElementById('ref-name');
+    const codePillEl     = document.getElementById('ref-code-pill');
+    const statOrdersEl   = document.getElementById('ref-stat-orders');
+    const statSaleEl     = document.getElementById('ref-stat-sale');
+    const statCommEl     = document.getElementById('ref-stat-commission');
+    const statEarningEl  = document.getElementById('ref-stat-earning');
+    const ordersBody     = document.getElementById('ref-orders-body');
+    const emptyOrdersEl  = document.getElementById('ref-empty-orders');
+    const ordersTable    = document.getElementById('ref-orders-table');
+
+    function formatCurrency(n) {
+      const num = Number(n) || 0;
+      return '₹' + num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('show');
+    }
+    function hideError() {
+      errorMsg.classList.remove('show');
+      errorMsg.textContent = '';
+    }
+
+    function renderDashboard(referral) {
+      nameEl.textContent = referral.name || 'Partner';
+      codePillEl.textContent = referral.couponCode || '';
+      statOrdersEl.textContent = referral.noOfOrders ?? 0;
+      statSaleEl.textContent = formatCurrency(referral.totalSale);
+      statCommEl.textContent = (Number(referral.commissionPct) || 0) + '%';
+      statEarningEl.textContent = formatCurrency(referral.earning);
+
+      ordersBody.innerHTML = '';
+      const orders = Array.isArray(referral.orders) ? referral.orders : [];
+
+      if (orders.length === 0) {
+        ordersTable.style.display = 'none';
+        emptyOrdersEl.style.display = 'block';
+      } else {
+        ordersTable.style.display = '';
+        emptyOrdersEl.style.display = 'none';
+        orders.forEach(function (o) {
+          const tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + (o.dateTime || '-') + '</td>' +
+            '<td>' + (o.productName || '-') + '</td>' +
+            '<td>' + (o.quantity ?? '-') + '</td>' +
+            '<td>' + formatCurrency(o.salePrice) + '</td>' +
+            '<td>' + formatCurrency(o.totalPrice) + '</td>';
+          ordersBody.appendChild(tr);
+        });
+      }
+
+      loginSection.style.display = 'none';
+      dashboard.classList.add('show');
+    }
+
+    async function fetchReferralData(couponCode, password) {
+      const res = await fetch(`${WORKER_API_BASE}/api/referral/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ couponCode, password }),
+      });
+      return res.json();
+    }
+
+    async function doLogin(couponCode, password, remember) {
+      hideError();
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
+      try {
+        const result = await fetchReferralData(couponCode, password);
+        if (result.status === 'success' && result.referral) {
+          if (remember) {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify({ couponCode, password }));
+          }
+          renderDashboard(result.referral);
+        } else {
+          showError(result.message || 'Invalid coupon code or password.');
+        }
+      } catch (err) {
+        showError('Something went wrong. Please check your connection and try again.');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Log In';
+      }
+    }
+
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const couponCode = document.getElementById('ref-coupon').value.trim();
+      const password = document.getElementById('ref-password').value.trim();
+      if (!couponCode || !password) {
+        showError('Please enter both your coupon code and password.');
+        return;
+      }
+      doLogin(couponCode, password, true);
+    });
+
+    logoutBtn.addEventListener('click', function () {
+      sessionStorage.removeItem(SESSION_KEY);
+      dashboard.classList.remove('show');
+      loginSection.style.display = '';
+      loginForm.reset();
+      hideError();
+    });
+
+    // Auto re-login if a session already exists in this tab (e.g. page refresh)
+    (function tryRestoreSession() {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (!saved) return;
+      try {
+        const { couponCode, password } = JSON.parse(saved);
+        if (couponCode && password) doLogin(couponCode, password, false);
+      } catch (e) {
+        sessionStorage.removeItem(SESSION_KEY);
+      }
+    })();
+
+    // Mobile hamburger menu (matches site-wide nav behaviour)
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', function () {
+        const isOpen = navLinks.classList.toggle('active');
+        hamburger.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+  })();
+  </script>
+
+</body>
+</html>
