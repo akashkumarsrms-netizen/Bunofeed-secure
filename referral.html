@@ -337,9 +337,9 @@
           <div class="ref-stat-label">Total Sale</div>
         </div>
         <div class="ref-stat-card">
-          <div class="ref-stat-icon"><i class="fas fa-percent"></i></div>
-          <div class="ref-stat-value" id="ref-stat-commission">0%</div>
-          <div class="ref-stat-label">Commission %</div>
+          <div class="ref-stat-icon"><span style="font-size:.8rem;font-weight:800;line-height:1;">₹/%</span></div>
+          <div class="ref-stat-value" id="ref-stat-commission">0</div>
+          <div class="ref-stat-label">Commission</div>
         </div>
         <div class="ref-stat-card">
           <div class="ref-stat-icon"><i class="fas fa-wallet"></i></div>
@@ -472,7 +472,7 @@
       codePillEl.textContent = referral.couponCode || '';
       statOrdersEl.textContent = referral.noOfOrders ?? 0;
       statSaleEl.textContent = formatCurrency(referral.totalSale);
-      statCommEl.textContent = (Number(referral.commissionPct) || 0) + '%';
+      statCommEl.textContent = referral.commissionPct ?? 0;
       statEarningEl.textContent = formatCurrency(referral.earning);
 
       ordersBody.innerHTML = '';
